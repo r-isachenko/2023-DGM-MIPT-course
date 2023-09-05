@@ -44,6 +44,23 @@
 	 \myfootnotewithlink{https://jmtomczak.github.io/blog/2/2\_ARM.html}{image credit: https://jmtomczak.github.io/blog/2/2\_ARM.html}
 \end{frame}
 %=======
+\begin{frame}{Autoregressive models: RNN}
+	\begin{itemize}
+		\item Previous model has \textbf{limited} memory $d$. It is insufficient for many modalities (e.g. for images and text). 
+		\item Recurrent NN fixes this problem and potentially could learn long-range dependencies:
+		\[
+			p(x_j | \bx_{1:j - 1}, \btheta) = p(x_j | \bh_j, \btheta), \quad \bh_j = \text{RNN}(\bx_{j-d:j - 1}, \bh_{j - 1})
+		\]
+		 \begin{figure}
+	    \centering
+	    \includegraphics[width=0.7\linewidth]{figs/sequential_RNN}
+		 \end{figure}
+		\item Sequential computation of all conditionals $p(x_j | \bx_{1:j-1}, \btheta)$, hence, the training is slow.
+		\item RNN suffers from vanishing and exploding gradients.
+	\end{itemize}
+	 \myfootnotewithlink{https://jmtomczak.github.io/blog/2/2\_ARM.html}{image credit: https://jmtomczak.github.io/blog/2/2\_ARM.html}
+\end{frame}
+%=======
 \subsection{Masked Autoencoder (MADE)}
 %=======
 \begin{frame}{MADE}

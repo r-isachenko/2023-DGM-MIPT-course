@@ -27,9 +27,9 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |---|---|---|---|---|
 | 1 | September, 5 | <b>Lecture 1:</b> Logistics. Generative models overview and motivation. Problem statement. Divergence minimization framework. Autoregressive models (PixelCNN). | [slides](lectures/lecture1/Lecture1.pdf) |  |
 |  |  | <b>Seminar 1:</b> Introduction. Maximum likelihood estimation. Histograms. Kernel density estimation (KDE). |  |  |
-| 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). |  |  |
+| 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). EM-algorithm, amortized inference. | [slides](lectures/lecture2/Lecture2.pdf) |  |
 |  |  | <b>Seminar 2:</b> MADE theory and practice. PixelCNN implementation hints. Gaussian MADE. |  |  |
-| 3 |  | <b>Lecture 3:</b> EM-algorithm, amortized inference. ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). |  |  |
+| 3 |  | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). |  |  |
 |  |  | <b>Seminar 3:</b> Latent Variable Models. Gaussian Mixture Model (GMM). GMM and MLE. ELBO and EM-algorithm. GMM via EM-algorithm. |  |  |
 | 4 |  | <b>Lecture 4:</b> VAE limitations. Posterior collapse and decoder weakening. Tighter ELBO (IWAE). Normalizing flows prerequisities.  |  |  |
 |  |  | <b>Seminar 4:</b> VAE implementation hints. IWAE theory. |  |  |

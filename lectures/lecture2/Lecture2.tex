@@ -80,7 +80,7 @@
 	\begin{block}{Sampling}
 		\vspace{-0.5cm}
 		\[
-			\hat{x}_1 \sim p(x_1 | \btheta), \quad \hat{x}_2 \sim p(x_2 | \hat{x}_1, \btheta), \dots, \quad \hat{x}_m \sim p(x_m | \hat{\bx}_{1:m-1}, \btheta)
+		{\color{teal}\hat{x}_1} \sim p(x_1 | \btheta), \quad \hat{x}_2 \sim p(x_2 | {\color{teal}\hat{x}_1}, \btheta), \quad \dots, \quad \hat{x}_m \sim p(x_m | \hat{\bx}_{1:m-1}, \btheta)
 		\]
 		New generated object is $\hat{\bx} = (\hat{x}_1, \hat{x}_2, \dots, \hat{x}_m)$.
 	\end{block}
@@ -91,16 +91,24 @@
 		\vspace{-0.3cm}
  		\begin{figure}
 		     \centering
-		     \includegraphics[width=0.75\linewidth]{figs/sequential_MLP}
+		     \includegraphics[width=0.6\linewidth]{figs/sequential_MLP}
 		 \end{figure}
 	\end{block}
 	\vspace{-0.3cm}
-	\begin{block}{Autoregressive RNN}
-	   	\vspace{-0.3cm}
-		\begin{figure}
-		   \centering
-		   \includegraphics[width=0.75\linewidth]{figs/sequential_RNN}
-		\end{figure}
+
+	\begin{block}{Autoregressive CNN}
+		\begin{minipage}[t]{0.5\columnwidth}
+			\begin{figure}
+				\centering
+	      \includegraphics[width=0.6\linewidth]{figs/pixelcnn1}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.5\columnwidth}
+			\begin{figure}
+				\centering
+	      \includegraphics[width=0.45\linewidth]{figs/pixelcnn_0_2}
+			\end{figure}
+		\end{minipage}
 	\end{block}
 	 \myfootnotewithlink{https://jmtomczak.github.io/blog/2/2\_ARM.html}{image credit: https://jmtomczak.github.io/blog/2/2\_ARM.html}
 \end{frame}
@@ -422,6 +430,137 @@
 	   	    
 \end{frame}
 %=======
+\section{EM-algorithm, amortized inference}
+%=======
+\begin{frame}{Variational lower bound (ELBO)}
+	\vspace{-0.3cm}
+	\begin{align*}
+		\mathcal{L} (q, \btheta) &= \int q(\bz) \log \frac{\color{violet}p(\bx, \bz | \btheta)}{\color{teal}q(\bz)}d\bz = \\ 
+		&= \int q(\bz) \log {\color{violet}p(\bx | \bz, \btheta)} d\bz + \int q(\bz) \log \frac{\color{violet}p(\bz)}{\color{teal}q(\bz)}d\bz \\ 
+		&= \mathbb{E}_{q} \log p(\bx | \bz, \btheta) - KL (q(\bz) || p(\bz))
+	\end{align*}
+	\vspace{-0.5cm}
+	\begin{block}{Log-likelihood decomposition}
+		\vspace{-0.8cm}
+		\begin{multline*}
+			\log p(\bx| \btheta) = {\color{olive}\mathcal{L} (q, \btheta)} + KL(q(\bz) || p(\bz|\bx, \btheta)) \\ = {\color{olive}\mathbb{E}_{q} \log p(\bx | \bz, \btheta) - KL (q(\bz) || p(\bz))} + KL(q(\bz) || p(\bz|\bx, \btheta)).
+		\end{multline*}
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{itemize}
+		\item Instead of maximizing incomplete likelihood, maximize ELBO
+		\[
+		\max_{\btheta} p(\bx | \btheta) \quad \rightarrow \quad \max_{q, \btheta} \mathcal{L} (q, \btheta)
+		\]
+		\item Maximization of ELBO by \textbf{variational} distribution $q$ is equivalent to minimization of KL
+		\[
+		\argmax_q \mathcal{L} (q, \btheta) \equiv \argmin_q KL(q(\bz) || p(\bz|\bx, \btheta)).
+		\]
+	\end{itemize}
+	
+\end{frame}
+%=======
+\begin{frame}{EM-algorithm}
+	\vspace{-0.5cm}
+	\begin{multline*}
+		\mathcal{L} (q, \btheta)  =  \mathbb{E}_{q} \log p(\bx | \bz, \btheta) - KL (q(\bz) || p(\bz)) = \\ = \bbE_q \left[ \log p(\bx | \bz, \btheta) - \log \frac{q(\bz)}{p(\bz)} \right]d\bz \rightarrow \max_{q, \btheta}.
+	\end{multline*}
+	\vspace{-0.5cm}
+	\begin{block}{Block-coordinate optimization}
+		\begin{itemize}
+			\item Initialize $\btheta^*$;
+			\item \textbf{E-step} ($\mathcal{L} (q, \btheta) \rightarrow \max_q$)
+			\vspace{-0.2cm}
+			\begin{multline*}
+				q^*(\bz) = \argmax_q \mathcal{L} (q, \btheta^*) = \\
+				= \argmin_q KL(q(\bz) || p(\bz | \bx, \btheta^*)) = p(\bz| \bx, \btheta^*);
+			\end{multline*}
+			\item \textbf{M-step} ($\mathcal{L} (q, \btheta) \rightarrow \max_{\btheta}$)
+			\vspace{-0.2cm}
+			\[
+			\btheta^* = \argmax_{\btheta} \mathcal{L} (q^*, \btheta);
+			\]
+			\vspace{-0.2cm}
+			\item Repeat E-step and M-step until convergence.
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{EM-algorithm illustration}
+	
+	\begin{minipage}[t]{0.45\columnwidth}
+		\begin{figure}
+			\includegraphics[width=0.9\linewidth]{figs/em_bishop1}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.55\columnwidth}
+		\begin{figure}
+			\includegraphics[width=0.85\linewidth]{figs/em_bishop2}
+		\end{figure}
+	\end{minipage}
+	\begin{figure}
+		\includegraphics[width=.55\linewidth]{figs/em_bishop3}
+	\end{figure}
+	
+	\myfootnote{Bishop\,C. Pattern Recognition and Machine Learning, 2006}
+\end{frame}
+%=======
+\begin{frame}{Amortized variational inference}
+	\begin{block}{E-step}
+		\vspace{-0.3cm}
+		\[
+		q(\bz) = \argmax_q \mathcal{L} (q, \btheta^*) = \argmin_q KL(q || p) =
+		p(\bz| \bx, \btheta^*).
+		\]
+		\vspace{-0.3cm}
+		\begin{itemize}
+			\item $q(\bz)$ approximates true posterior distribution $p(\bz| \bx, \btheta^*)$, that is why it is called \textbf{variational posterior};
+			\item $p(\bz| \bx, \btheta^*)$ could be \textbf{intractable};
+			\item $q(\bz)$ is different for each object $\bx$.
+		\end{itemize}
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{block}{Idea}
+		Restrict a family of all possible distributions $q(\bz)$ to a parametric class $q(\bz|\bx, \bphi)$ conditioned on samples $\bx$ with parameters $\bphi$.
+	\end{block}
+	
+	\textbf{Variational Bayes}
+	\begin{itemize}
+		\item E-step
+		\[
+		\bphi_k = \bphi_{k-1} + \left.\eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta_{k-1})\right|_{\bphi=\bphi_{k-1}}
+		\]
+		\item M-step
+		\[
+		\btheta_k = \btheta_{k-1} + \left.\eta \nabla_{\btheta} \mathcal{L}(\bphi_k, \btheta)\right|_{\btheta=\btheta_{k-1}}
+		\]
+	\end{itemize}
+\end{frame}
+%=======
+\begin{frame}{Variational EM-algorithm}
+	\begin{block}{ELBO}
+		\vspace{-0.5cm}
+		\[
+		\log p(\bx| \btheta) = \mathcal{L} (\bphi, \btheta) + KL(q(\bz | \bx, \bphi) || p(\bz|\bx, \btheta)) \geq \mathcal{L} (\bphi, \btheta).
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{itemize}
+		\item \textbf{E-step}
+		\[
+		\bphi_k = \bphi_{k-1} + \left.\eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta_{k-1})\right|_{\bphi=\bphi_{k-1}},
+		\]
+		where $\bphi$~-- parameters of variational posterior distribution $q(\bz | \bx, \bphi)$.
+		\item \textbf{M-step}
+		\[
+		\btheta_k = \btheta_{k-1} + \left.\eta \nabla_{\btheta} \mathcal{L}(\bphi_k, \btheta)\right|_{\btheta=\btheta_{k-1}},
+		\]
+		where $\btheta$~-- parameters of the generative distribution $p(\bx | \bz, \btheta)$.
+	\end{itemize}
+	Now all we have to do is to obtain two gradients $\nabla_{\bphi} \mathcal{L}(\bphi, \btheta)$, $\nabla_{\btheta} \mathcal{L}(\bphi, \btheta)$.  \\
+	\textbf{Challenge:} Number of samples $n$ could be huge (we heed to derive unbiased stochastic gradients).
+\end{frame}
+%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Bayesian inference is a generalization of most common machine learning tasks. It allows to construct MLE, MAP and bayesian inference, to compare models complexity and many-many more cool stuff.
@@ -429,6 +568,8 @@
 		\item LVM introduces latent representation of observed samples to make model more interpretable.
 		\vfill
 		\item LVM maximizes variational evidence lower bound (ELBO) to find MLE for the parameters.
+		\vfill
+		\item The general variational EM algorithm maximizes ELBO objective for LVM model to find MLE for parameters $\btheta$.
 	\end{itemize}
 \end{frame}
 \end{document} 
