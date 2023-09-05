@@ -25,7 +25,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 
 | # | Date | Description | Slides | Video |
 |---|---|---|---|---|
-| 1 | September, 5 | <b>Lecture 1:</b> Logistics. Generative models overview and motivation. Problem statement. Divergence minimization framework. Autoregressive models (PixelCNN). | [slides](lectures/lecture1/Lecture1.pdf) |  |
+| 1 | September, 5 | <b>Lecture 1:</b> Logistics. Generative models overview and motivation. Problem statement. Divergence minimization framework. Autoregressive models (PixelCNN). | [slides](lectures/lecture1/Lecture1.pdf) | [video](https://youtu.be/n9dsiRqkXb8) |
 |  |  | <b>Seminar 1:</b> Introduction. Maximum likelihood estimation. Histograms. Kernel density estimation (KDE). | [notebook](seminars/seminar1/seminar1.ipynb) |  |
 | 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). |  |  |
 |  |  | <b>Seminar 2:</b> MADE theory and practice. PixelCNN implementation hints. Gaussian MADE. |  |  |
