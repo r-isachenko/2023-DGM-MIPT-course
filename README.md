@@ -28,7 +28,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 1 | September, 5 | <b>Lecture 1:</b> Logistics. Generative models overview and motivation. Problem statement. Divergence minimization framework. Autoregressive models (PixelCNN). | [slides](lectures/lecture1/Lecture1.pdf) | [video](https://youtu.be/n9dsiRqkXb8) |
 |  |  | <b>Seminar 1:</b> Introduction. Maximum likelihood estimation. Histograms. Kernel density estimation (KDE). | [notebook](seminars/seminar1/seminar1.ipynb) | [video](https://youtu.be/Py9DNGqR7l8) |
 | 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). EM-algorithm, amortized inference. | [slides](lectures/lecture2/Lecture2.pdf) |  |
-|  |  | <b>Seminar 2:</b> MADE theory and practice. PixelCNN implementation hints. Gaussian MADE. |  |  |
+|  |  | <b>Seminar 2:</b> PixelCNN for MNIST and Binarized MNIST coding. | ![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar2/seminar2.ipynb) [notebook](seminars/seminar2/seminar2.ipynb) |  |
 | 3 |  | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). |  |  |
 |  |  | <b>Seminar 3:</b> Latent Variable Models. Gaussian Mixture Model (GMM). GMM and MLE. ELBO and EM-algorithm. GMM via EM-algorithm. |  |  |
 | 4 |  | <b>Lecture 4:</b> VAE limitations. Posterior collapse and decoder weakening. Tighter ELBO (IWAE). Normalizing flows prerequisities.  |  |  |
