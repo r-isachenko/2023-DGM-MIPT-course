@@ -29,8 +29,8 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |  |  | <b>Seminar 1:</b> Introduction. Maximum likelihood estimation. Histograms. Kernel density estimation (KDE). | [notebook](seminars/seminar1/seminar1.ipynb) | [video](https://youtu.be/Py9DNGqR7l8) |
 | 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). EM-algorithm, amortized inference. | [slides](lectures/lecture2/Lecture2.pdf) | [video](https://youtu.be/W239stDfszY) |
 |  |  | <b>Seminar 2:</b> PixelCNN for MNIST and Binarized MNIST coding. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar2/seminar2.ipynb) [notebook](seminars/seminar2/seminar2.ipynb) | [video](https://youtu.be/vN_qkKce8fg) |
-| 3 | September, 19 | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). VAE limitations. Tighter ELBO (IWAE).  |  |  |
-|  |  | <b>Seminar 3:</b> Latent Variable Models. Gaussian Mixture Model (GMM). GMM and MLE. ELBO and EM-algorithm. GMM via EM-algorithm. | [slides](lectures/lecture3/Lecture3.pdf) |  |
+| 3 | September, 19 | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). VAE limitations. Tighter ELBO (IWAE).  | [slides](lectures/lecture3/Lecture3.pdf)g |  |
+|  |  | <b>Seminar 3:</b> Latent Variable Models. Gaussian Mixture Model (GMM). GMM and MLE. ELBO and EM-algorithm. GMM via EM-algorithm. |  |  |
 | 4 |  | <b>Lecture 4:</b> TBA |  |  |
 |  |  | <b>Seminar 4:</b> TBA |  |  |
 | 5 |  | <b>Lecture 5:</b> TBA |  |  |
