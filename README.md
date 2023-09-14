@@ -27,32 +27,32 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |---|---|---|---|---|
 | 1 | September, 5 | <b>Lecture 1:</b> Logistics. Generative models overview and motivation. Problem statement. Divergence minimization framework. Autoregressive models (PixelCNN). | [slides](lectures/lecture1/Lecture1.pdf) | [video](https://youtu.be/n9dsiRqkXb8) |
 |  |  | <b>Seminar 1:</b> Introduction. Maximum likelihood estimation. Histograms. Kernel density estimation (KDE). | [notebook](seminars/seminar1/seminar1.ipynb) | [video](https://youtu.be/Py9DNGqR7l8) |
-| 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). EM-algorithm, amortized inference. | [slides](lectures/lecture2/Lecture2.pdf) |  |
-|  |  | <b>Seminar 2:</b> PixelCNN for MNIST and Binarized MNIST coding. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar2/seminar2.ipynb)<br>[notebook](seminars/seminar2/seminar2.ipynb)<br>[notebook_solved](seminars/seminar2/seminar2_solved.ipynb) |  |
-| 3 |  | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). |  |  |
+| 2 | September, 12 | <b>Lecture 2:</b> Bayesian Framework. Latent Variable Models (LVM). Variational lower bound (ELBO). EM-algorithm, amortized inference. | [slides](lectures/lecture2/Lecture2.pdf) | [video](https://youtu.be/W239stDfszY) |
+|  |  | <b>Seminar 2:</b> PixelCNN for MNIST and Binarized MNIST coding. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar2/seminar2.ipynb)<br>[notebook](seminars/seminar2/seminar2.ipynb)<br>[notebook_solved](seminars/seminar2/seminar2_solved.ipynb) | [video](https://youtu.be/vN_qkKce8fg) |
+| 3 | September, 19 | <b>Lecture 3:</b> ELBO gradients, reparametrization trick. Variational Autoencoder (VAE). VAE limitations. Tighter ELBO (IWAE).  | [slides](lectures/lecture3/Lecture3.pdf)g |  |
 |  |  | <b>Seminar 3:</b> Latent Variable Models. Gaussian Mixture Model (GMM). GMM and MLE. ELBO and EM-algorithm. GMM via EM-algorithm. |  |  |
-| 4 |  | <b>Lecture 4:</b> VAE limitations. Posterior collapse and decoder weakening. Tighter ELBO (IWAE). Normalizing flows prerequisities.  |  |  |
-|  |  | <b>Seminar 4:</b> VAE implementation hints. IWAE theory. |  |  |
-| 5 |  | <b>Lecture 5:</b> Normalizing Flow (NF) intuition and definition. Forward and reverse KL divergence for NF. Linear flows. |  |  |
-|  |  | <b>Seminar 5:</b> Flows. Planar flows. Forward KL vs Reverse KL. Planar flows via Forward KL and Reverse KL. |  |  |
-| 6 |  | <b>Lecture 6:</b> Autoregressive flows (gausian AR NF/inverse gaussian AR NF). Coupling layer (RealNVP). NF as VAE model. |  |  |
-|  |  | <b>Seminar 6:</b> RealNVP implementation hints. Integer Discrete Flows |  |  |
-| 7 |  | <b>Lecture 7:</b> Discrete data vs continuous model. Model discretization (PixelCNN++). Data dequantization: uniform and variational (Flow++). ELBO surgery and optimal VAE prior. Flow-based VAE prior. |  |  |
-|  |  | <b>Seminar 7:</b>  Discretization of continuous distribution (MADE++). Aggregated posterior distribution in VAE. VAE with learnable prior. |  |  |
-| 8 |  | <b>Lecture 8:</b> Flows-based VAE posterior vs flow-based VAE prior. Likelihood-free learning. GAN optimality theorem. |  |  |
-|  |  | <b>Seminar 8:</b> Glow implementation. Vanilla GAN in 1D coding. |  |  |
-| 9 |  | <b>Lecture 9:</b> Vanishing gradients and mode collapse, KL vs JS divergences. Adversarial Variational Bayes. Wasserstein distance. Wasserstein GAN (WGAN). |  |  |
-|  |  | <b>Seminar 9:</b> KL vs JS divergences. Mode collapse. Vanilla GAN on multimodal 1D and 2D data. Wasserstein distance theory. |  |  |
-| 10 |  | <b>Lecture 10:</b> WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). f-divergence minimization. GAN evaluation. |  |  |
-|  |  | <b>Seminar 10:</b> WGANs on multimodal 2D data. GANs zoo. Evolution of GANs. StyleGAN implementation. |  |  |
-| 11 |  | <b>Lecture 11:</b> GAN evaluation (Inception score, FID, Precision-Recall, truncation trick). Discrete VAE latent representations. |  |  |
-|  |  | <b>Seminar 11:</b> StyleGAN coding and assessing. Unpaired I2I translation. CycleGAN: discussion and coding. |  |  |
-| 12 |  | <b>Lecture 12:</b> Vector quantization, straight-through gradient estimation (VQ-VAE). Gumbel-softmax trick (DALL-E). Neural ODE.  |  |  |
-|  |  | <b>Seminar 12:</b> Beyond GANs: Neural Optimal Transport: theory and practice. VQ-VAE implementation hints. |  |  |
-| 13 |  | <b>Lecture 13:</b> Adjoint method. Continuous-in-time NF (FFJORD, Hutchinson's trace estimator). Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. |  |  |
-|  |  | <b>Seminar 13:</b> CNF theory. Langevin Dynamics. Energy-based Models. |  |  |
-| 14 |  | <b>Lecture 14:</b> Score matching. Noise conditioned score network (NCSN). Gaussian diffusion process. |  |  |
-|  |  | <b>Lecture 15:</b> Denoising diffusion probabilistic model (DDPM): objective, link to VAE and score matching. |  |  |
+| 4 |  | <b>Lecture 4:</b> TBA |  |  |
+|  |  | <b>Seminar 4:</b> TBA |  |  |
+| 5 |  | <b>Lecture 5:</b> TBA |  |  |
+|  |  | <b>Seminar 5:</b> TBA |  |  |
+| 6 |  | <b>Lecture 6:</b> TBA |  |  |
+|  |  | <b>Seminar 6:</b> TBA |  |  |
+| 7 |  | <b>Lecture 7:</b> TBA |  |  |
+|  |  | <b>Seminar 7:</b>  TBA |  |  |
+| 8 |  | <b>Lecture 8:</b> TBA |  |  |
+|  |  | <b>Seminar 8:</b> TBA |  |  |
+| 9 |  | <b>Lecture 9:</b> TBA |  |  |
+|  |  | <b>Seminar 9:</b> TBA |  |  |
+| 10 |  | <b>Lecture 10:</b> TBA |  |  |
+|  |  | <b>Seminar 10:</b> TBA |  |  |
+| 11 |  | <b>Lecture 11:</b> TBA |  |  |
+|  |  | <b>Seminar 11:</b> TBA |  |  |
+| 12 |  | <b>Lecture 12:</b> TBA |  |  |
+|  |  | <b>Seminar 12:</b> TBA |  |  |
+| 13 |  | <b>Lecture 13:</b> TBA |  |  |
+|  |  | <b>Seminar 13:</b> TBA |  |  |
+| 14 |  | <b>Lecture 14:</b> TBA |  |  |
+|  |  | <b>Seminar 14:</b> TBA |  |  |
 
 ## Homeworks
 | Homework | Date | Deadline | Description | Link |

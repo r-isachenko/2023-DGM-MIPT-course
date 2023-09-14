@@ -541,6 +541,222 @@
 %=======
 \section{VAE-related topics}
 %=======
+\subsection{Posterior collapse and decoder weakening techniques}
+%=======
+\begin{frame}{VAE limitations}
+	\begin{itemize}
+		\item \textbf{Poor generative distribution (decoder)}
+		\[
+			p(\bx | \bz, \btheta) = \mathcal{N}(\bx| \bmu_{\btheta}(\bz), \bsigma^2_{\btheta}(\bz)) \quad \text{or } = \text{Softmax}(\bpi_{\btheta}(\bz)).
+		\]
+		\item Loose lower bound
+		\[
+			\log p(\bx | \btheta) - \mathcal{L}(q, \btheta) = (?).
+		\]
+		\item Poor prior distribution
+		\[
+			p(\bz) = \mathcal{N}(0, \mathbf{I}).
+		\]
+		\item Poor variational posterior distribution (encoder)
+		\[
+			q(\bz | \bx, \bphi) = \mathcal{N}(\bz| \bmu_{\bphi}(\bx), \bsigma^2_{\bphi}(\bx)).
+		\]
+	\end{itemize}
+\end{frame}
+%=======
+\begin{frame}{Posterior collapse: toy example}
+	Let define latent variable model in the following way:
+	\[
+	p(\bx | \btheta) = \int p(\bx, \bz | \btheta) d \bz = \int p(\bx | \bz, \btheta) p(\bz) d \bz 
+	\]
+	\begin{itemize}
+		\item prior distribution $p(\bz) = \mathcal{N}(\bz| 0, \mathbf{I})$;
+		\item probabilistic model $p(\bx | \bz, \btheta) = \mathcal{N}(\bx | \bmu_{\btheta}(\bz), \bsigma_{\btheta}(\bz))$ (diagonal covariance);
+		\item variational posterior $q(\bz | \bx, \bphi) =  \mathcal{N}(\bx | \bmu_{\bphi}(\bx), \bsigma_{\phi}(\bx))$  (diagonal covariance).
+	\end{itemize}
+	
+	Let data distribution is $\pi(\bx) = \mathcal{N}(\bx | \bmu, \bSigma)$. Possible cases:
+	\begin{itemize}
+		\item covariance matrix $\bSigma$ is diagonal (univariate case);
+		\item covariance matrix $\bSigma$ is \textbf{not} diagonal (multivariate case).
+	\end{itemize}
+	What is the difference?
+\end{frame}
+%=======
+\begin{frame}{Posterior collapse: toy example + VLAE}
+	\begin{block}{Multivariate ($\bSigma$ is non-diagonal)}
+		\vspace{-0.5cm}
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=.8\linewidth]{figs/posterior_collapse_toy_1.png}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=0.75\linewidth]{figs/posterior_collapse_toy_3.png}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_5.png}
+			\end{figure}
+		\end{minipage}
+		The encoder uses latent variables to model data.
+	\end{block}
+	
+	\begin{block}{Univariate ($\bSigma$ is diagonal)}
+		\vspace{-0.5cm}
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=.8\linewidth]{figs/posterior_collapse_toy_2.png}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_4.png}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.33\columnwidth}
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_6.png}
+			\end{figure}
+		\end{minipage}
+		Latent variables are not used, since the decoder could model the data without the encoder.
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{PixelVAE}
+	\begin{block}{Autoregressive decoder}
+		\vspace{-0.3cm}
+		\[
+		p(\bx | \bz , \btheta) = \prod_{j=1}^m p(x_j | \bx_{1:j - 1}, \bz , \btheta)
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{itemize}
+		\item Global structure is captured by latent variables.
+		\item Local statistics are captured by limited receptive field autoregressive model.
+	\end{itemize}
+	\vspace{-0.1cm}
+	\begin{block}{MNIST results}
+		\vspace{-0.3cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.75\linewidth]{figs/PixelVAE_2.png}
+		\end{figure}
+	\end{block}
+	
+	\myfootnotewithlink{https://arxiv.org/abs/1611.05013}{Gulrajani I. et al. PixelVAE: A Latent Variable Model for Natural Images, 2016}
+\end{frame}
+%=======
+\begin{frame}{Variational Lossy AutoEncoder}
+	\begin{block}{Lossy code via explicit information placement}
+		\[
+		p(\bx | \bz, \btheta) = \prod_{i=1}^m p(x_i | \bz, \bx_{\text{WindowAround}(i)}, \btheta).
+		\]
+		\begin{itemize}
+			\item WindowAround($i$) restricts the receptive field (it forbids to represent arbitrarily complex distribution over $\bx$ without dependence on $\bz$). 
+			\item Local statistics of 2D images (texture) will be modeled by a small local window.
+			\item Global structural information (shapes) is long-range dependency that can only be communicated through latent code $\bz$. 
+		\end{itemize}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}
+\end{frame}
+%=======
+\begin{frame}{Variational Lossy AutoEncoder}
+	\begin{itemize}
+		\item Can VLAE learn lossy codes that encode global statistics?
+		\item Does using AF priors improves upon using IAF posteriors as predicted by theory?
+		\item Does using autoregressive decoding distributions improve density estimation performance?
+	\end{itemize}
+	\begin{minipage}[t]{0.5\columnwidth}
+		\vspace{1cm}
+		MNIST
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=1.\linewidth]{figs/VLAE_1.png}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		CIFAR10
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=1.\linewidth]{figs/VLAE_2.png}
+		\end{figure}
+	\end{minipage}
+	
+	\myfootnotewithlink{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}
+\end{frame}
+%=======
+\begin{frame}{Posterior collapse}
+	\begin{block}{LVM}
+		\vspace{-0.3cm}
+		\[
+		p(\bx | \btheta) = \int p(\bx, \bz | \btheta) d \bz = \int p(\bx | \bz, \btheta) p(\bz) d \bz 
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{ELBO objective}
+		\vspace{-0.3cm}
+		\[
+		\mathcal{L}(\bphi, \btheta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz, \btheta) - KL(q(\bz | \bx, \bphi) || p(\bz)).
+		\]
+	\end{block}
+	More powerful $p(\bx | \bz, \btheta)$ leads to more powerful generative model $p(\bx | \btheta)$.
+	\begin{block}{Extreme cast}
+		\vspace{-0.3cm}
+		\[
+			p(\bx | \btheta) \in \mathcal{P} = \{ p(\bx | \bz, \btheta) | \, \forall \bz, \btheta\}.
+		\]
+	\end{block}
+	If the decoder $p(\bx | \bz, \btheta)$ is too powerful (it could  model $p(\bx | \btheta)$), then ELBO avoids paying any cost $KL(q(\bz| \bx, \bphi)||p(\bz))$ ($q(\bz| \bx, \bphi) \approx p(\bz)$), the variational posterior $q(\bz | \bx, \bphi)$ will not carry any information about $\bx$, the latent variables $\bz$ becomes irrelevant.
+\end{frame}
+%=======
+\begin{frame}{Autoregressive VAE decoder}
+	How to make the generative model $p(\bx | \bz, \btheta)$ more powerful?
+	\begin{block}{PixelVAE/VLAE}
+		\vspace{-0.3cm}
+		\[
+			p(\bx | \bz , \btheta) = \prod_{j=1}^m p(x_j | {\color{teal}\bx_{1:j - 1}}, {\color{violet}\bz}, \btheta)
+		\]
+		\begin{itemize}
+			\item Global structure is captured by latent variables ${\color{violet}\bz}$.
+			\item Local statistics are captured by limited receptive field of autoregressive context ${\color{teal}\bx_{1:j - 1}}$.
+		\end{itemize}
+	\end{block}
+	PixelVAE/VLAE models use the autoregressive PixelCNN decoder model with small number of layers to limit receptive field.
+	\myfootnote{\href{https://arxiv.org/abs/1611.05013}{Gulrajani I. et al. PixelVAE: A Latent Variable Model for Natural Images, 2016}, \\
+	\href{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}}
+\end{frame}
+%=======
+\begin{frame}{Decoder weakening techniques}
+	How to force the model encode information about $\bx$ into $\bz$?
+	\begin{block}{KL annealing}
+		\vspace{-0.3cm}
+		\[
+		    \mathcal{L}(\bphi, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz, \btheta) - {\color{violet}\beta} \cdot KL (q(\bz | \bx, \bphi) || p(\bz))
+		\]
+		\vspace{-0.3cm} \\
+		Start training with $\beta = 0$, increase it until $\beta = 1$ during training.
+	\end{block}
+	\begin{block}{Free bits}
+		\vspace{-0.3cm}
+		\[
+		    \mathcal{L}(\bphi, \btheta, \lambda) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz, \btheta) - {\color{violet}\max(\lambda,} KL (q(\bz | \bx, \bphi) || p(\bz)){\color{violet})}.
+		\]
+		\vspace{-0.3cm} \\
+		It ensures the use of less than $\lambda$ bits of information and results in $KL (q(\bz | \bx, \bphi) || p(\bz)) \geq \lambda$.
+	\end{block}
+	\myfootnote{\href{https://arxiv.org/abs/1511.06349}{Bowman S. R. et al. Generating Sentences from a Continuous Space, 2015} \\
+	\href{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016}}
+\end{frame}
+%=======
 \subsection{IWAE}
 %=======
 \begin{frame}{IWAE}
@@ -750,138 +966,6 @@
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1611.05013.pdf}{https://arxiv.org/pdf/1611.05013.pdf}}
-\end{frame}
-%=======
-\subsection{Posterior collapse}
-%=======
-\begin{frame}{Posterior collapse: toy example}
-	Let define latent variable model in the following way:
-	\[
-	p(\bx | \btheta) = \int p(\bx, \bz | \btheta) d \bz = \int p(\bx | \bz, \btheta) p(\bz) d \bz 
-	\]
-	\begin{itemize}
-		\item prior distribution $p(\bz) = \mathcal{N}(\bz| 0, \mathbf{I})$;
-		\item probabilistic model $p(\bx | \bz, \btheta) = \mathcal{N}(\bx | \bmu_{\btheta}(\bz), \bsigma_{\btheta}(\bz))$ (diagonal covariance);
-		\item variational posterior $q(\bz | \bx, \bphi) =  \mathcal{N}(\bx | \bmu_{\bphi}(\bx), \bsigma_{\phi}(\bx))$  (diagonal covariance).
-	\end{itemize}
-	
-	Let data distribution is $\pi(\bx) = \mathcal{N}(\bx | \bmu, \bSigma)$. Possible cases:
-	\begin{itemize}
-		\item covariance matrix $\bSigma$ is diagonal (univariate case);
-		\item covariance matrix $\bSigma$ is \textbf{not} diagonal (multivariate case).
-	\end{itemize}
-	What is the difference?
-\end{frame}
-%=======
-\begin{frame}{Posterior collapse: toy example + VLAE}
-	\begin{block}{Multivariate ($\bSigma$ is non-diagonal)}
-		\vspace{-0.5cm}
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=.8\linewidth]{figs/posterior_collapse_toy_1.png}
-			\end{figure}
-		\end{minipage}%
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=0.75\linewidth]{figs/posterior_collapse_toy_3.png}
-			\end{figure}
-		\end{minipage}%
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_5.png}
-			\end{figure}
-		\end{minipage}
-		The encoder uses latent variables to model data.
-	\end{block}
-	
-	\begin{block}{Univariate ($\bSigma$ is diagonal)}
-		\vspace{-0.5cm}
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=.8\linewidth]{figs/posterior_collapse_toy_2.png}
-			\end{figure}
-		\end{minipage}%
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_4.png}
-			\end{figure}
-		\end{minipage}%
-		\begin{minipage}[t]{0.33\columnwidth}
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=.75\linewidth]{figs/posterior_collapse_toy_6.png}
-			\end{figure}
-		\end{minipage}
-		Latent variables are not used, since the decoder could model the data without the encoder.
-	\end{block}
-\end{frame}
-%=======
-\begin{frame}{PixelVAE}
-	\begin{block}{Autoregressive decoder}
-		\vspace{-0.3cm}
-		\[
-		p(\bx | \bz , \btheta) = \prod_{j=1}^m p(x_j | \bx_{1:j - 1}, \bz , \btheta)
-		\]
-		\vspace{-0.3cm}
-	\end{block}
-	\begin{itemize}
-		\item Global structure is captured by latent variables.
-		\item Local statistics are captured by limited receptive field autoregressive model.
-	\end{itemize}
-	\vspace{-0.1cm}
-	\begin{block}{MNIST results}
-		\vspace{-0.3cm}
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.75\linewidth]{figs/PixelVAE_2.png}
-		\end{figure}
-	\end{block}
-	
-	\myfootnotewithlink{https://arxiv.org/abs/1611.05013}{Gulrajani I. et al. PixelVAE: A Latent Variable Model for Natural Images, 2016}
-\end{frame}
-%=======
-\begin{frame}{Variational Lossy AutoEncoder}
-	\begin{block}{Lossy code via explicit information placement}
-		\[
-		p(\bx | \bz, \btheta) = \prod_{i=1}^m p(x_i | \bz, \bx_{\text{WindowAround}(i)}, \btheta).
-		\]
-		\begin{itemize}
-			\item WindowAround($i$) restricts the receptive field (it forbids to represent arbitrarily complex distribution over $\bx$ without dependence on $\bz$). 
-			\item Local statistics of 2D images (texture) will be modeled by a small local window.
-			\item Global structural information (shapes) is long-range dependency that can only be communicated through latent code $\bz$. 
-		\end{itemize}
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}
-\end{frame}
-%=======
-\begin{frame}{Variational Lossy AutoEncoder}
-	\begin{itemize}
-		\item Can VLAE learn lossy codes that encode global statistics?
-		\item Does using AF priors improves upon using IAF posteriors as predicted by theory?
-		\item Does using autoregressive decoding distributions improve density estimation performance?
-	\end{itemize}
-	\begin{minipage}[t]{0.5\columnwidth}
-		\vspace{1cm}
-		MNIST
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=1.\linewidth]{figs/VLAE_1.png}
-		\end{figure}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\columnwidth}
-		CIFAR10
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=1.\linewidth]{figs/VLAE_2.png}
-		\end{figure}
-	\end{minipage}
-	
-	\myfootnotewithlink{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}
 \end{frame}
 %=======
 \section{Normalizing Flows}
