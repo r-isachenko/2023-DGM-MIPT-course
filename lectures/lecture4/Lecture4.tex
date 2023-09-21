@@ -49,6 +49,32 @@
 \end{frame}
 %=======
 \begin{frame}{Recap of previous lecture}
+	\begin{block}{Final EM-algorithm}
+		\begin{itemize}
+			\item pick random sample $\bx_i, i \sim U[1, n]$.
+			\item compute the objective:
+			\vspace{-0.3cm}
+			\[
+			\bepsilon^* \sim r(\bepsilon); \quad \bz^* = g(\bx, \bepsilon^*, \bphi);
+			\]
+			\[
+			\cL(\bphi, \btheta) \approx  \log p(\bx | \bz^*, \btheta) - KL(q(\bz^* | \bx, \bphi) || p(\bz^*)).
+			\]
+			\item compute a stochastic gradients w.r.t. $\bphi$ and $\btheta$
+			\begin{align*}
+				\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) &\approx \nabla_{\bphi} \log p(\bx | g(\bx, \bepsilon^*, \bphi), \btheta)  - \nabla_{\bphi} \text{KL}(q(\bz | \bx, \bphi) || p(\bz)); \\
+				\nabla_{\btheta} \mathcal{L} (\bphi, \btheta) &\approx \nabla_{\btheta} \log p(\bx|\bz^*, \btheta).
+			\end{align*}
+			\item update $\btheta, \bphi$ according to the selected optimization method (SGD, Adam, RMSProp):
+			\begin{align*}
+				\bphi &:= \bphi + \eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta), \\
+				\btheta &:= \btheta + \eta \nabla_{\btheta} \mathcal{L}(\bphi, \btheta).
+			\end{align*}
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Recap of previous lecture}
 	\begin{minipage}[t]{0.55\columnwidth}
 		\begin{block}{Variational autoencoder (VAE)}
 		    \begin{itemize}
@@ -67,31 +93,6 @@
 	\end{minipage}
 	
 	\myfootnotewithlink{https://arxiv.org/abs/1906.02691}{Kingma D. P., Welling M. An introduction to variational autoencoders, 2019}
-\end{frame}
-%=======
-\begin{frame}{Recap of previous lecture}
-	\begin{block}{Decoder weakening}
-		\begin{itemize}
-			\item Powerful decoder $p(\bx | \bz, \btheta)$ makes the model expressive, but posterior collapse is possible.
-			\item PixelVAE model uses the autoregressive PixelCNN model with small number of layers to limit receptive field.
-		\end{itemize}
-	\end{block}
-	
-	\begin{block}{KL annealing}
-		\vspace{-0.6cm}
-		\[
-			\mathcal{L}(\bphi, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz, \btheta) - {\color{violet}\beta} \cdot KL (q(\bz | \bx, \bphi) || p(\bz))
-		\]
-		Start training with $\beta = 0$, increase it until $\beta = 1$ during training.
-	\end{block}
-	
-	\begin{block}{Free bits}
-		Ensure the use of less than $\lambda$ bits of information:
-		\[
-		\mathcal{L}(\bphi, \btheta, \lambda) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz, \btheta) - {\color{violet}\max(\lambda,} KL (q(\bz | \bx, \bphi) || p(\bz)){\color{violet})}.
-		\]
-		This results in $KL (q(\bz | \bx, \bphi) || p(\bz)) \geq \lambda$.
-	\end{block}
 \end{frame}
 %=======
 \begin{frame}{Recap of previous lecture}
@@ -304,7 +305,7 @@
 		Normalizing flow is a \textit{differentiable, invertible} mapping from data $\bx$ to the noise $\bz$. 
 	\end{block}
 	\begin{itemize}
-		\item \textbf{Normalizing} means that the inverse flow takes samples from $\pi(\bx)$ and normalizes them into samples from the density $p(\bz)$.
+		\item \textbf{Normalizing} means that the inverse NF takes samples from $\pi(\bx)$ and normalizes them into samples from the density $p(\bz)$.
 		\item \textbf{Flow} refers to the trajectory followed by samples from $p(\bz)$ as they are transformed by the sequence of transformations
 		\[
 		\bz = f_K \circ \dots \circ f_1(\bx); \quad \bx = f_1^{-1} \circ \dots \circ f_K^{-1} (\bz) = g_1 \circ \dots \circ g_K(\bz) 
@@ -323,14 +324,14 @@
 \end{frame}
 %=======
 \begin{frame}{Normalizing flows}
-	\begin{block}{Example of a 4-step flow}
+	\begin{block}{Example of a 4-step NF}
 		\vspace{-0.2cm}
 		\begin{figure}
 			\includegraphics[width=\linewidth]{figs/flow_4_steps_example.png}
 		\end{figure}
 	\end{block}
 	\vspace{-0.5cm}
-	\begin{block}{Flow log likelihood}
+	\begin{block}{NF log likelihood}
 		\vspace{-0.3cm}
 		\[
 		\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log |\det ( \bJ_f)|
@@ -370,7 +371,7 @@
 		\begin{itemize}
 			\item We need to be able to compute $f(\bx, \btheta)$ and its Jacobian.
 			\item We need to be able to compute the density $p(\bz)$.
-			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the flow.
+			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the NF.
 		\end{itemize}
 	\end{block}
 \end{frame}
@@ -401,7 +402,7 @@
 	\end{block}
 \end{frame}
 %=======
-\begin{frame}{Flow KL duality}
+\begin{frame}{Normalizing flows KL duality}
 	\begin{block}{Theorem}
 		Fitting NF model $p(\bx| \btheta)$ to the target distribution $\pi(\bx)$ using forward KL (MLE) is equivalent to fitting the induced distribution $p(\bz| \btheta)$ to the base $p(\bz)$ using reverse KL:
 		\vspace{-0.2cm}
@@ -416,7 +417,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1912.02762}{Papamakarios G. et al. Normalizing flows for probabilistic modeling and inference, 2019} 
 \end{frame}
 %=======
-\begin{frame}{Flow KL duality}
+\begin{frame}{Normalizing flows KL duality}
 	\begin{block}{Theorem}
 		\vspace{-0.3cm}
 		\[
@@ -445,7 +446,9 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 
 \end{frame}
 %=======
-\section{Linear flows}
+\section{NF examples}
+%=======
+\subsection{Linear normalizing flows}
 %=======
 \begin{frame}{Jacobian structure}
 	\begin{block}{Normalizing flows log-likelihood}
@@ -467,7 +470,7 @@
 	\end{block}
 \end{frame}
 %=======
-\begin{frame}{Linear flows}
+\begin{frame}{Linear normalizing flows}
 	\[
 		\bz = f(\bx, \btheta) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
 	\]
@@ -489,7 +492,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1807.03039}{Kingma D. P., Dhariwal P. Glow: Generative Flow with Invertible 1x1 Convolutions, 2018} 
 \end{frame}
 %=======
-\begin{frame}{Linear flows}
+\begin{frame}{Linear normalizing flows}
 	\vspace{-0.5cm}
 	\[
 		\bz = f(\bx, \btheta) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
@@ -517,16 +520,76 @@
 	}
 \end{frame}
 %=======
+\subsection{Gaussian autoregressive NF}
+%=======
+\begin{frame}{Gaussian autoregressive model}
+	Consider an autoregressive model
+	\vspace{-0.3cm}
+	{\small
+		\[
+		p(\bx | \btheta) = \prod_{j=1}^m p(x_j | \bx_{1:j - 1}, \btheta), \quad
+		p(x_j | \bx_{1:j - 1}, \btheta) = \mathcal{N} \left(\mu_j(\bx_{1:j-1}), \sigma^2_j (\bx_{1:j-1})\right).
+		\]
+	}
+	\vspace{-0.5cm}
+	\begin{block}{Sampling: reparametrization trick}
+		\vspace{-0.3cm}
+		\[
+		x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}), \quad z_j \sim \mathcal{N}(0, 1).
+		\]
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{block}{Inverse transform}
+		\vspace{-0.3cm}
+		\[
+		z_j = \left(x_j - \mu_j(\bx_{1:j-1}) \right) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }.
+		\]
+		\vspace{-0.4cm}
+	\end{block}
+	\begin{itemize}
+		\item We have an \textbf{invertible} and \textbf{differentiable} transformation from $p(\bz)$ to $p(\bx | \btheta)$.
+		\item It is an autoregressive (AR) NF with the base distribution $p(\bz) = \cN(0, 1)$!
+		\item Jacobian of such transformation is triangular!
+	\end{itemize}
+	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
+\end{frame}
+%=======
+\begin{frame}{Gaussian autoregressive NF}
+	\vspace{-0.2cm}
+	\begin{align*}
+		\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
+		\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
+	\end{align*}
+	Generation function $g(\bz, \btheta)$ is \textbf{sequential}. \\ Inference function $f(\bx, \btheta)$ is \textbf{not sequential}.
+
+	\begin{block}{Forward KL for NF}
+		\vspace{-0.5cm}
+		\[
+			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|\right] + \text{const} 
+		\]
+		\vspace{-0.5cm}
+		\begin{itemize}
+			\item We need to be able to compute $f(\bx, \btheta)$ and its Jacobian.
+			\item We need to be able to compute the density $p(\bz)$.
+			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the model.
+		\end{itemize}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 
+\end{frame}
+%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Change of variable theorem allows to get the density function of the random variable under the invertible transformation.
 		\vfill
 		\item Normalizing flows transform a simple base distribution to a complex one via a sequence of invertible transformations with tractable Jacobian.
+		\vfill
 		\item Normalizing flows have a tractable likelihood that is given by the change of variable theorem.
 		\vfill
 		\item We fit normalizing flows using forward or reverse KL minimization. 
 		\vfill 
-		\item Linear flows try to parametrize set of invertible matrices via matrix decompositions.
+		\item Linear NF try to parametrize set of invertible matrices via matrix decompositions.
+		\vfill
+		\item Gaussian autoregressive NF is an autoregressive model with triangular Jacobian. It has fast inference function and slow generation function. Forward KL is a natural loss function.
 	\end{itemize}
 \end{frame}
 \end{document} 
