@@ -58,7 +58,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | Homework | Date | Deadline | Description | Link |
 |---------|------|-------------|--------|-------|
 | 1 | September, 13 | September, 27 | <ol><li>Theory (KDE, alpha-divergences, curse of dimensionality).</li><li>PixelCNN (receptive field, autocomplete) on MNIST.</li><li>ImageGPT on MNIST.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw1.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw1.ipynb) |
-| 2 | TBA | TBA | TBA | TBA |
+| 2 | September, 27 | October, 11 | <ol><li>Theory (IWAE theory, EM-algorithm for GMM).</li><li>VAE on CIFAR10.</li><li>ResNetVAE on CIFAR10.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw2.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw2.ipynb) |
 | 3 | TBA | TBA | TBA | TBA |
 | 4 | TBA | TBA | TBA | TBA |
 | 5 | TBA | TBA | TBA | TBA |
