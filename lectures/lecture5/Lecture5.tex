@@ -113,15 +113,7 @@
 	}
 \end{frame}
 %=======
-\begin{frame}{Outline}
-	\tableofcontents
-\end{frame}
-%=======
-\section{Autoregressive flows}
-%=======
-\subsection{Gaussian autoregressive flows}
-%=======
-\begin{frame}{Gaussian autoregressive model}
+\begin{frame}{Recap of previous lecture}
 	Consider an autoregressive model
 	\vspace{-0.3cm}
 	{\small
@@ -131,85 +123,39 @@
 		\]
 	}
 	\vspace{-0.5cm}
-	\begin{block}{Sampling: reparametrization trick}
-		\vspace{-0.3cm}
-		\[
-		x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}), \quad z_j \sim \mathcal{N}(0, 1).
-		\]
-		\vspace{-0.7cm}
-	\end{block}
-	\begin{block}{Inverse transform}
-		\vspace{-0.3cm}
-		\[
-		z_j = \left(x_j - \mu_j(\bx_{1:j-1}) \right) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }.
-		\]
-		\vspace{-0.4cm}
+	\begin{block}{Gaussian autoregressive NF}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
+			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
+		\end{align*}
+		\vspace{-0.5cm}
 	\end{block}
 	\begin{itemize}
 		\item We have an \textbf{invertible} and \textbf{differentiable} transformation from $p(\bz)$ to $p(\bx | \btheta)$.
-		\item It is an autoregressive (AR) flow with the base distribution $p(\bz) = \cN(0, 1)$!
 		\item Jacobian of such transformation is triangular!
 	\end{itemize}
-	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
+	Generation function $g(\bz, \btheta)$ is \textbf{sequential}. \\ Inference function $f(\bx, \btheta)$ is \textbf{not sequential}.
+	
+	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 
 \end{frame}
 %=======
-\begin{frame}{Gaussian autoregressive flow}
-	\vspace{-0.2cm}
+\begin{frame}{Gaussian autoregressive NF}
+	\vspace{-0.5cm}
 	\begin{align*}
 		\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
 		\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
 	\end{align*}
-	Generation function $g(\bz, \btheta)$ is \textbf{sequential}. \\ Inference function $f(\bx, \btheta)$ is \textbf{not sequential}.
-
-	\begin{block}{Forward KL for NF}
-		\vspace{-0.5cm}
-		\[
-			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|\right] + \text{const} 
-		\]
-		\vspace{-0.5cm}
-		\begin{itemize}
-			\item We need to be able to compute $f(\bx, \btheta)$ and its Jacobian.
-			\item We need to be able to compute the density $p(\bz)$.
-			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the model.
-		\end{itemize}
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 
-\end{frame}
-%=======
-\subsection{Inverse gaussian autoregressive flows}
-%=======
-\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
-	Let use the following reparametrization:
-	$\tilde{\bsigma} = \frac{1}{\bsigma}$; $ \tilde{\bmu} = - \frac{\bmu}{\bsigma}$.
 	
-	\begin{block}{Gaussian autoregressive flow}
-		\vspace{-0.5cm}
-		\begin{align*}
-			x_j &= \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}) =  \left( z_j - \tilde{\mu}_j(\bx_{1:j-1})\right) \cdot \frac{1}{\tilde{\sigma}_j (\bx_{1:j-1}) }\\
-			z_j &= \left(x_j - \mu_j(\bx_{1:j-1}) \right) \cdot \frac{1}{ \sigma_j (\bx_{1:j-1})} = \tilde{\sigma}_j (\bx_{1:j-1}) \cdot x_j + \tilde{\mu}_j(\bx_{1:j-1}).
-		\end{align*}
-		\vspace{-0.3cm}
-	\end{block}
-	Let just swap $\bz$ and $\bx$. 
-	
-	\begin{block}{Inverse gaussian autoregressive flow}
-		\vspace{-0.5cm}
-		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
-		\end{align*}
-		\vspace{-0.3cm}
-	\end{block}
-	
-	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
-\end{frame}
-%=======
-\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
-	
+	\begin{itemize}
+		\item Sampling is sequential, density estimation is parallel.
+		\item Forward KL is a natural loss.
+	\end{itemize}
+	\vspace{-0.3cm}
 	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Gaussian autoregressive flow: $g(\bz, \btheta)$}
+		\begin{block}{Forward transform: $g(\bz, \btheta)$}
 			\[
-			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}).
+			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1})
 			\]
 		\end{block}
 	\end{minipage}%
@@ -223,10 +169,9 @@
 	\begin{minipage}[t]{0.65\columnwidth}
 		\begin{block}{Inverse transform: $f(\bx, \btheta)$}
 			\vspace{-0.5cm}
-			\begin{align*}
-				z_j &= (x_j - \mu_j(\bx_{1:j-1})) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }; \\
-				z_j &= \tilde{\sigma}_j (\bx_{1:j-1}) \cdot x_j + \tilde{\mu}_j(\bx_{1:j-1}).
-			\end{align*}
+			\[
+				z_j = (x_j - \mu_j(\bx_{1:j-1})) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }
+			\]
 			\vspace{-0.4cm}
 		\end{block}
 	\end{minipage}% 
@@ -235,88 +180,15 @@
 			\centering
 			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_2.png}
 		\end{figure}
-	\end{minipage}\\
-	\vspace{0.1cm}
-	
-	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Inverse gaussian autoregressive flow: $g(\bz, \btheta)$}
-			\vspace{-0.3cm}
-			\[
-			x_j = \tilde{\sigma}_j (\bz_{1:j-1}) \cdot z_j + \tilde{\mu}_j(\bz_{1:j-1}).
-			\]
-		\end{block}
-	\end{minipage}%
-	\begin{minipage}[t]{0.35\columnwidth}
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_3.png}
-		\end{figure}
 	\end{minipage}
 	
 	\myfootnotewithlink{https://blog.evjang.com/2018/01/nf2.html}{image credit: https://blog.evjang.com/2018/01/nf2.html}
 \end{frame}
-%=======
-\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
-	\begin{block}{Inverse gaussian autoregressive flow}
-		\vspace{-0.5cm}
-		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
-		\end{align*}
-		\vspace{-0.3cm}
-	\end{block}
-	\begin{block}{Reverse KL for NF}
-		\vspace{-0.3cm}
-		\[
-			KL(p || \pi)  = \bbE_{p(\bz)} \left[ \log p(\bz) -  \log |\det (\bJ_g)|  - \log \pi(g(\bz, \btheta)) \right]
-		\]
-		\vspace{-0.3cm}
-		\begin{itemize}
-			\item We need to be able to compute $g(\bz, \btheta)$ and its Jacobian.
-			\item We need to be able to sample from the density $p(\bz)$ (do not need to evaluate it) and to evaluate(!) $\pi(\bx)$.
-			\item We don’t need to think about computing the function $f(\bx, \btheta)$.
-		\end{itemize}
-	\end{block}
+\begin{frame}{Outline}
+	\tableofcontents
 \end{frame}
 %=======
-\begin{frame}{Gaussian autoregressive NF}
-	\begin{block}{Gaussian AR NF}
-		\vspace{-0.6cm}
-		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \sigma_j ({\color{violet}\bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet}\bx_{1:j-1}}). \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet} x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{\sigma_j ({\color{violet} \bx_{1:j-1}}) }.
-		\end{align*}
-		\vspace{-0.6cm}
-		\begin{itemize}
-			\item Sampling is sequential, density estimation is parallel.
-			\item Forward KL is a natural loss.
-		\end{itemize}
-	\end{block}
-	\begin{block}{Inverse gaussian AR NF}
-		\vspace{-0.6cm}
-		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
-		\end{align*}
-		\vspace{-0.6cm}
-		\begin{itemize}
-			\item Sampling is parallel, density estimation is sequential.
-			\item Reverse KL is a natural loss.
-		\end{itemize}
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
-\end{frame}
-%=======
-\begin{frame}{Autoregressive flows}
-	Gaussian AR NF and inverse gaussian AR NF are mutually interchangeable. 
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/flows_how2.png}
-	\end{figure}
-	
-	\myfootnotewithlink{https://arxiv.org/abs/1605.08803}{Dinh L., Sohl-Dickstein J., Bengio S. Density estimation using Real NVP, 2016} 
-\end{frame}
-%=======
-\subsection{RealNVP: coupling layer}
+\section{RealNVP: coupling layer}
 %=======
 \begin{frame}{RealNVP}
 	\vspace{-0.5cm}
@@ -490,15 +362,168 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2007.02731}{Nielsen D., et al. SurVAE Flows: Surjections to Bridge the Gap between VAEs and Flows, 2020}
 \end{frame}
 %=======
+\section{Discrete data vs continuous model}
+%=======
+\begin{frame}{Discrete data vs continuous model}
+	Let our data $\by$ comes from discrete distribution $\Pi(\by)$ and we have continuous model $p(\bx | \btheta) = \text{NN}(\bx, \btheta)$.
+	\begin{itemize}
+		\item Images {\color{gray}(and not only images)} are discrete data, pixels lie in the integer domain (\{0, 255\}). 
+		\item By fitting a continuous density model $p(\bx | \btheta)$ to discrete data $\Pi(\by)$, one can produce a degenerate solution with all probability mass on discrete values. 
+	\end{itemize}
+	\begin{block}{Discrete model}
+		\begin{itemize}
+			\item Use \textbf{discrete} model (e.x. $P(\by | \btheta) = \text{Cat}(\bpi(\btheta))$). 
+			\item Minimize any suitable divergence measure $D(\Pi, P)$.
+			\item NF works only with continuous data $\bx$ (there are discrete NF, see papers below).
+			\item If pixel value is not presented in the train data, it won't be predicted.		
+		\end{itemize}
+	\end{block}
+	\myfootnote{\href{https://arxiv.org/abs/1905.07376}{Hoogeboom E. et al. Integer discrete flows and lossless compression, 2019} \\
+		\href{https://arxiv.org/abs/1905.10347}{Tran D. et al. Discrete flows: Invertible generative models of discrete data, 2019}}
+\end{frame}
+%=======
+\begin{frame}{Discrete data vs continuous model}
+	\begin{block}{Continuous model}
+		\begin{itemize}
+			\item Use \textbf{continuous} model (e.x. $p(\bx | \btheta) = \cN(\bmu_{\btheta}(\bx), \bsigma_{\btheta}^2(\bx))$), but
+			\begin{itemize}
+				\item \textbf{discretize} model (make the model outputs discrete): transform $p(\bx | \btheta)$ to $P(\by | \btheta)$;
+				\item \textbf{dequantize} data (make the data continuous): transform $\Pi(\by)$ to $\pi(\bx)$.
+			\end{itemize}
+			\item Continuous distribution knows numerical relationships.
+		\end{itemize}
+	\end{block}
+	\begin{block}{CIFAR-10 pixel values distribution}
+		\begin{figure}
+			\includegraphics[width=0.6\linewidth,height=0.2\linewidth]{figs/CIFAR_pixel_distr}
+		\end{figure}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1701.05517}{Salimans T. et al. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications, 2017}
+\end{frame}
+%=======
+\subsection{Discretization of continuous distribution}
+%=======
+\begin{frame}{Discretization of continuous distribution}
+	\vspace{-0.3cm}
+	\begin{block}{Model discretization through CDF}
+		\vspace{-0.6cm}
+		\[
+			F(\bx | \btheta) = \int_{-\infty}^{\bx} p(\bx' | \btheta) d\bx'; \quad 
+			P(\by | \btheta) = F(\by + 0.5 | \btheta) - F(\by - 0.5 | \btheta)
+		\]
+	\end{block}
+	\vspace{-0.6cm}
+	\begin{block}{Mixture of logistic distributions}
+		\vspace{-0.7cm}
+		\[
+			p(x | \mu, s) = \frac{\exp^{-(x - \mu) / s}}{s (1 + \exp^{-(x - \mu) / s})^2}; \quad p(x | \bpi, \bmu, \bs) = \sum_{k=1}^K \pi_k p(x | \mu_k, s_k).
+		\]
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{block}{PixelCNN++}
+		\vspace{-0.7cm}
+		\[
+			p(\bx | \btheta) = \prod_{j=1}^m p(x_j | \bx_{1:j-1}, \btheta); \quad p(x_j | \bx_{1:j-1}, \btheta) = \sum_{k=1}^K \pi_k p(x | \mu_k, s_k).
+		\]
+		\vspace{-0.5cm} \\
+		Here, $\pi_k = \pi_{k, \btheta}(\bx_{1:j-1})$, $\mu_k = \mu_{k, \btheta}(\bx_{1:j-1})$, $s_k = s_{k, \btheta}(\bx_{1:j-1})$.
+	\end{block}
+
+	For the pixel edge cases of 0, replace $y - 0.5$ by $-\infty$, and for 255 replace $y + 0.5$ by $+\infty$.
+	\myfootnotewithlink{https://arxiv.org/abs/1701.05517}{Salimans T. et al. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications, 2017}\end{frame}
+%=======
+\subsection{Dequantization of discrete data}
+%=======
+\begin{frame}{Uniform dequantization}
+	Let dequantize discrete distribution $\Pi(\by)$ to continuous distribution $\pi(\bx)$ in the following way: $\bx = \by + \bu$, where  $\bu \sim U[0, 1]$.
+	\begin{minipage}{0.7\linewidth}	
+		\begin{block}{Theorem}
+			Fitting continuous model $p(\bx | \btheta)$ on uniformly dequantized data is equivalent to maximization of a lower bound on log-likelihood for a discrete model:
+			\vspace{-0.2cm}
+			\[
+			P(\by | \btheta) = \int_{U[0, 1]} p(\by + \bu | \btheta) d \bu
+			\]
+			\vspace{-0.5cm} 
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}{0.3\linewidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth,height=0.8\linewidth]{figs/uniform_dequantization.png}
+		\end{figure}
+	\end{minipage}
+
+	\begin{block}{Proof}
+		\vspace{-0.8cm}
+		{\small
+		\begin{multline*}
+			\bbE_{\pi} \log p(\bx | \btheta) = \int \pi(\bx) \log p(\bx | \btheta) d \bx = \sum \Pi(\by) \int_{U[0,1]} \log p(\by + \bu | \btheta) d \bu \leq \\
+			\leq \sum \Pi(\by) \log \int_{U[0,1]}  p(\by + \bu | \btheta) d \bu = \\ = \sum \Pi(\by) \log P(\by | \btheta) = \bbE_{\Pi} \log P(\by | \btheta).
+		\end{multline*}
+		}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1511.01844}{Theis L., Oord A., Bethge M. A note on the evaluation of generative models. 2015}
+\end{frame}
+%=======
+\begin{frame}{Variational dequantization}
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/uniform_dequantization.png}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/variational_dequantization.png}
+		\end{figure}
+	\end{minipage}
+	\begin{itemize}
+		\item $p(\bx | \btheta)$ assign uniform density to unit hypercubes $\by + U[0, 1]$ (left fig).
+		\item Smooth dequantization is more natural (right fig).
+		\item Neural network density models are smooth function approximators.
+	\end{itemize}
+	Introduce variational dequantization noise distribution $q(\bu | \by)$, which tells what kind of noise we have to add to our discrete data.  \\
+	Treat it as an approximate posterior as in VAE model. 
+\end{frame}
+%=======
+\begin{frame}{Variational dequantization}
+	\vspace{-0.2cm}
+	\begin{block}{Variational lower bound}
+		\vspace{-0.7cm}
+		\begin{multline*}
+			\log P(\by | \btheta) = \left[ \log \int q(\bu | \by) \frac{p(\by + \bu | \btheta)}{q(\bu | \by)} d \bu \right] \geq \\ 
+			\geq  \int q(\bu | \by) \log \frac{p(\by + \bu | \btheta)}{q(\bu | \by)} d \bu = \mathcal{L}(q, \btheta).
+		\end{multline*}
+		\vspace{-0.6cm}
+	\end{block}
+	Uniform dequantization is a special case of variational dequantization ($q(\bu | \by) = U[0, 1]$).
+	\begin{block}{Flow++: flow-based variational dequantization}
+		Let $\bu = g(\bepsilon, \by, \blambda)$ is a flow model with base distribution $\bepsilon \sim p(\bepsilon)$:
+		\vspace{-0.3cm}
+		\[
+		q(\bu | \by) = p(f(\bu, \by, \blambda)) \cdot \left| \det \frac{\partial f(\bu, \by, \blambda)}{\partial \bu}\right|.
+		\]
+		\vspace{-0.3cm}
+		\[
+		\log P(\by | \btheta) \geq \cL(\blambda, \btheta) = \int p(\bepsilon) \log \left( \frac{p(\by + g(\bepsilon, \by, \blambda) | \btheta)}{p(\bepsilon) \cdot \left| \det \bJ_g\right|^{-1}} \right) d\bepsilon.
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1902.00275}{Ho J. et al. Flow++: Improving Flow-Based Generative Models with Variational Dequantization and Architecture Design, 2019}
+\end{frame}
+%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Gaussian autoregressive flow is an autoregressive model with triangular Jacobian. It has fast inference function and slow generation function. Forward KL is a natural loss function.
 		\vfill
-		\item Inverse gaussian autoregressive flow generate new samples fast, but the inference is slow. Reverse KL is a natural loss function.
-		\vfill
 		\item The RealNVP coupling layer is an effective type of flow (special case of AR flows) that has fast inference and generation modes.
 		\vfill
 		\item NF models could be treated as VAE model with deterministic encoder and decoder.
+		\vfill
+		\item Lots of data are discrete. We able to discretize the model or to dequantize our data to use continuous model.
+		\vfill
+		\item Uniform dequantization is the simplest form of dequantization. Variational dequantization is a more natural type that uses variational inference.
 	\end{itemize}
 \end{frame}
 %=======

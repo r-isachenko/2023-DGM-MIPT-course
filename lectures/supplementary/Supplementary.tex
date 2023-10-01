@@ -1127,6 +1127,146 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1912.02762}{Papamakarios G. et al. Normalizing flows for probabilistic modeling and inference, 2019} 
 \end{frame}
 %=======
+\subsection{Inverse gaussian autoregressive flows}
+%=======
+\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
+	Let use the following reparametrization:
+	$\tilde{\bsigma} = \frac{1}{\bsigma}$; $ \tilde{\bmu} = - \frac{\bmu}{\bsigma}$.
+	
+	\begin{block}{Gaussian autoregressive flow}
+		\vspace{-0.5cm}
+		\begin{align*}
+			x_j &= \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}) =  \left( z_j - \tilde{\mu}_j(\bx_{1:j-1})\right) \cdot \frac{1}{\tilde{\sigma}_j (\bx_{1:j-1}) }\\
+			z_j &= \left(x_j - \mu_j(\bx_{1:j-1}) \right) \cdot \frac{1}{ \sigma_j (\bx_{1:j-1})} = \tilde{\sigma}_j (\bx_{1:j-1}) \cdot x_j + \tilde{\mu}_j(\bx_{1:j-1}).
+		\end{align*}
+		\vspace{-0.3cm}
+	\end{block}
+	Let just swap $\bz$ and $\bx$. 
+	
+	\begin{block}{Inverse gaussian autoregressive flow}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
+			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
+		\end{align*}
+		\vspace{-0.3cm}
+	\end{block}
+	
+	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
+\end{frame}
+%=======
+\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
+	
+	\begin{minipage}[t]{0.65\columnwidth}
+		\begin{block}{Gaussian autoregressive flow: $g(\bz, \btheta)$}
+			\[
+			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1}).
+			\]
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}[t]{0.35\columnwidth}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_1.png}
+		\end{figure}
+	\end{minipage} \\
+	
+	\begin{minipage}[t]{0.65\columnwidth}
+		\begin{block}{Inverse transform: $f(\bx, \btheta)$}
+			\vspace{-0.5cm}
+			\begin{align*}
+				z_j &= (x_j - \mu_j(\bx_{1:j-1})) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }; \\
+				z_j &= \tilde{\sigma}_j (\bx_{1:j-1}) \cdot x_j + \tilde{\mu}_j(\bx_{1:j-1}).
+			\end{align*}
+			\vspace{-0.4cm}
+		\end{block}
+	\end{minipage}% 
+	\begin{minipage}[t]{0.35\columnwidth}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_2.png}
+		\end{figure}
+	\end{minipage}\\
+	\vspace{0.1cm}
+	
+	\begin{minipage}[t]{0.65\columnwidth}
+		\begin{block}{Inverse gaussian autoregressive flow: $g(\bz, \btheta)$}
+			\vspace{-0.3cm}
+			\[
+			x_j = \tilde{\sigma}_j (\bz_{1:j-1}) \cdot z_j + \tilde{\mu}_j(\bz_{1:j-1}).
+			\]
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}[t]{0.35\columnwidth}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_3.png}
+		\end{figure}
+	\end{minipage}
+	
+	\myfootnotewithlink{https://blog.evjang.com/2018/01/nf2.html}{image credit: https://blog.evjang.com/2018/01/nf2.html}
+\end{frame}
+%=======
+\begin{frame}{Inverse gaussian autoregressive flow (IAF)}
+	\begin{block}{Inverse gaussian autoregressive flow}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
+			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
+		\end{align*}
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{block}{Reverse KL for NF}
+		\vspace{-0.3cm}
+		\[
+			KL(p || \pi)  = \bbE_{p(\bz)} \left[ \log p(\bz) -  \log |\det (\bJ_g)|  - \log \pi(g(\bz, \btheta)) \right]
+		\]
+		\vspace{-0.3cm}
+		\begin{itemize}
+			\item We need to be able to compute $g(\bz, \btheta)$ and its Jacobian.
+			\item We need to be able to sample from the density $p(\bz)$ (do not need to evaluate it) and to evaluate(!) $\pi(\bx)$.
+			\item We don’t need to think about computing the function $f(\bx, \btheta)$.
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Gaussian autoregressive NF}
+	\begin{block}{Gaussian AR NF}
+		\vspace{-0.6cm}
+		\begin{align*}
+			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \sigma_j ({\color{violet}\bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet}\bx_{1:j-1}}). \\
+			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet} x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{\sigma_j ({\color{violet} \bx_{1:j-1}}) }.
+		\end{align*}
+		\vspace{-0.6cm}
+		\begin{itemize}
+			\item Sampling is sequential, density estimation is parallel.
+			\item Forward KL is a natural loss.
+		\end{itemize}
+	\end{block}
+	\begin{block}{Inverse gaussian AR NF}
+		\vspace{-0.6cm}
+		\begin{align*}
+			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) \cdot {\color{teal} z_j} + \tilde{\mu}_j({\color{teal}\bz_{1:j-1}}) \\
+			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal}z_j} = \left( {\color{violet} x_j} - \tilde{\mu}_j({\color{teal}\bz_{1:j-1}})\right) \cdot \frac{1}{\tilde{\sigma}_j ({\color{teal}\bz_{1:j-1}}) }.
+		\end{align*}
+		\vspace{-0.6cm}
+		\begin{itemize}
+			\item Sampling is parallel, density estimation is sequential.
+			\item Reverse KL is a natural loss.
+		\end{itemize}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1606.04934}{Kingma D. P. et al. Improving Variational Inference with Inverse Autoregressive Flow, 2016} 
+\end{frame}
+%=======
+\begin{frame}{Autoregressive flows}
+	Gaussian AR NF and inverse gaussian AR NF are mutually interchangeable. 
+	\begin{figure}
+		\includegraphics[width=\linewidth]{figs/flows_how2.png}
+	\end{figure}
+	
+	\myfootnotewithlink{https://arxiv.org/abs/1605.08803}{Dinh L., Sohl-Dickstein J., Bengio S. Density estimation using Real NVP, 2016} 
+\end{frame}
+%=======
 \subsection{Parallel WaveNet}
 %=======
 \begin{frame}{MAF/IAF pros and cons}
@@ -1288,7 +1428,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1711.10433}{Oord A. et al. Parallel WaveNet: Fast High-Fidelity Speech Synthesis, 2017}
 \end{frame}
 %=======
-\section{RevNet, i-RevNet}
+\subsection{RevNet, i-RevNet}
 %=======
 \begin{frame}{RevNets, 2017}
 	\begin{minipage}[t]{0.6\columnwidth}
@@ -2237,7 +2377,7 @@ where $i$ is treated as random variable:
 	\myfootnotewithlink{https://arxiv.org/abs/1802.05957}{Miyato T. et al. Spectral Normalization for Generative Adversarial Networks, 2018}
 \end{frame}
 %=======
-\section{Evolution of GANs}
+\subsection{Evolution of GANs}
 %=======
 \begin{frame}{Evolution of GANs}
 	\begin{figure}

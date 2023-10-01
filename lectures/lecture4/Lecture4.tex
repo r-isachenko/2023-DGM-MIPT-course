@@ -305,7 +305,7 @@
 		Normalizing flow is a \textit{differentiable, invertible} mapping from data $\bx$ to the noise $\bz$. 
 	\end{block}
 	\begin{itemize}
-		\item \textbf{Normalizing} means that the inverse NF takes samples from $\pi(\bx)$ and normalizes them into samples from the density $p(\bz)$.
+		\item \textbf{Normalizing} means that NF takes samples from $\pi(\bx)$ and normalizes them into samples from the density $p(\bz)$.
 		\item \textbf{Flow} refers to the trajectory followed by samples from $p(\bz)$ as they are transformed by the sequence of transformations
 		\[
 		\bz = f_K \circ \dots \circ f_1(\bx); \quad \bx = f_1^{-1} \circ \dots \circ f_K^{-1} (\bz) = g_1 \circ \dots \circ g_K(\bz) 
