@@ -2382,6 +2382,58 @@ where $i$ is treated as random variable:
 	\myfootnotewithlink{https://arxiv.org/abs/1511.06434}{Radford A., Metz L., Chintala S. Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks, 2015}
 \end{frame}
 %=======
+\subsection{Vanishing gradients}
+%=======
+\begin{frame}{Vanishing gradients}
+	\vspace{-0.2cm}
+	\begin{block}{Objective}
+		\vspace{-0.8cm}
+		\[
+		\min_{\btheta} \max_{\bphi} \left[ \bbE_{\pi(\bx)} \log D(\bx, \bphi) + \bbE_{p(\bz)} \log (1 - D(G(\bz, \btheta), \bphi)) \right]
+		\]
+		\vspace{-0.6cm}
+	\end{block}
+	Early in learning, $G$ is poor, $D$ can reject samples with high confidence. In this case, $\log (1 - D(G(\bz, \btheta), \bphi))$ saturates.
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/vanishing_gradients_1}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/vanishing_gradients_2}
+		\end{figure}
+	\end{minipage}
+	\myfootnotewithlink{https://arxiv.org/abs/1701.04862}{Arjovsky M., Bottou L. Towards Principled Methods for Training Generative Adversarial Networks, 2017}
+\end{frame}
+%=======
+\begin{frame}{Vanishing gradients}
+	\begin{block}{Objective}
+		\vspace{-0.4cm}
+		\[
+		\min_{\btheta} \max_{\bphi} \left[ \bbE_{\pi(\bx)} \log D(\bx, \bphi) + \bbE_{p(\bz)} \log (1 - D(G(\bz, \btheta), \bphi)) \right]
+		\]
+		\vspace{-0.4cm}
+	\end{block}
+	\begin{minipage}[t]{0.45\columnwidth}
+		\begin{block}{Non-saturating GAN}
+			\begin{itemize}
+				\item Maximize $\log D(G(z))$ instead of minimizing $\log (1 - D(G(\bz)))$. \\
+				\item Gradients are getting much stronger, but the training is unstable (with increasing mean and variance).
+			\end{itemize}
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}[t]{0.55\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/vanishing_gradients_3}
+		\end{figure}
+	\end{minipage}
+	\myfootnotewithlink{https://arxiv.org/abs/1701.04862}{Arjovsky M., Bottou L. Towards Principled Methods for Training Generative Adversarial Networks, 2017}
+\end{frame}
+%=======
 \subsection{Improved techniques for training GANs}
 %=======
 \begin{frame}{Improved techniques for training GANs}
