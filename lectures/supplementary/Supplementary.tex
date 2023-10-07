@@ -1724,6 +1724,95 @@ where $i$ is treated as random variable:
 	\myfootnotewithlink{https://arxiv.org/abs/1705.07120}{Tomczak J. M., Welling M. VAE with a VampPrior, 2017}
 \end{frame}
 %=======
+\section{VAE limitations: posterior distribution}
+%=======
+\begin{frame}{Normalizing Flows in VAE posterior}
+		\vspace{-0.3cm}
+		\[
+			\mathcal{L}(\bphi, \btheta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \left[ \log p(\bx | \bz, \btheta) + \log p(\bz) - {\color{teal}\log q(\bz | \bx, \bphi)} \right]
+		\]
+	Let apply NF to VAE posterior! \\ 
+	Assume $q(\bz | \bx, \bphi)$ (VAE encoder) is a base distribution for a flow model.
+	\begin{block}{Flow model in latent space}
+		\vspace{-0.5cm}
+		\[
+		\log q(\bz^* | \bx, \bphi, \blambda) = \log q(\bz | \bx, \bphi) + \log \left | \det \left( \frac{d \bz}{d \bz^*}\right) \right|
+		\]
+		\vspace{-0.3cm}
+		\[
+		\bz^* = f(\bz, \blambda) = g^{-1}(\bz, \blambda)
+		\]
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{itemize}
+		\item Encoder outputs base distribution $q(\bz | \bx, \bphi)$.
+		\item Flow model $\bz^* = f(\bz, \blambda)$ transforms the base distribution $q(\bz | \bx, \bphi)$ to the distribution $q(\bz^* | \bx, \bphi, \blambda)$.
+		\item Distribution $q(\bz^* | \bx, \bphi, \blambda)$ is used as a variational distribution for ELBO maximization. 
+		\item Here $\bphi$~-- encoder parameters, $\blambda$~-- flow parameters.
+	\end{itemize}
+	\myfootnotewithlink{https://arxiv.org/abs/1505.05770}{Rezende D. J., Mohamed S. Variational Inference with Normalizing Flows, 2015} 
+\end{frame}
+%=======
+\begin{frame}{Normalizing Flows in VAE posterior}
+	\vspace{-0.2cm}
+	\begin{block}{ELBO with flow-based VAE posterior}
+		\vspace{-0.8cm}
+		\begin{multline*}
+			\mathcal{L} (\bphi, \btheta, \blambda) =  \bbE_{q(\bz^* | \bx, \bphi, \blambda)} \log p(\bx | \bz^*, \btheta) - {\color{olive}KL (q(\bz^* | \bx, \bphi, \blambda) || p(\bz^*))} = \\ = \bbE_{q(\bz^* | \bx, \bphi, \blambda)} \bigl[\log p(\bx | \bz^*, \btheta) + \log p(\bz^*) - {\color{teal}\log q(\bz^*| \bx, \bphi, \blambda)} \bigr] = \\
+			= \bbE_{q(\bz^* | \bx, \bphi, \blambda)} \bigg[\log p(\bx| \bz^*, \btheta)  + \log p(\bz^*) - \\ - \Bigl({\color{teal}\log q(g(\bz^*, \blambda) | \bx, \bphi ) + \log | \det \left( \bJ_g ) \right| }\Bigr)  \bigg].
+		\end{multline*}
+	\end{block}
+	\vspace{-0.7cm}
+	{\color{olive}KL term} in ELBO is \textbf{reverse} KL divergence with respect to $\blambda$.
+	\begin{itemize}
+		\item RealNVP with coupling layers.
+		\item Inverse autoregressive flow (slow $f(\bz, \blambda)$, fast $g(\bz^*, \blambda)$).
+		\item {\color{gray}Is it OK to use AF for VAE posterior?}
+	\end{itemize}
+	\myfootnotewithlink{https://arxiv.org/abs/1505.05770}{Rezende D. J., Mohamed S. Variational Inference with Normalizing Flows, 2015} 
+\end{frame}
+%=======
+\begin{frame}{Normalizing Flows in VAE posterior}
+
+	\begin{block}{Theorem (flow KL duality, Lecture 5)}
+		\vspace{-0.3cm}
+		\[
+			KL(\pi(\bx) || p(\bx | {\color{violet}\btheta})) = KL(p(\bz | {\color{violet}\btheta}) || p(\bz)).
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{ELBO with flow-based VAE posterior}
+		\vspace{-0.6cm}
+		\begin{align*}
+		\mathcal{L} (\bphi, \btheta, \blambda) &=  \bbE_{q(\bz^* | \bx, \bphi, \blambda)} \log p(\bx | \bz^*, \btheta) - KL (q(\bz^* | \bx, \bphi, \blambda) || p(\bz^*)) \\ 
+		&=  \bbE_{q(\bz | \bx, \bphi)} \log p(\bx | {\color{violet}f(\bz, \blambda)}, \btheta) - KL (q(\bz | \bx, \bphi) || p(\bz | \blambda)).
+		\end{align*}
+		\vspace{-0.6cm}
+	\end{block}
+	{\color{gray}(Here we use Flow KL duality theorem and LOTUS trick.)}
+	
+	\begin{block}{ELBO with flow-based VAE prior}
+		\vspace{-0.5cm}
+		\[
+			\mathcal{L}(\bphi, \btheta, \blambda) = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | {\color{violet}\bz}, \btheta) - KL( q(\bz | \bx, \bphi) || p(\bz | \blambda))
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/1611.02731}{Chen X. et al. Variational Lossy Autoencoder, 2016}
+\end{frame}
+%=======
+\begin{frame}{Flows-based VAE prior vs posterior}
+	\vspace{-1.5cm}
+	\begin{figure}
+		\includegraphics[width=0.65\linewidth]{figs/prior_vs_posterior}
+	\end{figure}
+	\begin{itemize}
+		\item Flow-based posterior decoder path: $\bz \sim p(\bz)$, $\bx \sim p(\bx|\bz, \btheta)$.
+		\item Flow-based prior decoder path: $\bz^* \sim p(\bz^*)$, $\bz = f(\bz^*, \blambda)$, $\bx \sim p(\bx|\bz, \btheta)$. 
+	\end{itemize}
+	\myfootnotewithlink{https://courses.cs.washington.edu/courses/cse599i/20au/slides/L09_flow.pdf}{image credit: https://courses.cs.washington.edu/courses/cse599i/20au}
+\end{frame}
+%=======
 \section{Disentanglement}
 %=======
 \subsection{InfoGAN}
@@ -2679,7 +2768,9 @@ where $i$ is treated as random variable:
 	\myfootnotewithlink{https://arxiv.org/abs/1810.01367}{Grathwohl W. et al. FFJORD: Free-form Continuous Dynamics for Scalable Reversible Generative Models, 2018} 
 \end{frame}
 %=======
-\section{Vector Quantized VAE-2}
+\section{Quantized latents}
+%=======
+\subsection{Vector Quantized VAE-2}
 %=======
 \begin{frame}{Vector Quantized VAE}
 	\begin{itemize}
@@ -2725,7 +2816,7 @@ where $i$ is treated as random variable:
 	\myfootnotewithlink{https://arxiv.org/abs/1906.00446}{Razavi A., Oord A., Vinyals O. Generating Diverse High-Fidelity Images with VQ-VAE-2, 2019} 
 \end{frame}
 %=======
-\section{Feature Quantized GAN}
+\subsection{Feature Quantized GAN}
 %=======
 \begin{frame}{Feature Quantized GAN}
 	\begin{itemize}

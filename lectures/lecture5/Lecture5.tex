@@ -152,23 +152,9 @@
 		\item Forward KL is a natural loss.
 	\end{itemize}
 	\vspace{-0.3cm}
-	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Forward transform: $g(\bz, \btheta)$}
-			\[
-			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1})
-			\]
-		\end{block}
-	\end{minipage}%
-	\begin{minipage}[t]{0.35\columnwidth}
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_1.png}
-		\end{figure}
-	\end{minipage} \\
 	
 	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Inverse transform: $f(\bx, \btheta)$}
-			\vspace{-0.5cm}
+		\begin{block}{Forward transform: $f(\bx, \btheta)$}
 			\[
 				z_j = (x_j - \mu_j(\bx_{1:j-1})) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }
 			\]
@@ -180,8 +166,21 @@
 			\centering
 			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_2.png}
 		\end{figure}
-	\end{minipage}
+	\end{minipage} \\
 	
+	\begin{minipage}[t]{0.65\columnwidth}
+		\begin{block}{Inverse transform: $g(\bz, \btheta)$}
+			\[
+			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1})
+			\]
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}[t]{0.35\columnwidth}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.9\linewidth]{figs/af_iaf_explained_1.png}
+		\end{figure}
+	\end{minipage}
 	\myfootnotewithlink{https://blog.evjang.com/2018/01/nf2.html}{image credit: https://blog.evjang.com/2018/01/nf2.html}
 \end{frame}
 \begin{frame}{Outline}

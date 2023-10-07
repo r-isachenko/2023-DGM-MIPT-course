@@ -287,75 +287,6 @@
 	\href{https://arxiv.org/abs/1812.04948}{Karras T., Laine S., Aila T. A Style-Based Generator Architecture for Generative Adversarial Networks, 2018}}
 \end{frame}
 %=======
-\section{Discrete VAE latent representations}
-%=======
-\begin{frame}{Discrete VAE latents}
-	\begin{block}{Motivation}
-		\begin{itemize}
-			\item Previous VAE models had \textbf{continuous} latent variables $\bz$.
-			\item \textbf{Discrete} representations $\bz$ are potentially a more natural fit for many of the modalities.
-			\item Powerful autoregressive models (like PixelCNN) have been developed for modelling distributions over discrete variables.
-			\item All cool transformer-like models work with discrete tokens.
-		\end{itemize}
-	\end{block}
-	\begin{block}{ELBO}
-		\vspace{-0.3cm}
-		\[
-		\mathcal{L} (\bphi, \btheta)  = \mathbb{E}_{q(\bz | \bx, \bphi)} \log p(\bx | \bz , \btheta) - KL(q(\bz| \bx, \bphi) || p(\bz)) \rightarrow \max_{\bphi, \btheta}.
-		\]
-		\vspace{-0.5cm}
-	\end{block}
-	\begin{itemize}
-		\item Reparametrization trick to get unbiased gradients.
-		\item Normal assumptions for $q(\bz | \bx, \bphi)$ and $p(\bz)$ to compute KL analytically.
-	\end{itemize}
-\end{frame}
-%=======
-\begin{frame}{Discrete VAE latents}
-	\begin{block}{Assumptions}
-		\begin{itemize}
-			\item Define dictionary (word book) space $\{\be_k\}_{k=1}^K$, where $\be_k \in \bbR^C$, $K$ is the size of the dictionary.
-			\item Let $c \sim \text{Categorical}(\bpi)$, where 
-			\vspace{-0.6cm}
-			\[
-			\bpi = (\pi_1, \dots, \pi_K), \quad \pi_k = P(c = k), \quad \sum_{k=1}^K \pi_k = 1.
-			\]
-			\vspace{-0.6cm}
-			\item Let VAE model has discrete latent representation $c$ with prior $p(c) = \text{Uniform}\{1, \dots, K\}$.
-		\end{itemize}
-	\end{block}
-	\vspace{-0.3cm}
-	\begin{block}{How it should work?}
-		\begin{itemize}
-			\item Our variational posterior $q(c | \bx, \bphi) = \text{Categorical}(\bpi(\bx, \bphi))$ (encoder) outputs discrete probabilities vector.
-			\item We sample $c^*$ from $q(c | \bx, \bphi)$ (reparametrization trick analogue).
-			\item Our generative distribution $p(\bx | \be_{c^*}, \btheta)$ (decoder).
-		\end{itemize}
-	\end{block}
-\end{frame}
-%=======
-\begin{frame}{Discrete VAE latents}
-	\begin{block}{ELBO}
-		\vspace{-0.5cm}
-		\[
-		\mathcal{L} (\bphi, \btheta)  = \mathbb{E}_{q(c | \bx, \bphi)} \log p(\bx | c, \btheta) - KL(q(c| \bx, \bphi) || p(c)) \rightarrow \max_{\bphi, \btheta}.
-		\]
-		\vspace{-0.5cm}
-	\end{block}
-	\begin{block}{KL term}
-		\vspace{-0.8cm}
-		\begin{multline*}
-			KL(q(c| \bx, \bphi) || p(c)) = \sum_{k=1}^K q(k | \bx, \bphi) \log \frac{q(k | \bx, \bphi)}{p(k)} = 
-			\\ = \color{violet}{\sum_{k=1}^K q(k | \bx, \bphi) \log q(k | \bx, \bphi)}  \color{teal}{- \sum_{k=1}^K q(k | \bx, \bphi) \log p(k)}  = \\ = \color{violet}{- H(q(c | \bx, \bphi))} + \color{teal}{\log K}. 
-		\end{multline*}
-		\vspace{-0.6cm}
-	\end{block}
-	\begin{itemize}
-		\item Is it possible to make reparametrization trick? (we sample from discrete distribution now!).
-		\item Entropy term should be estimated.
-	\end{itemize}
-\end{frame}
-%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Inception Score and Frechet Inception Distance are the common metrics for GAN evaluation, but both of them have drawbacks.
@@ -363,8 +294,6 @@
 		\item Precision-recall allows to select model that compromises the sample quality and the sample diversity.	
 		\vfill 
 		\item Truncation tricks help to select model with compomised samples: diverse and sharp.
-		\vfill
-		\item Discrete VAE latents is a natural idea, but we have to avoid non-differentiable sampling operation.
 	\end{itemize}
 \end{frame}
 \end{document} 
