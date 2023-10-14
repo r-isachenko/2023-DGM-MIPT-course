@@ -30,8 +30,8 @@
 	\begin{block}{E-step: $\nabla_{\bphi} \mathcal{L}(\bphi, \btheta)$, reparametrization trick}
 		\vspace{-0.8cm}
 		\begin{multline*}
-			\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) = \int r(\bepsilon) \nabla_{\bphi} \log p(\bx | g(\bx, \bepsilon, \bphi), \btheta) d\bepsilon  - \nabla_{\bphi} \text{KL}
-			\\ \approx \nabla_{\bphi} \log p(\bx | g(\bx, \bepsilon^*, \bphi), \btheta)  - \nabla_{\bphi} \text{KL}
+			\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) = \int r(\bepsilon) \nabla_{\bphi} \log p(\bx | g_{\bphi}(\bx, \bepsilon), \btheta) d\bepsilon  - \nabla_{\bphi} \text{KL}
+			\\ \approx \nabla_{\bphi} \log p(\bx | g_{\bphi}(\bx, \bepsilon^*), \btheta)  - \nabla_{\bphi} \text{KL}
 		\end{multline*}
 		\vspace{-0.5cm}
 	\end{block}
@@ -43,7 +43,7 @@
 			r(\bepsilon) = \mathcal{N}(0, \bI); \quad  q(\bz| \bx, \bphi) = \mathcal{N} (\bmu_{\bphi}(\bx), \bsigma^2_{\bphi}(\bx)).
 		\]
 		\[
-			\bz = g(\bx, \bepsilon, \bphi) = \bsigma_{\bphi}(\bx) \cdot \bepsilon + \bmu_{\bphi}(\bx).
+			\bz = g_{\bphi}(\bx, \bepsilon) = \bsigma_{\bphi}(\bx) \cdot \bepsilon + \bmu_{\bphi}(\bx).
 		\]
 	\end{block}
 \end{frame}
@@ -55,14 +55,14 @@
 			\item compute the objective:
 			\vspace{-0.3cm}
 			\[
-			\bepsilon^* \sim r(\bepsilon); \quad \bz^* = g(\bx, \bepsilon^*, \bphi);
+			\bepsilon^* \sim r(\bepsilon); \quad \bz^* = g_{\bphi}(\bx, \bepsilon^*);
 			\]
 			\[
 			\cL(\bphi, \btheta) \approx  \log p(\bx | \bz^*, \btheta) - KL(q(\bz^* | \bx, \bphi) || p(\bz^*)).
 			\]
 			\item compute a stochastic gradients w.r.t. $\bphi$ and $\btheta$
 			\begin{align*}
-				\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) &\approx \nabla_{\bphi} \log p(\bx | g(\bx, \bepsilon^*, \bphi), \btheta)  - \nabla_{\bphi} \text{KL}(q(\bz | \bx, \bphi) || p(\bz)); \\
+				\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) &\approx \nabla_{\bphi} \log p(\bx | g_{\bphi}(\bx, \bepsilon^*), \btheta)  - \nabla_{\bphi} \text{KL}(q(\bz | \bx, \bphi) || p(\bz)); \\
 				\nabla_{\btheta} \mathcal{L} (\bphi, \btheta) &\approx \nabla_{\btheta} \log p(\bx|\bz^*, \btheta).
 			\end{align*}
 			\item update $\btheta, \bphi$ according to the selected optimization method (SGD, Adam, RMSProp):
@@ -246,9 +246,9 @@
 		\begin{itemize}
 			\item $\bx$ and $\bz$ have the same dimensionality ($\bbR^m$).
 			\vfill
-			\item $f(\bx, \btheta)$ could be parametric function.
+			\item $f_{\btheta}(\bx)$ could be parametric function.
 			\vfill
-			\item Determinant  of Jacobian matrix $\mathbf{J} =\frac{\partial f(\bx, \btheta)}{\partial \bx}$ shows how the volume changes under the transformation.
+			\item Determinant  of Jacobian matrix $\mathbf{J} =\frac{\partial f_{\btheta}(\bx)}{\partial \bx}$ shows how the volume changes under the transformation.
 		\end{itemize}
 	\end{minipage}%
 	\begin{minipage}{0.45\columnwidth}
@@ -263,10 +263,10 @@
 	\begin{block}{MLE problem}
 		\vspace{-0.3cm}
 		\[
-		p(\bx|\btheta) = p(\bz) \left|\det \left(  \frac{\partial \bz}{\partial \bx} \right) \right|  = p(f(\bx, \btheta)) \left|\det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx} \right) \right|
+		p(\bx|\btheta) = p(\bz) \left|\det \left(  \frac{\partial \bz}{\partial \bx} \right) \right|  = p(f_{\btheta}(\bx)) \left|\det \left( \frac{\partial f_{\btheta}(\bx)}{\partial \bx} \right) \right|
 		\]
 		\[
-		\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log  |\det (\bJ_f) | \rightarrow \max_{\btheta}
+		\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f) | \rightarrow \max_{\btheta}
 		\]
 	\end{block}
 	\vspace{-0.2cm}
@@ -298,7 +298,7 @@
 \begin{frame}{Normalizing flows (NF)}
 	\vspace{-0.3cm}
 	\[
-	\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log |\det (\bJ_f)|
+	\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log |\det (\bJ_f)|
 	\]
 	\vspace{-0.4cm}
 	\begin{block}{Definition}
@@ -334,15 +334,15 @@
 	\begin{block}{NF log likelihood}
 		\vspace{-0.3cm}
 		\[
-		\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log |\det ( \bJ_f)|
+		\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log |\det ( \bJ_f)|
 		\]
 		\vspace{-0.3cm}
 	\end{block}
 	What is the complexity of the determinant computation?
 	\begin{block}{What we need:}
 		\begin{itemize}
-			\item efficient computation of the Jacobian matrix $\bJ_f = \frac{\partial f(\bx, \btheta)}{\partial \bx}$;
-			\item efficient inversion of $f(\bx, \btheta)$;
+			\item efficient computation of the Jacobian matrix $\bJ_f = \frac{\partial f_{\btheta}(\bx)}{\partial \bx}$;
+			\item efficient inversion of $f_{\btheta}(\bx)$;
 			\item loss function to minimize.
 		\end{itemize}
 	\end{block}
@@ -362,16 +362,16 @@
 	\begin{block}{Forward KL for NF model}
 	    \vspace{-0.1cm}
 		\[
-			\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|
+			\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f)|
 		\]		
 		\[
-			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|\right] + \text{const} 
+			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f)|\right] + \text{const} 
 		\]
 		\vspace{-0.2cm}
 		\begin{itemize}
-			\item We need to be able to compute $f(\bx, \btheta)$ and its Jacobian.
+			\item We need to be able to compute $f_{\btheta}(\bx)$ and its Jacobian.
 			\item We need to be able to compute the density $p(\bz)$.
-			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the NF.
+			\item We don’t need to think about computing the function $g_{\btheta}(\bz) = f^{-1}(\bz, \btheta)$ until we want to sample from the NF.
 		\end{itemize}
 	\end{block}
 \end{frame}
@@ -391,13 +391,13 @@
 			 \log p(\bx | \btheta) = \log p(\bz) +  \log  |\det (\bJ_f)| = \log p(\bz) - \log |\det (\bJ_g)| 
 		\]
 		\[
-			KL(p || \pi)  = \bbE_{p(\bz)} \left[ {\color{violet} \log p(\bz) -  \log |\det (\bJ_g)| } - \log \pi(g(\bz, \btheta)) \right]
+			KL(p || \pi)  = \bbE_{p(\bz)} \left[ {\color{violet} \log p(\bz) -  \log |\det (\bJ_g)| } - \log \pi(g_{\btheta}(\bz)) \right]
 		\]
 		\vspace{-0.3cm}
 		\begin{itemize}
-		\item We need to be able to compute $g(\bz, \btheta)$ and its Jacobian.
+		\item We need to be able to compute $g_{\btheta}(\bz)$ and its Jacobian.
 		\item We need to be able to sample from the density $p(\bz)$ (do not need to evaluate it) and to evaluate(!) $\pi(\bx)$.
-		\item We don’t need to think about computing the function $f(\bx, \btheta)$.
+		\item We don’t need to think about computing the function $f_{\btheta}(\bx)$.
 		\end{itemize}
 	\end{block}
 \end{frame}
@@ -427,19 +427,19 @@
 	\end{block}
 	\begin{block}{Proof}
 		\begin{itemize}
-			\item $\bz \sim p(\bz)$, $\bx = g(\bz, \btheta)$, $\bx \sim p(\bx| \btheta)$;
-			\item $\bx \sim \pi(\bx)$, $\bz = f(\bx, \btheta)$, $\bz \sim p(\bz | \btheta)$;
+			\item $\bz \sim p(\bz)$, $\bx = g_{\btheta}(\bz)$, $\bx \sim p(\bx| \btheta)$;
+			\item $\bx \sim \pi(\bx)$, $\bz = f_{\btheta}(\bx)$, $\bz \sim p(\bz | \btheta)$;
 		\end{itemize}
 		\vspace{-0.3cm}
 		\begin{align*}
-			\log p(\bz | \btheta) &= \log \pi(g(\bz, \btheta)) + \log | \det ( \bJ_g) |; \\
-			\log p(\bx | \btheta) &= \log p(f(\bx, \btheta)) + \log | \det ( \bJ_f) |.
+			\log p(\bz | \btheta) &= \log \pi(g_{\btheta}(\bz)) + \log | \det ( \bJ_g) |; \\
+			\log p(\bx | \btheta) &= \log p(f_{\btheta}(\bx)) + \log | \det ( \bJ_f) |.
 		\end{align*}
 		\vspace{-0.9cm}
 		\begin{multline*}
 			KL\left(p(\bz | \btheta) || p(\bz) \right) = \mathbb{E}_{p(\bz | \btheta)} \bigl[ {\color{violet}\log p(\bz | \btheta)} - \log p(\bz) \bigr] = \\ 
-			= \mathbb{E}_{{\color{olive}p(\bz | \btheta)}} \left[ {\color{violet}\log \pi(g(\bz, \btheta)) +  \log |\det (\bJ_g)|} - \log p(\bz) \right] = \\
-			= \mathbb{E}_{{\color{olive}\pi(\bx)}} \left[ \log \pi(\bx) {\color{teal} - \log |\det (\bJ_f)| - \log p(f(\bx, \btheta))} \right] = \\
+			= \mathbb{E}_{{\color{olive}p(\bz | \btheta)}} \left[ {\color{violet}\log \pi(g_{\btheta}(\bz)) +  \log |\det (\bJ_g)|} - \log p(\bz) \right] = \\
+			= \mathbb{E}_{{\color{olive}\pi(\bx)}} \left[ \log \pi(\bx) {\color{teal} - \log |\det (\bJ_f)| - \log p(f_{\btheta}(\bx))} \right] = \\
 			= \mathbb{E}_{\pi(\bx)} \bigl[ \log \pi(\bx) {\color{teal} -\log p(\bx | \btheta)} \bigr] = KL (\pi(\bx) || p(\bx | \btheta)).
 		\end{multline*}
 	\end{block}
@@ -453,7 +453,7 @@
 \begin{frame}{Jacobian structure}
 	\begin{block}{Normalizing flows log-likelihood}
 		\[
-			\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log \left|\det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx} \right) \right|
+			\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log \left|\det \left( \frac{\partial f_{\btheta}(\bx)}{\partial \bx} \right) \right|
 		\]
 	\end{block}
 	The main challenge is a determinant of the Jacobian matrix.
@@ -463,7 +463,7 @@
 			\item Let $\bz$ be a permutation of $\bx$. 
 			\item Let $z_j$ depend only on $x_j$. 
 			\[
-				\log \left|\det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx} \right) \right| = \log \left| \prod_{j=1}^m \frac{\partial f_j(x_j, \btheta)}{\partial x_j} \right| = \sum_{j=1}^m \log \left|  \frac{\partial f_j(x_j, \btheta)}{\partial x_j} \right|.
+				\log \left|\det \left( \frac{\partial f_{\btheta}(\bx)}{\partial \bx} \right) \right| = \log \left| \prod_{j=1}^m \frac{\partial f_{j, \btheta}(x_j)}{\partial x_j} \right| = \sum_{j=1}^m \log \left|  \frac{\partial f_{j, \btheta}(x_j)}{\partial x_j} \right|.
 			\]
 			\item Let $z_j$ depend only on $\bx_{1:j}$ (autoregressive dependency). 
 		\end{enumerate}
@@ -472,7 +472,7 @@
 %=======
 \begin{frame}{Linear normalizing flows}
 	\[
-		\bz = f(\bx, \btheta) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
+		\bz = f_{\btheta}(\bx) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
 	\]
 	In general, we need $O(m^3)$ to invert matrix.
 	\begin{block}{Invertibility}
@@ -495,7 +495,7 @@
 \begin{frame}{Linear normalizing flows}
 	\vspace{-0.5cm}
 	\[
-		\bz = f(\bx, \btheta) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
+		\bz = f_{\btheta}(\bx) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
 	\]
 	\vspace{-0.7cm}
 	\begin{block}{Matrix decompositions}
@@ -557,21 +557,21 @@
 \begin{frame}{Gaussian autoregressive NF}
 	\vspace{-0.2cm}
 	\begin{align*}
-		\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
-		\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
+		\bx &= g_{\btheta}(\bz) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
+		\bz &= f_{\btheta}(\bx) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
 	\end{align*}
-	Generation function $g(\bz, \btheta)$ is \textbf{sequential}. \\ Inference function $f(\bx, \btheta)$ is \textbf{not sequential}.
+	Generation function $g_{\btheta}(\bz)$ is \textbf{sequential}. \\ Inference function $f_{\btheta}(\bx)$ is \textbf{not sequential}.
 
 	\begin{block}{Forward KL for NF}
 		\vspace{-0.5cm}
 		\[
-			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|\right] + \text{const} 
+			KL(\pi || p)  = - \bbE_{\pi(\bx)} \left[\log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f)|\right] + \text{const} 
 		\]
 		\vspace{-0.5cm}
 		\begin{itemize}
-			\item We need to be able to compute $f(\bx, \btheta)$ and its Jacobian.
+			\item We need to be able to compute $f_{\btheta}(\bx)$ and its Jacobian.
 			\item We need to be able to compute the density $p(\bz)$.
-			\item We don’t need to think about computing the function $g(\bz, \btheta) = f^{-1}(\bz, \btheta)$ until we want to sample from the model.
+			\item We don’t need to think about computing the function $g_{\btheta}(\bz) = f^{-1}(\bz, \btheta)$ until we want to sample from the model.
 		\end{itemize}
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 

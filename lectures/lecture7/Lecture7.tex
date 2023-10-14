@@ -56,12 +56,12 @@
 		{\small
 			\begin{multline*}
 				\mathcal{L}(\bphi, \btheta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \left[ \log p(\bx | \bz, \btheta) + {\color{violet}\log p(\bz | \blambda)} - \log q(\bz | \bx, \bphi) \right] \\
-				= \mathbb{E}_{q(\bz | \bx, \bphi)} \Bigl[ \log p(\bx | \bz, \btheta) + \underbrace{ \Bigl({\color{violet} \log p(f(\bz, \blambda)) + \log \left| \det (\bJ_f) \right|} \Bigr) }_{\text{flow-based prior}} - \log q(\bz | \bx, \bphi) \Bigr] 
+				= \mathbb{E}_{q(\bz | \bx, \bphi)} \Bigl[ \log p(\bx | \bz, \btheta) + \underbrace{ \Bigl({\color{violet} \log p(f_{\blambda}(\bz)) + \log \left| \det (\bJ_f) \right|} \Bigr) }_{\text{flow-based prior}} - \log q(\bz | \bx, \bphi) \Bigr] 
 			\end{multline*}
 		}
 		\vspace{-0.5cm}
 		\[
-			\bz = f^{-1}(\bz^*, \blambda) = g(\bz^*, \blambda), \quad \bz^* \sim p(\bz^*) = \cN(0, 1)
+			\bz = f^{-1}_{\blambda}(\bz^*) = g_{\blambda}(\bz^*), \quad \bz^* \sim p(\bz^*) = \cN(0, 1)
 		\]
 	\end{block}
 	\vspace{-0.5cm}
@@ -72,7 +72,7 @@
 	\begin{block}{Discrete VAE latents}
 		\begin{itemize}
 			\item Define dictionary (word book) space $\{\be_k\}_{k=1}^K$, where $\be_k \in \bbR^C$, $K$ is the size of the dictionary.
-			\item Our variational posterior $q(c | \bx, \bphi) = \text{Categorical}(\bpi(\bx, \bphi))$ (encoder) outputs discrete probabilities vector.
+			\item Our variational posterior $q(c | \bx, \bphi) = \text{Categorical}(\bpi_{\bphi}(\bx))$ (encoder) outputs discrete probabilities vector.
 			\item We sample $c^*$ from $q(c | \bx, \bphi)$ (reparametrization trick analogue).
 			\item Our generative distribution $p(\bx | \be_{c^*}, \btheta)$ (decoder).
 		\end{itemize}
@@ -150,7 +150,7 @@
 		has a categorical distribution $c \sim \text{Categorical}(\bpi)$.
 	\end{block}
 	\begin{itemize}
-		\item Let our encoder $q(c | \bx, \bphi) = \text{Categorical}(\bpi(\bx, \bphi))$ outputs logits of $\bpi(\bx, \bphi)$.
+		\item Let our encoder $q(c | \bx, \bphi) = \text{Categorical}(\bpi_{\bphi}(\bx))$ outputs logits of $\bpi_{\bphi}(\bx)$.
 		\item We could sample from the discrete distribution using Gumbel-max reparametrization.
 	\end{itemize}
 
@@ -535,10 +535,10 @@
 	\item Reparametrization trick allows to get gradients of the reconstruction loss
 		\vspace{-0.4cm}
 		\begin{multline*}
-			\nabla_{\bphi}\int q(\bz|\bx, \bphi) f(\bz) d\bz = \nabla_{\bphi}\int r(\bepsilon)  f(\bz) d\bepsilon \\ = \int r(\bepsilon) \nabla_{\bphi} f(g(\bx, \bepsilon, \bphi)) d\bepsilon \approx \nabla_{\bphi} f(g(\bx, \bepsilon^*, \bphi)),
+			\nabla_{\bphi}\int q(\bz|\bx, \bphi) f(\bz) d\bz = \nabla_{\bphi}\int r(\bepsilon)  f(\bz) d\bepsilon \\ = \int r(\bepsilon) \nabla_{\bphi} f(g_{\bphi}(\bx, \bepsilon)) d\bepsilon \approx \nabla_{\bphi} f(g_{\bphi}(\bx, \bepsilon^*)),
 		\end{multline*}
 		\vspace{-0.6cm} \\
-		where $\bepsilon^* \sim r(\bepsilon), \quad \bz = g(\bx, \bepsilon, \bphi), \quad \bz \sim q(\bz | \bx, \bphi)$.
+		where $\bepsilon^* \sim r(\bepsilon), \quad \bz = g_{\bphi}(\bx, \bepsilon), \quad \bz \sim q(\bz | \bx, \bphi)$.
 	\end{itemize}
 	\myfootnotewithlink{https://arxiv.org/abs/1701.04722}{Mescheder L., Nowozin S., Geiger A. Adversarial variational bayes: Unifying variational autoencoders and generative adversarial networks, 2017}
 \end{frame}

@@ -54,14 +54,14 @@
 	\begin{block}{Forward KL for flow model}
 	  	\vspace{-0.1cm}
 		\[
-			\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|
+			\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f)|
 		\]
 		\vspace{-0.3cm}
 	\end{block}
 	\begin{block}{Reverse KL for flow model}
   		\vspace{-0.5cm}
 		\[
-			KL(p || \pi)  = \bbE_{p(\bz)} \left[  \log p(\bz) -  \log |\det (\bJ_g)| - \log \pi(g(\bz, \btheta)) \right]
+			KL(p || \pi)  = \bbE_{p(\bz)} \left[  \log p(\bz) -  \log |\det (\bJ_g)| - \log \pi(g_{\btheta}(\bz)) \right]
 		\]
 		\vspace{-0.5cm}
 	\end{block}
@@ -73,8 +73,8 @@
 		\vspace{-0.3cm}
 		\begin{itemize}
 			\item $p(\bz)$ is a base distribution; $\pi(\bx)$ is a data distribution;
-			\item $\bz \sim p(\bz)$, $\bx = g(\bz, \btheta)$, $\bx \sim p(\bx| \btheta)$;
-			\item $\bx \sim \pi(\bx)$, $\bz = f(\bx, \btheta)$, $\bz \sim p(\bz | \btheta)$.
+			\item $\bz \sim p(\bz)$, $\bx = g_{\btheta}(\bz)$, $\bx \sim p(\bx| \btheta)$;
+			\item $\bx \sim \pi(\bx)$, $\bz = f_{\btheta}(\bx)$, $\bz \sim p(\bz | \btheta)$.
 		\end{itemize}
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/1912.02762}{Papamakarios G. et al. Normalizing flows for probabilistic modeling and inference, 2019} 
@@ -85,7 +85,7 @@
 	\begin{block}{Flow log-likelihood}
 		\vspace{-0.3cm}
 		\[
-			\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log  |\det (\bJ_f)|
+			\log p(\bx|\btheta) = \log p(f_{\btheta}(\bx)) + \log  |\det (\bJ_f)|
 		\]
 		\vspace{-0.5cm}
 	\end{block}
@@ -93,7 +93,7 @@
 	\begin{block}{Linear flows}	
 		\vspace{-0.2cm}
 		\[
-			\bz = f(\bx, \btheta) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
+			\bz = f_{\btheta}(\bx) = \bW \bx, \quad \bW \in \bbR^{m \times m}, \quad \btheta = \bW, \quad \bJ_f = \bW^T
 		\]
 	\end{block}
 	\vspace{-0.3cm}
@@ -126,8 +126,8 @@
 	\begin{block}{Gaussian autoregressive NF}
 		\vspace{-0.5cm}
 		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
+			\bx &= g_{\btheta}(\bz) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
+			\bz &= f_{\btheta}(\bx) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
 		\end{align*}
 		\vspace{-0.5cm}
 	\end{block}
@@ -135,7 +135,7 @@
 		\item We have an \textbf{invertible} and \textbf{differentiable} transformation from $p(\bz)$ to $p(\bx | \btheta)$.
 		\item Jacobian of such transformation is triangular!
 	\end{itemize}
-	Generation function $g(\bz, \btheta)$ is \textbf{sequential}. \\ Inference function $f(\bx, \btheta)$ is \textbf{not sequential}.
+	Generation function $g_{\btheta}(\bz)$ is \textbf{sequential}. \\ Inference function $f_{\btheta}(\bx)$ is \textbf{not sequential}.
 	
 	\myfootnotewithlink{https://arxiv.org/abs/1705.07057}{Papamakarios G., Pavlakou T., Murray I. Masked Autoregressive Flow for Density Estimation, 2017} 
 \end{frame}
@@ -143,8 +143,8 @@
 \begin{frame}{Gaussian autoregressive NF}
 	\vspace{-0.5cm}
 	\begin{align*}
-		\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
-		\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
+		\bx &= g_{\btheta}(\bz) \quad \Rightarrow \quad {\color{violet} x_j} = \sigma_j ({\color{violet} \bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet} \bx_{1:j-1}}). \\
+		\bz &= f_{\btheta}(\bx) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet}x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{ \sigma_j ({\color{violet}\bx_{1:j-1}})}.
 	\end{align*}
 	
 	\begin{itemize}
@@ -154,7 +154,7 @@
 	\vspace{-0.3cm}
 	
 	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Forward transform: $f(\bx, \btheta)$}
+		\begin{block}{Forward transform: $f_{\btheta}(\bx)$}
 			\[
 				z_j = (x_j - \mu_j(\bx_{1:j-1})) \cdot \frac{1}{\sigma_j (\bx_{1:j-1}) }
 			\]
@@ -169,7 +169,7 @@
 	\end{minipage} \\
 	
 	\begin{minipage}[t]{0.65\columnwidth}
-		\begin{block}{Inverse transform: $g(\bz, \btheta)$}
+		\begin{block}{Inverse transform: $g_{\btheta}(\bz)$}
 			\[
 			x_j = \sigma_j (\bx_{1:j-1}) \cdot z_j + \mu_j(\bx_{1:j-1})
 			\]
@@ -199,8 +199,8 @@
 	\begin{block}{Coupling layer}
 		\vspace{-0.7cm}
 		\[
-			\begin{cases} \bx_1 = \bz_1; \\ \bx_2 = \bz_2 \odot \bsigma(\bz_1, \btheta) + \bmu(\bz_1, \btheta).\end{cases}  
-			\begin{cases} \bz_1 = \bx_1; \\ \bz_2 = \left(\bx_2 - \bmu({\color{olive}\bx_1}, \btheta) \right) \odot \frac{1}{\bsigma({\color{olive}\bx_1}, \btheta)}.\end{cases}
+			\begin{cases} \bx_1 = \bz_1; \\ \bx_2 = \bz_2 \odot \bsigma_{\btheta}(\bz_1) + \bmu_{\btheta}(\bz_1).\end{cases}  
+			\begin{cases} \bz_1 = \bx_1; \\ \bz_2 = \left(\bx_2 - \bmu_{\btheta}({\color{olive}\bx_1}) \right) \odot \frac{1}{\bsigma_{\btheta}({\color{olive}\bx_1})}.\end{cases}
 		\]
 	\end{block}
 	\vspace{-0.5cm}
@@ -227,8 +227,8 @@
 	\begin{block}{Coupling layer}
 		\vspace{-0.7cm}
 		\[
-		 \begin{cases} {\color{violet}\bx_1} = {\color{teal}\bz_1}; \\ {\color{violet}\bx_2} = {\color{teal}\bz_2} \odot \bsigma({\color{teal}\bz_1}, \btheta) + \bmu({\color{teal}\bz_1}, \btheta).\end{cases}  
-		\begin{cases} {\color{teal}\bz_1} ={\color{violet} \bx_1}; \\ {\color{teal}\bz_2} = \left({\color{violet}\bx_2} - \bmu({\color{violet}\bx_1}, \btheta) \right) \odot \frac{1}{\bsigma({\color{violet}\bx_1}, \btheta)}.\end{cases}
+		 \begin{cases} {\color{violet}\bx_1} = {\color{teal}\bz_1}; \\ {\color{violet}\bx_2} = {\color{teal}\bz_2} \odot \bsigma_{\btheta}({\color{teal}\bz_1}) + \bmu_{\btheta}({\color{teal}\bz_1}).\end{cases}  
+		\begin{cases} {\color{teal}\bz_1} ={\color{violet} \bx_1}; \\ {\color{teal}\bz_2} = \left({\color{violet}\bx_2} - \bmu_{\btheta}({\color{violet}\bx_1}) \right) \odot \frac{1}{\bsigma_{\btheta}({\color{violet}\bx_1})}.\end{cases}
 		\]
 		Estimating the density takes 1 pass, sampling takes 1 pass!
 	\end{block}
@@ -239,15 +239,15 @@
 		\begin{pmatrix}
 			\bI_d & 0_{d \times m - d} \\
 			\frac{\partial \bz_2}{\partial \bx_1} & \frac{\partial \bz_2}{\partial \bx_2}
-		\end{pmatrix} = \prod_{j=1}^{m - d} \frac{1}{\sigma_j(\bx_1, \btheta)}.
+		\end{pmatrix} = \prod_{j=1}^{m - d} \frac{1}{\sigma_j(\bx_1)}.
 		\]
 		\vspace{-0.5cm}
 	\end{block}
 	\begin{block}{Gaussian AR NF}
 		\vspace{-0.6cm}
 		\begin{align*}
-			\bx &= g(\bz, \btheta) \quad \Rightarrow \quad {\color{violet}x_j} = \sigma_j ({\color{violet}\bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet}\bx_{1:j-1}}). \\
-			\bz &= f(\bx, \btheta) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet} x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{\sigma_j ({\color{violet} \bx_{1:j-1}}) }.
+			\bx &= g_{\btheta}(\bz) \quad \Rightarrow \quad {\color{violet}x_j} = \sigma_j ({\color{violet}\bx_{1:j-1}}) \cdot {\color{teal} z_j} + \mu_j({\color{violet}\bx_{1:j-1}}). \\
+			\bz &= f_{\btheta}(\bx) \quad \Rightarrow \quad {\color{teal} z_j} = \left({\color{violet} x_j} - \mu_j({\color{violet}\bx_{1:j-1}}) \right) \cdot \frac{1}{\sigma_j ({\color{violet} \bx_{1:j-1}}) }.
 		\end{align*}
 		\vspace{-0.5cm}
 	\end{block}
@@ -286,8 +286,8 @@
 		\begin{tabular}{l|c|c}
 			& \textbf{VAE} & \textbf{NF} \\ \hline
 			\textbf{Objective} & ELBO $\cL$ & Forward KL/MLE \\ \hline
-			\textbf{Encoder} & \shortstack{stochastic \\ $\bz \sim q (\bz | \bx, \bphi)$} &  \shortstack{\\ deterministic \\ $\bz = f(\bx, \btheta)$ \\ $q(\bz | \bx, \btheta) = \delta(\bz - f(\bx, \btheta))$}  \\ \hline
-			\textbf{Decoder} & \shortstack{stochastic \\ $\bx \sim p (\bx | \bz, \btheta)$} & \shortstack{\\ deterministic \\ $\bx = g(\bz, \btheta)$ \\ $ p(\bx | \bz, \btheta) = \delta(\bx - g(\bz, \btheta))$} \\ \hline
+			\textbf{Encoder} & \shortstack{stochastic \\ $\bz \sim q (\bz | \bx, \bphi)$} &  \shortstack{\\ deterministic \\ $\bz = f_{\btheta}(\bx)$ \\ $q(\bz | \bx, \btheta) = \delta(\bz - f_{\btheta}(\bx))$}  \\ \hline
+			\textbf{Decoder} & \shortstack{stochastic \\ $\bx \sim p (\bx | \bz, \btheta)$} & \shortstack{\\ deterministic \\ $\bx = g_{\btheta}(\bz)$ \\ $ p(\bx | \bz, \btheta) = \delta(\bx - g_{\btheta}(\bz))$} \\ \hline
 			\textbf{Parameters}  & $\bphi, \btheta$ & $\btheta \equiv \bphi$\\ 
 		\end{tabular}
 	\end{table}
@@ -295,10 +295,10 @@
 		MLE for normalizing flow is equivalent to maximization of ELBO for VAE model with deterministic encoder and decoder:
 		\vspace{-0.3cm}
 		\[
-			p(\bx | \bz, \btheta) = \delta (\bx - f^{-1}(\bz, \btheta)) = \delta (\bx - g(\bz, \btheta));
+			p(\bx | \bz, \btheta) = \delta (\bx - f^{-1}(\bz, \btheta)) = \delta (\bx - g_{\btheta}(\bz));
 		\]
 		\[
-			q(\bz | \bx, \btheta) = p(\bz | \bx, \btheta) = \delta (\bz - f(\bx, \btheta)).
+			q(\bz | \bx, \btheta) = p(\bz | \bx, \btheta) = \delta (\bz - f_{\btheta}(\bx)).
 		\]
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/2007.02731}{Nielsen D., et al. SurVAE Flows: Surjections to Bridge the Gap between VAEs and Flows, 2020}
@@ -340,7 +340,7 @@
 			\item  Dirac delta function property:
 			\vspace{-0.3cm}
 			\[
-				{\color{teal}\bbE_{q(\bz | \bx, \btheta)} \log p(\bz)} = \int \delta (\bz - f(\bx, \btheta)) \log p(\bz) d \bz = \log p(f(\bx, \btheta)).
+				{\color{teal}\bbE_{q(\bz | \bx, \btheta)} \log p(\bz)} = \int \delta (\bz - f_{\btheta}(\bx)) \log p(\bz) d \bz = \log p(f_{\btheta}(\bx)).
 			\]
 			\vspace{-0.6cm}
 			\item CoV theorem and Bayes theorem:
@@ -354,7 +354,7 @@
 			\item Log-likelihood decomposition
 			\vspace{-0.3cm}
 			\[
-				\log p(\bx | \btheta) = \cL(\btheta) = \log p(f(\bx, \btheta)) +  \log |\det \bJ_f|.
+				\log p(\bx | \btheta) = \cL(\btheta) = \log p(f_{\btheta}(\bx)) +  \log |\det \bJ_f|.
 			\]
 		\end{enumerate}
 	\end{block}
@@ -498,14 +498,14 @@
 	\end{block}
 	Uniform dequantization is a special case of variational dequantization ($q(\bu | \by) = U[0, 1]$).
 	\begin{block}{Flow++: flow-based variational dequantization}
-		Let $\bu = g(\bepsilon, \by, \blambda)$ is a flow model with base distribution $\bepsilon \sim p(\bepsilon)$:
+		Let $\bu = g_{\blambda}(\bepsilon, \by)$ is a flow model with base distribution $\bepsilon \sim p(\bepsilon)$:
 		\vspace{-0.3cm}
 		\[
-		q(\bu | \by) = p(f(\bu, \by, \blambda)) \cdot \left| \det \frac{\partial f(\bu, \by, \blambda)}{\partial \bu}\right|.
+		q(\bu | \by) = p(f_{\blambda}(\bu, \by)) \cdot \left| \det \frac{\partial f_{\blambda}(\bu, \by)}{\partial \bu}\right|.
 		\]
 		\vspace{-0.3cm}
 		\[
-		\log P(\by | \btheta) \geq \cL(\blambda, \btheta) = \int p(\bepsilon) \log \left( \frac{p(\by + g(\bepsilon, \by, \blambda) | \btheta)}{p(\bepsilon) \cdot \left| \det \bJ_g\right|^{-1}} \right) d\bepsilon.
+		\log P(\by | \btheta) \geq \cL(\blambda, \btheta) = \int p(\bepsilon) \log \left( \frac{p(\by + g_{\blambda}(\bepsilon, \by) | \btheta)}{p(\bepsilon) \cdot \left| \det \bJ_g\right|^{-1}} \right) d\bepsilon.
 		\]
 		\vspace{-0.3cm}
 	\end{block}

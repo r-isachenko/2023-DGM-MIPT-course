@@ -135,7 +135,7 @@
 	\vspace{-0.3cm}
 	\begin{itemize}
 		\footnotesize
-		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G(\bz, \btheta)$ has a measure 0 in $\bx$ space. Hence, support of $p(\bx | \btheta)$ lies on low-dimensional manifold.
+		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G_{\btheta}(\bz)$ has a measure 0 in $\bx$ space. Hence, support of $p(\bx | \btheta)$ lies on low-dimensional manifold.
 		\item Distribution of real images $\pi(\bx)$ is also concentrated on a low dimensional manifold.
 		\begin{figure}
 			\centering
@@ -227,7 +227,7 @@
 %=======
 \begin{frame}{Wasserstein distance vs KL vs JSD}
 	\begin{block}{Theorem 1}
-		Let $G(\bz, \btheta)$ be (almost) any feedforward neural network, and $p(\bz)$ a prior over $\bz$ such that $\bbE_{p(\bz)} \|\bz\| < \infty$. Then therefore $W(\pi, p)$ is continuous everywhere and differentiable almost everywhere.
+		Let $G_{\btheta}(\bz)$ be (almost) any feedforward neural network, and $p(\bz)$ a prior over $\bz$ such that $\bbE_{p(\bz)} \|\bz\| < \infty$. Then therefore $W(\pi, p)$ is continuous everywhere and differentiable almost everywhere.
 	\end{block}
 	\begin{block}{Theorem 2}
 		Let $\pi$ be a distribution on a compact space $\cX$ and $\{p_t\}_{t=1}^\infty$ be a sequence of distributions on $\cX$. 
@@ -278,12 +278,12 @@
 	\end{block}
 	\begin{itemize}
 		\item Now we have to ensure that $f$ is $K$-Lipschitz continuous.
-		\item Let $f(\bx, \bphi)$ be a feedforward neural network parametrized by~$\bphi$.
-		\item If parameters $\bphi$ lie in a compact set $\boldsymbol{\Phi}$ then $f(\bx, \bphi)$ will be $K$-Lipschitz continuous function. 
+		\item Let $f_{\bphi}(\bx)$ be a feedforward neural network parametrized by~$\bphi$.
+		\item If parameters $\bphi$ lie in a compact set $\boldsymbol{\Phi}$ then $f_{\bphi}(\bx)$ will be $K$-Lipschitz continuous function. 
 		\item Let the parameters be clamped to a fixed box $\boldsymbol{\Phi} \in [-c, c]^d$ (e.x. $c = 0.01$) after each gradient update.
 	\end{itemize}
 	\begin{multline*}
-		K \cdot W(\pi || p) = \max_{\| f \|_L \leq K} \left[ \bbE_{\pi(\bx)} f(\bx)  - \bbE_{p(\bx)} f(\bx)\right] \geq \\  \geq \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\pi(\bx)} f(\bx, \bphi)  - \bbE_{p(\bx)} f(\bx, \bphi )\right]
+		K \cdot W(\pi || p) = \max_{\| f \|_L \leq K} \left[ \bbE_{\pi(\bx)} f(\bx)  - \bbE_{p(\bx)} f(\bx)\right] \geq \\  \geq \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\pi(\bx)} f_{\bphi}(\bx)  - \bbE_{p(\bx)} f_{\bphi}(\bx)\right]
 	\end{multline*}
 	
 	\myfootnotewithlink{https://arxiv.org/abs/1701.07875}{Arjovsky M., Chintala S., Bottou L. Wasserstein GAN, 2017}
@@ -293,14 +293,14 @@
 	\begin{block}{Standard GAN objective}
 		\vspace{-0.2cm}
 		\[
-		\min_{\btheta} \max_{\bphi} \bbE_{\pi(\bx)} \log D(\bx, \bphi) + \bbE_{p(\bz)} \log (1 - D(G(\bz, \btheta), \bphi))
+		\min_{\btheta} \max_{\bphi} \bbE_{\pi(\bx)} \log D_{\bphi}(\bx) + \bbE_{p(\bz)} \log (1 - D_{\bphi}(G_{\btheta}(\bz)))
 		\]
 		\vspace{-0.2cm}
 	\end{block}
 	\begin{block}{WGAN objective}
 		\vspace{-0.6cm}
 		\[
-		\min_{\btheta} W(\pi || p) \approx \min_{\btheta} \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\pi(\bx)} f(\bx, \bphi)  - \bbE_{p(\bz)} f(G(\bz, \btheta), \bphi )\right].
+		\min_{\btheta} W(\pi || p) \approx \min_{\btheta} \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\pi(\bx)} f_{\bphi}(\bx)  - \bbE_{p(\bz)} f_{\bphi}(G_{\btheta}(\bz))\right].
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -430,9 +430,9 @@
 \end{frame}
 %=======
 \begin{frame}{Spectral Normalization GAN}
-	Let consider the critic $f(\bx, \bphi)$ of the following form:
+	Let consider the critic $f_{\bphi}(\bx)$ of the following form:
 	\[
-		f(\bx, \bphi) = \bW_{K+1} \sigma_K (\bW_K \sigma_{K-1}(\dots \sigma_1(\bW_1 \bx) \dots)).
+		f_{\bphi}(\bx) = \bW_{K+1} \sigma_K (\bW_K \sigma_{K-1}(\dots \sigma_1(\bW_1 \bx) \dots)).
 	\]
 	This feedforward network is a superposition of simple functions.
 	\begin{itemize}
@@ -450,7 +450,7 @@
 		\]
 		\vspace{-0.2cm}
 	\end{block}
-	If we replace the weights in the critic $f(\bx, \bphi)$ by $\bW^{SN}_k = \bW_k / \|\bW_k\|_2$, we will get $\| f\|_L \leq 1.$ \\
+	If we replace the weights in the critic $f_{\bphi}(\bx)$ by $\bW^{SN}_k = \bW_k / \|\bW_k\|_2$, we will get $\| f\|_L \leq 1.$ \\
 	
 	\myfootnotewithlink{https://arxiv.org/abs/1802.05957}{Miyato T. et al. Spectral Normalization for Generative Adversarial Networks, 2018}
 \end{frame}

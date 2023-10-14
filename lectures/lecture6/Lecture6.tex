@@ -17,8 +17,8 @@
 	\begin{block}{Coupling layer}
 		\vspace{-0.5cm}
 		\[
-		\begin{cases} {\color{violet}\bx_1} = {\color{teal}\bz_1}; \\ {\color{violet}\bx_2} = {\color{teal}\bz_2} \odot \bsigma({\color{teal}\bz_1}, \btheta) + \bmu({\color{teal}\bz_1}, \btheta).\end{cases}  
-		\begin{cases} {\color{teal}\bz_1} ={\color{violet} \bx_1}; \\ {\color{teal}\bz_2} = \left({\color{violet}\bx_2} - \bmu({\color{violet}\bx_1}, \btheta) \right) \odot \frac{1}{\bsigma({\color{violet}\bx_1}, \btheta)}.\end{cases}
+		\begin{cases} {\color{violet}\bx_1} = {\color{teal}\bz_1}; \\ {\color{violet}\bx_2} = {\color{teal}\bz_2} \odot \bsigma_{\btheta}({\color{teal}\bz_1}) + \bmu_{\btheta}({\color{teal}\bz_1}).\end{cases}  
+		\begin{cases} {\color{teal}\bz_1} ={\color{violet} \bx_1}; \\ {\color{teal}\bz_2} = \left({\color{violet}\bx_2} - \bmu_{\btheta}({\color{violet}\bx_1}) \right) \odot \frac{1}{\bsigma_{\btheta}({\color{violet}\bx_1})}.\end{cases}
 		\]
 		Estimating the density takes 1 pass, sampling takes 1 pass!
 	\end{block}
@@ -29,7 +29,7 @@
 		\begin{pmatrix}
 			\bI_d & 0_{d \times m - d} \\
 			\frac{\partial \bz_2}{\partial \bx_1} & \frac{\partial \bz_2}{\partial \bx_2}
-		\end{pmatrix} = \prod_{j=1}^{m - d} \frac{1}{\sigma_j(\bx_1, \btheta)}.
+		\end{pmatrix} = \prod_{j=1}^{m - d} \frac{1}{\sigma_j(\bx_1)}.
 		\]
 	\end{block}
 	Coupling layer is a special case of autoregressive NF.
@@ -42,8 +42,8 @@
 		\begin{tabular}{l|c|c}
 			& \textbf{VAE} & \textbf{NF} \\ \hline
 			\textbf{Objective} & ELBO $\cL$ & Forward KL/MLE \\ \hline
-			\textbf{Encoder} & \shortstack{stochastic \\ $\bz \sim q (\bz | \bx, \bphi)$} &  \shortstack{\\ deterministic \\ $\bz = f(\bx, \btheta)$ \\ $q(\bz | \bx, \btheta) = \delta(\bz - f(\bx, \btheta))$}  \\ \hline
-			\textbf{Decoder} & \shortstack{stochastic \\ $\bx \sim p (\bx | \bz, \btheta)$} & \shortstack{\\ deterministic \\ $\bx = g(\bz, \btheta)$ \\ $ p(\bx | \bz, \btheta) = \delta(\bx - g(\bz, \btheta))$} \\ \hline
+			\textbf{Encoder} & \shortstack{stochastic \\ $\bz \sim q (\bz | \bx, \bphi)$} &  \shortstack{\\ deterministic \\ $\bz = f_{\btheta}(\bx)$ \\ $q(\bz | \bx, \btheta) = \delta(\bz - f_{\btheta}(\bx))$}  \\ \hline
+			\textbf{Decoder} & \shortstack{stochastic \\ $\bx \sim p (\bx | \bz, \btheta)$} & \shortstack{\\ deterministic \\ $\bx = g_{\btheta}(\bz)$ \\ $ p(\bx | \bz, \btheta) = \delta(\bx - g_{\btheta}(\bz))$} \\ \hline
 			\textbf{Parameters}  & $\bphi, \btheta$ & $\btheta \equiv \bphi$\\ 
 		\end{tabular}
 	\end{table}
@@ -51,10 +51,10 @@
 		MLE for normalizing flow is equivalent to maximization of ELBO for VAE model with deterministic encoder and decoder:
 		\vspace{-0.3cm}
 		\[
-		p(\bx | \bz, \btheta) = \delta (\bx - f^{-1}(\bz, \btheta)) = \delta (\bx - g(\bz, \btheta));
+		p(\bx | \bz, \btheta) = \delta (\bx - f^{-1}(\bz, \btheta)) = \delta (\bx - g_{\btheta}(\bz));
 		\]
 		\[
-		q(\bz | \bx, \btheta) = p(\bz | \bx, \btheta) = \delta (\bz - f(\bx, \btheta)).
+		q(\bz | \bx, \btheta) = p(\bz | \bx, \btheta) = \delta (\bz - f_{\btheta}(\bx)).
 		\]
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/2007.02731}{Nielsen D., et al. SurVAE Flows: Surjections to Bridge the Gap between VAEs and Flows, 2020}
@@ -85,7 +85,8 @@
 		\]
 	\end{block}
 	
-	\myfootnotewithlink{https://arxiv.org/abs/1701.05517}{Salimans T. et al. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications, 2017}\end{frame}
+	\myfootnotewithlink{https://arxiv.org/abs/1701.05517}{Salimans T. et al. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications, 2017}
+\end{frame}
 %=======
 \begin{frame}{Recap of previous lecture}
 	\begin{block}{Uniform dequantization bound}
@@ -269,20 +270,20 @@
 		\]
 		\vspace{-0.3cm}
 		\[
-			\bz = g(\bz^*, \blambda) = f^{-1}(\bz^*, \blambda)
+			\bz = g_{\blambda}(\bz^*) = f^{-1}_{\blambda}(\bz^*)
 		\]
 	\end{block}
 	\vspace{-0.3cm}
 	\begin{itemize}
 		\item RealNVP with coupling layers.
-		\item Autoregressive NF (fast $f(\bz, \blambda)$, slow $g(\bz^*, \blambda)$).
+		\item Autoregressive NF (fast $f_{\blambda}(\bz)$, slow $g_{\blambda}(\bz^*)$).
 	\end{itemize}
 	\begin{block}{ELBO with NF-based VAE prior}
 		\vspace{-0.5cm}
 		{\small
 		\begin{multline*}
 			\mathcal{L}(\bphi, \btheta) = \mathbb{E}_{q(\bz | \bx, \bphi)} \left[ \log p(\bx | \bz, \btheta) + {\color{violet}\log p(\bz | \blambda)} - \log q(\bz | \bx, \bphi) \right] \\
-				= \mathbb{E}_{q(\bz | \bx, \bphi)} \Bigl[ \log p(\bx | \bz, \btheta) + \underbrace{ \Bigl({\color{violet} \log p(f(\bz, \blambda)) + \log \left| \det (\bJ_f) \right|} \Bigr) }_{\text{NF-based prior}} - \log q(\bz | \bx, \bphi) \Bigr] 
+				= \mathbb{E}_{q(\bz | \bx, \bphi)} \Bigl[ \log p(\bx | \bz, \btheta) + \underbrace{ \Bigl({\color{violet} \log p(f_{\blambda}(\bz)) + \log \left| \det (\bJ_f) \right|} \Bigr) }_{\text{NF-based prior}} - \log q(\bz | \bx, \bphi) \Bigr] 
 		\end{multline*}
 		}
 	\end{block}
@@ -329,7 +330,7 @@
 	\vspace{-0.3cm}
 	\begin{block}{How it should work?}
 		\begin{itemize}
-			\item Our variational posterior $q(c | \bx, \bphi) = \text{Categorical}(\bpi(\bx, \bphi))$ (encoder) outputs discrete probabilities vector.
+			\item Our variational posterior $q(c | \bx, \bphi) = \text{Categorical}(\bpi_{\bphi}(\bx))$ (encoder) outputs discrete probabilities vector.
 			\item We sample $c^*$ from $q(c | \bx, \bphi)$ (reparametrization trick analogue).
 			\item Our generative distribution $p(\bx | \be_{c^*}, \btheta)$ (decoder).
 		\end{itemize}
@@ -396,7 +397,7 @@
 	\[
 	q(\bc | \bx, \bphi) = \prod_{i=1}^W \prod_{j=1}^H q(c_{ij} | \bx, \bphi); \quad p(\bc) = \prod_{i=1}^W \prod_{j=1}^H \text{Uniform}\{1, \dots, K\}.
 	\]
-	Let $\bz_e = \text{NN}_e(\bx, \bphi) \in \bbR^{W \times H \times C}$ is the encoder output.
+	Let $\bz_e = \text{NN}_{e, \bphi}(\bx) \in \bbR^{W \times H \times C}$ is the encoder output.
 	\begin{block}{Deterministic variational posterior}
 		\vspace{-0.6cm}
 		\[
