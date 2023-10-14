@@ -130,6 +130,8 @@
 	\tableofcontents
 \end{frame}
 %=======
+\section{Discrete VAE latent representations}
+%=======
 \subsection{Gumbel-softmax for discrete VAE latents}
 %=======
 \begin{frame}{Gumbel-softmax trick}
@@ -240,7 +242,7 @@
 			\[
 				p_1(\bx) = \frac{1}{n} \sum_{i=1}^n \cN(\bx | \bx_i, \epsilon \bI)
 			\]
-			For small $\epsilon$ this model will generate samples with great quality, but likelihood will be very poor.
+			For small $\epsilon$ this model will generate samples with great quality, but likelihood of test sample will be very poor.
 		\end{block}
 	\end{minipage}%
 	\begin{minipage}[t]{0.52\columnwidth}
@@ -265,7 +267,7 @@
 \begin{frame}{Likelihood-free learning}
 	\begin{block}{Where did we start}
 	 We would like to approximate true data distribution $\pi(\bx)$.
-		Instead of searching true $\pi(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx \pi(\bx)$.
+	Instead of searching true $\pi(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx \pi(\bx)$.
 	\end{block}
 	Imagine we have two sets of samples 
 	\begin{itemize}
@@ -287,7 +289,7 @@
 \section{Generative adversarial networks (GAN)}
 %=======
 \begin{frame}{Likelihood-free learning}
-	The more powerful discriminative model we will have, the more likely we got the "best" generative distribution $p(\bx | \btheta)$. \\
+	The more powerful discriminative model we will have, the more likely we will get the "best" generative distribution $p(\bx | \btheta)$. \\
 	The most common way to learn a classifier is to minimize cross entropy loss.
 	\begin{itemize}
 		\item \textbf{Generator:} generative model $\bx = G(\bz)$, which makes generated sample more realistic. Here $\bz$ comes from the base (known) distribution $p(\bz)$ and $\bx \sim p(\bx | \btheta)$. Generator tries to \textbf{maximize} cross entropy.
@@ -382,7 +384,7 @@
 	\begin{block}{Proof continued (fixed $D = D^*$)}
 		\vspace{-0.5cm}
 		\begin{multline*}
-			V(G, D^*) = \bbE_{\pi(\bx)} \log \frac{\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)} + \bbE_{p(\bx | \btheta)} \log \frac{p(\bx | \btheta)}{\pi(\bx) + p(\bx | \btheta)} \\
+			V(G, D^*) = \bbE_{\pi(\bx)} \log \left( \frac{\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)} \right) + \bbE_{p(\bx | \btheta)} \log \left( \frac{p(\bx | \btheta)}{\pi(\bx) + p(\bx | \btheta)}\right)  \\
 		 = KL \left(\pi(\bx) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) + KL \left(p(\bx | \btheta) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) - 2\log 2 \\
 		 = 2JSD(\pi(\bx) || p(\bx | \btheta)) - 2\log 2.
 		\end{multline*}
