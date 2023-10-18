@@ -36,10 +36,10 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 5 | October, 3 | <b>Lecture 5:</b> Coupling layer (RealNVP). NF as VAE model. Discrete data vs continuous model. Model discretization (PixelCNN++). Data dequantization: uniform and variational (Flow++). | [slides](lectures/lecture5/Lecture5.pdf) | [video](https://www.youtube.com/watch?v=wBb_K51erBE) | |
 |  |  | <b>Seminar 5:</b> VAE: posterior collapse, KL-annealing, free-bits. Normalizing flows: basics, planar flows, forward and backward kl for planar flows. | [posterior_collapse](seminars/seminar5/posterior_collapse.ipynb) | [video](https://www.youtube.com/watch?v=8FPAirzmGbA) |
 | 6 | October, 10 | <b>Lecture 6:</b> ELBO surgery and optimal VAE prior. NF-based VAE prior. Discrete VAE latent representations. Vector quantization, straight-through gradient estimation (VQ-VAE). | [slides](lectures/lecture6/Lecture6.pdf) | [video](https://youtu.be/7VhdOxWpEQo) |
-|  |  | <b>Seminar 6:</b> Planar Flow (coding), RealNVP | [planar_flow.ipynb](seminars/seminar6/planar_flow.ipynb) [real_nvp_notes.ipynb](seminars/seminar6/real_nvp_notes.ipynb) | [video](https://youtu.be/FI3NZt1ZADs) |
-| 7 | October, 17 | <b>Lecture 7:</b> Gumbel-softmax trick (DALL-E). Likelihood-free learning. GAN optimality theorem. Adversarial Variational Bayes. | [slides](lectures/lecture7/Lecture7.pdf) |  |
-|  |  | <b>Seminar 7:</b>  Glow. MADE++: discretization of continuous distributions | [notebook](seminars/seminar7/seminar7.ipynb)<br>[Glow](seminars/seminar7/Glow.ipynb) |  |
-| 8 |  | <b>Lecture 8:</b> TBA |  |  |
+|  |  | <b>Seminar 6:</b> Planar Flow (coding), RealNVP. | [planar_flow.ipynb](seminars/seminar6/planar_flow.ipynb) [real_nvp_notes.ipynb](seminars/seminar6/real_nvp_notes.ipynb) | [video](https://youtu.be/FI3NZt1ZADs) |
+| 7 | October, 17 | <b>Lecture 7:</b> Gumbel-softmax trick (DALL-E). Likelihood-free learning. GAN optimality theorem.  | [slides](lectures/lecture7/Lecture7.pdf) | [video](https://youtu.be/X8jeOTzLhn0) |
+|  |  | <b>Seminar 7:</b>  Glow. MADE++: discretization of continuous distributions. | [notebook](seminars/seminar7/seminar7.ipynb)<br>[Glow](seminars/seminar7/Glow.ipynb) |  |
+| 8 |  | <b>Lecture 8:</b> Wasserstein distance. Wasserstein GAN (WGAN). WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). | [slides](lectures/lecture8/Lecture8.pdf) |  |
 |  |  | <b>Seminar 8:</b> TBA |  |  |
 | 9 |  | <b>Lecture 9:</b> TBA |  |  |
 |  |  | <b>Seminar 9:</b> TBA |  |  |

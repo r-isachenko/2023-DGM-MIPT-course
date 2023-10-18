@@ -94,35 +94,18 @@
 		\item Generator updates are made in parameter space, discriminator is not optimal at every step.
 		\item Generator and discriminator loss keeps oscillating during GAN training.
 	\end{itemize}
-	\vspace{-0.3cm}
+	\begin{block}{Objective}
+		\vspace{-0.5cm}
+		\[
+		\min_{\btheta} \max_{\bphi} \left[ \bbE_{\pi(\bx)} \log D_{\bphi}(\bx) + \bbE_{p(\bz)} \log (1 - D_{\bphi}(G_{\btheta}(\bz))) \right]
+		\]
+		\vspace{-0.5cm}
+	\end{block}
 	\begin{figure}
 		\centering
 		\includegraphics[width=1.0\linewidth]{figs/gan_1}
 	\end{figure}
 	\myfootnotewithlink{https://arxiv.org/abs/1406.2661}{Goodfellow I. J. et al. Generative Adversarial Networks, 2014}
-\end{frame}
-%=======
-\begin{frame}{Recap of previous lecture}
-\vspace{-0.3cm}
-	\begin{block}{ELBO objective}
-		\vspace{-0.5cm}
-		\[
-			 \mathcal{L} (\bphi, \btheta)  = \mathbb{E}_{q(\bz | \bx, \bphi)} \left[\log p(\bx | \bz, \btheta) - KL(\log q(\bz| \bx, \bphi) || p(\bz)) \right] \rightarrow \max_{\bphi, \btheta}.
-		\]	
-		\vspace{-0.5cm}
-	\end{block}
-	What is the problem to make the variational posterior model an \textbf{implicit} model? \\
-	 We have to estimate density ratio (in KL term)
-	\[
-		r(\bx, \bz) = \frac{q_1(\bx, \bz)}{q_2(\bx, \bz)} = \frac{q(\bz| \bx, \bphi) \pi (\bx)}{p(\bz) \pi(\bx)} = \frac{D(\bx, \bz)}{1 - D(\bx, \bz)}.
-	\] 
-	\begin{block}{Adversarial Variational Bayes}
-		\vspace{-0.6cm}
-		\[
-			\max_D \left[ \bbE_{\pi(\bx)} \bbE_{q(\bz | \bx, \bphi)} \log D(\bx, \bz) + \bbE_{\pi(\bx)} \bbE_{p(\bz)} \log (1 - D(\bx, \bz)) \right]
-		\]
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/1701.04722}{Mescheder L., Nowozin S., Geiger A. Adversarial variational bayes: Unifying variational autoencoders and generative adversarial networks, 2017}
 \end{frame}
 %=======
 \begin{frame}{Outline}
