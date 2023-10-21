@@ -38,20 +38,20 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 6 | October, 10 | <b>Lecture 6:</b> ELBO surgery and optimal VAE prior. NF-based VAE prior. Discrete VAE latent representations. Vector quantization, straight-through gradient estimation (VQ-VAE). | [slides](lectures/lecture6/Lecture6.pdf) | [video](https://youtu.be/7VhdOxWpEQo) |
 |  |  | <b>Seminar 6:</b> Planar Flow (coding), RealNVP. | [planar_flow.ipynb](seminars/seminar6/planar_flow.ipynb) [real_nvp_notes.ipynb](seminars/seminar6/real_nvp_notes.ipynb) | [video](https://youtu.be/FI3NZt1ZADs) |
 | 7 | October, 17 | <b>Lecture 7:</b> Gumbel-softmax trick (DALL-E). Likelihood-free learning. GAN optimality theorem.  | [slides](lectures/lecture7/Lecture7.pdf) | [video](https://youtu.be/X8jeOTzLhn0) |
-|  |  | <b>Seminar 7:</b>  Glow. MADE++: discretization of continuous distributions. | [notebook](seminars/seminar7/seminar7.ipynb)<br>[Glow](seminars/seminar7/Glow.ipynb) |  |
-| 8 |  | <b>Lecture 8:</b> Wasserstein distance. Wasserstein GAN (WGAN). WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). | [slides](lectures/lecture8/Lecture8.pdf) |  |
+|  |  | <b>Seminar 7:</b>  Glow. MADE++: discretization of continuous distributions. | [notebook](seminars/seminar7/seminar7.ipynb)<br>[Glow](seminars/seminar7/Glow.ipynb) | [video](https://youtu.be/zhB_SwBc9hI) |
+| 8 | October, 24 | <b>Lecture 8:</b> Wasserstein distance. Wasserstein GAN (WGAN). WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). | [slides](lectures/lecture8/Lecture8.pdf) |  |
 |  |  | <b>Seminar 8:</b> TBA |  |  |
-| 9 |  | <b>Lecture 9:</b> TBA |  |  |
+| 9 | October, 31 | <b>Lecture 9:</b> TBA |  |  |
 |  |  | <b>Seminar 9:</b> TBA |  |  |
-| 10 |  | <b>Lecture 10:</b> TBA |  |  |
+| 10 | November, 7 | <b>Lecture 10:</b> TBA |  |  |
 |  |  | <b>Seminar 10:</b> TBA |  |  |
-| 11 |  | <b>Lecture 11:</b> TBA |  |  |
+| 11 | November, 14 | <b>Lecture 11:</b> TBA |  |  |
 |  |  | <b>Seminar 11:</b> TBA |  |  |
-| 12 |  | <b>Lecture 12:</b> TBA |  |  |
+| 12 | November, 21 | <b>Lecture 12:</b> TBA |  |  |
 |  |  | <b>Seminar 12:</b> TBA |  |  |
-| 13 |  | <b>Lecture 13:</b> TBA |  |  |
+| 13 | November, 28 | <b>Lecture 13:</b> TBA |  |  |
 |  |  | <b>Seminar 13:</b> TBA |  |  |
-| 14 |  | <b>Lecture 14:</b> TBA |  |  |
+| 14 | December, 5 | <b>Lecture 14:</b> TBA |  |  |
 |  |  | <b>Seminar 14:</b> TBA |  |  |
 
 ## Homeworks
@@ -60,9 +60,9 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 1 | September, 13 | September, 27 | <ol><li>Theory (KDE, alpha-divergences, curse of dimensionality).</li><li>PixelCNN (receptive field, autocomplete) on MNIST.</li><li>ImageGPT on MNIST.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw1.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw1.ipynb) |
 | 2 | September, 27 | October, 11 | <ol><li>Theory (IWAE theory, EM-algorithm for GMM).</li><li>VAE on CIFAR10.</li><li>ResNetVAE on CIFAR10.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw2.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw2.ipynb) |
 | 3 | October, 11 | October, 25 | <ol><li>Theory (Sylvester flows, NF expressivity, Discrete vs Continuous).</li><li>RealNVP on 2D data.</li><li>RealNVP on CIFAR10.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw3.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw3.ipynb) |
-| 4 | TBA | TBA | TBA | TBA |
-| 5 | TBA | TBA | TBA | TBA |
-| 6 | TBA | TBA | TBA | TBA |
+| 4 | October, 25 | November, 8 | TBA | TBA |
+| 5 | November, 8 | November, 22 | TBA | TBA |
+| 6 | November, 22 | December, 6 | TBA | TBA |
 
 ## Game rules
 - 6 homeworks each of 13 points = **78 points**
