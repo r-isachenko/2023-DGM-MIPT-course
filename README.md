@@ -38,9 +38,9 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 6 | October, 10 | <b>Lecture 6:</b> ELBO surgery and optimal VAE prior. NF-based VAE prior. Discrete VAE latent representations. Vector quantization, straight-through gradient estimation (VQ-VAE). | [slides](lectures/lecture6/Lecture6.pdf) | [video](https://youtu.be/7VhdOxWpEQo) |
 |  |  | <b>Seminar 6:</b> Planar Flow (coding), RealNVP. | [planar_flow.ipynb](seminars/seminar6/planar_flow.ipynb) [real_nvp_notes.ipynb](seminars/seminar6/real_nvp_notes.ipynb) | [video](https://youtu.be/FI3NZt1ZADs) |
 | 7 | October, 17 | <b>Lecture 7:</b> Gumbel-softmax trick (DALL-E). Likelihood-free learning. GAN optimality theorem.  | [slides](lectures/lecture7/Lecture7.pdf) | [video](https://youtu.be/X8jeOTzLhn0) |
-|  |  | <b>Seminar 7:</b>  Glow. MADE++: discretization of continuous distributions. | [notebook](seminars/seminar7/seminar7.ipynb)<br>[Glow](seminars/seminar7/Glow.ipynb) | [video](https://youtu.be/zhB_SwBc9hI) |
+|  |  | <b>Seminar 7:</b>  Glow.| [Glow](seminars/seminar7/Glow.ipynb) | [video](https://youtu.be/zhB_SwBc9hI) |
 | 8 | October, 24 | <b>Lecture 8:</b> Wasserstein distance. Wasserstein GAN (WGAN). WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). | [slides](lectures/lecture8/Lecture8.pdf) |  |
-|  |  | <b>Seminar 8:</b> TBA |  |  |
+|  |  | <b>Seminar 8:</b> Vanilla GAN in 1D coding. KL vs JS divergences. Mode collapse. Non-saturating GAN | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar8/seminar8_part1.ipynb)<br>[part_1](seminars/seminar8/seminar8_part1.ipynb)<br>[part_2](seminars/seminar8/seminar8_part2.ipynb) |  |
 | 9 | October, 31 | <b>Lecture 9:</b> TBA |  |  |
 |  |  | <b>Seminar 9:</b> TBA |  |  |
 | 10 | November, 7 | <b>Lecture 10:</b> TBA |  |  |
