@@ -42,7 +42,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 8 | October, 24 | <b>Lecture 8:</b> Wasserstein distance. Wasserstein GAN (WGAN). WGAN with gradient penalty (WGAN-GP). Spectral Normalization GAN (SNGAN). | [slides](lectures/lecture8/Lecture8.pdf) | [video](https://youtu.be/Ics9rBKmn_0) |
 |  |  | <b>Seminar 8:</b> Vanilla GAN in 1D coding. KL vs JS divergences. Mode collapse. Non-saturating GAN. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar8/seminar8_part1.ipynb)<br>[part_1](seminars/seminar8/seminar8_part1.ipynb)<br>[part_2](seminars/seminar8/seminar8_part2.ipynb) | [video](https://youtu.be/rx1yo2BiTxw) |
 | 9 | October, 31 | <b>Lecture 9:</b> f-divergence minimization. GAN evaluation. Inception score, FID, Precision-Recall, truncation trick. | [slides](lectures/lecture9/Lecture9.pdf) |  |
-|  |  | <b>Seminar 9:</b> TBA |  |  |
+|  |  | <b>Seminar 9:</b> WGANs on multimodal 2D data. GANs zoo and evolution of GANs. StyleGAN coding. |  |  |
 | 10 | November, 7 | <b>Lecture 10:</b> TBA |  |  |
 |  |  | <b>Seminar 10:</b> TBA |  |  |
 | 11 | November, 14 | <b>Lecture 11:</b> TBA |  |  |
