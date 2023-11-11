@@ -87,93 +87,9 @@
 	\tableofcontents
 \end{frame}
 %=======
-\section{Overview of DDPM and link to score matching}
-%=======
-\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
-	\begin{block}{DDPM is a VAE model}
-		\begin{itemize}
-			\item Encoder is a fixed Gaussian Markov chain.
-			\item Latent variable is a hierarchical (in each step the dim. of the latent equals to the dim of the input).
-			\item Decoder is a simple Gaussian model.
-			\item Prior distribution is given by parametric Gaussian Makov chain.
-		\end{itemize}
-	\end{block}
-	\begin{minipage}{0.5\linewidth}
-		\begin{block}{Forward process}
-			\begin{enumerate}
-				\item $\bx_0 = \bx \sim \pi(\bx)$;
-				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$.
-			\end{enumerate}
-		\end{block}
-	\end{minipage}%
-	\begin{minipage}{0.5\linewidth}
-		\begin{block}{Reverse process}
-			\begin{enumerate}
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$;
-				\item $\bx_{t - 1} = \bsigma(\bx_t, \btheta, t) \cdot \bepsilon + \bmu(\bx_t, \btheta, t)$;
-				\item $\bx_0 = \bx \sim \pi(\bx)$;
-			\end{enumerate}
-		\end{block}
-	\end{minipage}
-\end{frame}
-%=======
-\begin{frame}{Gaussian diffusion model vs Score matching}
-	\vspace{-0.3cm}
-	\[
-		\cL_t = {\color{olive}\bbE_{\bepsilon}} \left[ \frac{\beta_t^2}{2\tilde{\beta}_t (1 - \beta_t)} \left\| {\color{violet}\frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}} - {\color{teal}\frac{\bepsilon(\bx_t, \btheta, t)}{\sqrt{1 - \bar{\alpha}_t}}}\right\|^2 \right]
-	\]
-	\begin{itemize}
-		\item Result from Statement 2
-		\[
-			q(\bx_t | \bx_0) = \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI).
-		\]
-		\item Score of noised distribution
-		\[
-			\nabla_{\bx_t} \log q(\bx_t | \bx_0) = - \frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}, \quad \text{where } \bepsilon \sim \cN(0, 1).
-		\]
-		\item Let reparametrize our model: 
-		\[
-			\bs(\bx_t, \btheta, t) = - \frac{\bepsilon(\bx_t, \btheta, t)}{\sqrt{1 - \bar{\alpha}_t}}.
-		\]
-	\end{itemize}
-	\begin{block}{Noise conditioned score network}
-		\vspace{-0.2cm}
-		\[
-			{\color{olive}\bbE_{p(\bx' | \bx, \sigma_l)}}\bigl\| {\color{teal}\bs(\bx', \btheta, \sigma_l)} - {\color{violet}\nabla_{\bx'} \log p(\bx' | \bx, \sigma_l)} \bigr\|^2_2 \rightarrow \min_{\btheta}
-		\]
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-	\end{frame}
-%=======
-\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
-	\begin{block}{Samples}
-		\begin{figure}
-			\includegraphics[width=\linewidth]{figs/ddpm_samples}
-		\end{figure}
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-\end{frame}
-%=======
-\section{The worst course overview}
-%=======
-\begin{frame}{The worst course overview :)}
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/generative-overview}
-	\end{figure}
-	\myfootnotewithlink{https://lilianweng.github.io/posts/2021-07-11-diffusion-models/}{Weng L. What are Diffusion Models?, blog post, 2021}
-\end{frame}
-%=======
-\begin{frame}{The worst course overview :)}
-	\begin{figure}
-		\includegraphics[width=0.7\linewidth]{figs/trilemma}
-	\end{figure}
-	\myfootnotewithlink{https://arxiv.org/abs/2112.07804}{Xiao Z., Kreis K., Vahdat A. Tackling the generative learning trilemma with denoising diffusion GANs, 2021}
-\end{frame}
-%=======
 \begin{frame}{Summary}
 	\begin{itemize}
-		\item Objective of DDPM is closely related to the noise conditioned score network and score matching.
+		\item 
 	\end{itemize}
 \end{frame}
 \end{document} 

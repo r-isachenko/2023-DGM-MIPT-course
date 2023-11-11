@@ -15,27 +15,27 @@
 \begin{frame}{Recap of previous lecture}
 	Consider Ordinary Differential Equation    
 	\begin{align*}
-	    \frac{d \bz(t)}{dt} &= f(\bz(t), t, \btheta); \quad \text{with initial condition }\bz(t_0) = \bz_0. \\
-	    \bz(t_1) &= \int^{t_1}_{t_0} f(\bz(t), t, \btheta) d t  + \bz_0 = \text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta).
+	    \frac{d \bz(t)}{dt} &= f_{\btheta}(\bz(t), t); \quad \text{with initial condition }\bz(t_0) = \bz_0. \\
+	    \bz(t_1) &= \int^{t_1}_{t_0} f_{\btheta}(\bz(t), t) d t  + \bz_0 = \text{ODESolve}(\bz(t_0), f_{\btheta}, t_0,t_1).
 	\end{align*}
 	\vspace{-0.4cm}
 	\begin{block}{Euler update step}
 		\vspace{-0.6cm}
 		\[
-			\frac{\bz(t + \Delta t) - \bz(t)}{\Delta t} = f(\bz(t), t, \btheta) \,\, \Rightarrow \,\, \bz(t + \Delta t) = \bz(t) + \Delta t \cdot f(\bz(t), t, \btheta)
+			\frac{\bz(t + \Delta t) - \bz(t)}{\Delta t} = f_{\btheta}(\bz(t), t) \,\, \Rightarrow \,\, \bz(t + \Delta t) = \bz(t) + \Delta t \cdot f_{\btheta}(\bz(t), t)
 		\]
 		\vspace{-0.7cm}
 	\end{block}
 	\begin{block}{Residual block}
 		\vspace{-0.4cm}
 		\[
-			\bz_{t + 1} = \bz_t + f(\bz_t, \btheta)
+			\bz_{t + 1} = \bz_t + f_{\btheta}(\bz_t)
 		\]
 		It is equivalent to Euler update step for solving ODE with $\Delta t = 1$!
 	\end{block}
 	In the limit of adding more layers and taking smaller steps we get: 
 	\[
-	    \frac{d \bz(t)}{dt} = f(\bz(t), t, \btheta); \quad \bz(t_0) = \bx; \quad \bz(t_1) = \by.
+	    \frac{d \bz(t)}{dt} = f_{\btheta}(\bz(t), t); \quad \bz(t_0) = \bx; \quad \bz(t_1) = \by.
 	\]
 
 	\myfootnotewithlink{https://arxiv.org/abs/1806.07366}{Chen R. T. Q. et al. Neural Ordinary Differential Equations, 2018}   
@@ -45,7 +45,7 @@
 	\begin{block}{Forward pass (loss function)}
 		\vspace{-0.8cm}
 		\begin{align*}
-			L(\by) = L(\bz(t_1)) &= L\left( \bz(t_0) + \int_{t_0}^{t_1} f(\bz(t), t, \btheta) dt \right) \\ &= L\bigl(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \bigr)
+			L(\by) = L(\bz(t_1)) &= L\left( \bz(t_0) + \int_{t_0}^{t_1} f_{\btheta}(\bz(t), t) dt \right) \\ &= L\bigl(\text{ODESolve}(\bz(t_0), f_{\btheta}, t_0,t_1) \bigr)
 		\end{align*}
 	\vspace{-0.5cm}
 	\end{block}
@@ -71,14 +71,14 @@
 	\begin{block}{Theorem (Pontryagin)}
 	\vspace{-0.6cm}
 	\[
-		\frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz}; \quad \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), t, \btheta)}{\partial \btheta}.
+		\frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \bz}; \quad \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \btheta}.
 	\]
 	\vspace{-0.6cm}
 	\end{block}
 	\begin{block}{Forward pass}
 		\vspace{-0.5cm}
 		\[
-		\bz(t_1) = \int^{t_1}_{t_0} f(\bz(t), t, \btheta) d t  + \bz_0 \quad \Rightarrow \quad \text{ODE Solver}
+		\bz(t_1) = \int^{t_1}_{t_0} f_{\btheta}(\bz(t), t) d t  + \bz_0 \quad \Rightarrow \quad \text{ODE Solver}
 		\]
 		\vspace{-0.6cm}
 	\end{block}
@@ -88,9 +88,9 @@
 			\left.
 			{\footnotesize 
 				\begin{aligned}
-					\frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \btheta(t)} dt + 0 \\
-					\frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
-					\bz(t_0) &= - \int^{t_0}_{t_1} f(\bz(t), t, \btheta) d t  + \bz_1.
+					\frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \btheta(t)} dt + 0 \\
+					\frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
+					\bz(t_0) &= - \int^{t_0}_{t_1} f_{\btheta}(\bz(t), t) d t  + \bz_1.
 				\end{aligned}
 			}
 			\right\rbrace
@@ -106,7 +106,7 @@
 	\begin{block}{Continuous-in-time normalizing flows}
 		\vspace{-0.5cm}
 		\[
-			\frac{d\bz(t)}{dt} = f(\bz(t), t, \btheta); \quad \frac{d \log p(\bz(t), t)}{d t} = - \text{tr} \left( \frac{\partial f (\bz(t), t, \btheta)}{\partial \bz(t)} \right).
+			\frac{d\bz(t)}{dt} = f_{\btheta}(\bz(t), t); \quad \frac{d \log p(\bz(t), t)}{d t} = - \text{tr} \left( \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \bz(t)} \right).
 		\]
 		\vspace{-0.7cm}
 	\end{block}
@@ -127,8 +127,8 @@
 			\end{bmatrix} + 
 			\int_{t_0}^{t_1} 
 			\begin{bmatrix}
-				f(\bz(t), t, \btheta) \\
-				- \text{tr} \left( \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} \right) 
+				f_{\btheta}(\bz(t), t) \\
+				- \text{tr} \left( \frac{\partial f_{\btheta}(\bz(t), t)}{\partial \bz(t)} \right) 
 			\end{bmatrix} dt.
 		\]
 		\vspace{-0.4cm}
@@ -142,108 +142,35 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1810.01367}{Grathwohl W. et al. FFJORD: Free-form Continuous Dynamics for Scalable Reversible Generative Models, 2018} 
 \end{frame}
 %=======
-\begin{frame}{Outline}
-	\tableofcontents
-\end{frame}
-%=======
-\section{Langevin dynamic and SDE basics}
-%=======
-\begin{frame}{Langevin dynamic}
-	Imagine that we have some generative model $p(\bx | \btheta)$.
-	\begin{block}{Statement}
-		Let $\bx_0$ be a random vector. Then under mild regularity conditions for small enough $\eta$ samples from the following dynamics
+\begin{frame}{Recap of previous lecture}
+	\vspace{-0.2cm}
+	\begin{block}{SDE basics}
+		Let define stochastic process $\bx(t)$ with initial condition $\bx(0) \sim p_0(\bx)$:
 		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx_t} \log p(\bx_t | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \bepsilon \sim \cN(0, 1).
+			d\bx = \mathbf{f}(\bx, t) dt + g(t) d \bw, 
+		\]
+		where $\bw(t)$ is the standard Wiener process (Brownian motion)
+		\vspace{-0.2cm}
+		\[		
+			\bw(t) - \bw(s) \sim \cN(0, (t - s) \bI), \quad d \bw = \bepsilon \cdot \sqrt{dt}, \, \text{where } \bepsilon \sim \cN(0, \bI).
+		\]
+	\end{block}
+	\vspace{-0.5cm}
+	\begin{block}{Langevin dynamics}
+		Let $\bx_0$ be a random vector. Then under mild regularity conditions for small enough $\eta$ samples from the following dynamics
+		\vspace{-0.2cm}
+		\[
+			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx_t} \log p(\bx_t | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \bepsilon \sim \cN(0, \bI).
 		\]
 		will comes from $p(\bx | \btheta)$.
 	\end{block}
-	What do we get if $\bepsilon = \boldsymbol{0}$?
-	\begin{block}{Energy-based model}
-		\vspace{-0.4cm}
-		\[
-			p(\bx | \btheta) = \frac{\hat{p}(\bx | \btheta)}{Z_{\btheta}}, \quad \text{where } Z_{\btheta} = \int \hat{p}(\bx | \btheta) d \bx
-		\]
-		\[
-			\nabla_{\bx} \log p(\bx | \btheta) = \nabla_{\bx} \log \hat{p}(\bx | \btheta) - \nabla_{\bx} \log Z_{\btheta} = \nabla_{\bx} \log \hat{p}(\bx | \btheta)
-		\]
-		Gradient of normalized density equals to gradient of unnormalized density.
-	\end{block}
+	The density $p(\bx | \btheta)$ is a \textbf{stationary} distribution for the Langevin SDE.
 	\myfootnotewithlink{https://www.stats.ox.ac.uk/~teh/research/compstats/WelTeh2011a.pdf}{Welling M. Bayesian Learning via Stochastic Gradient Langevin Dynamics, 2011}
 \end{frame}
 %=======
-\begin{frame}{Stochastic differential equation (SDE)}
-	Let define stochastic process $\bx(t)$ with initial condition $\bx(0) \sim p_0(\bx)$:
-	\[
-		d\bx = \mathbf{f}(\bx, t) dt + g(t) d \bw
-	\]
-	\vspace{-0.6cm}
-	\begin{itemize}
-		 \item $\mathbf{f}(\bx, t)$ is the \textbf{drift} function of $\bx(t)$.
-		 \item $g(t)$ is the \textbf{diffusion} coefficient of $\bx(t)$.
-		 \item If $g(t) = 0$ we get standard ODE.
-		 \item $\bw(t)$ is the standard Wiener process (Brownian motion)
-		 \[		
-		 \bw(t) - \bw(s) \sim \cN(0, t - s), \quad d \bw = \bepsilon \cdot \sqrt{dt}, \, \text{where } \bepsilon \sim \cN(0, 1).
-		 \]
-	\end{itemize}
-	 How to get distribution $p(\bx, t)$ for $\bx(t)$?
- 	\begin{block}{Theorem (Kolmogorov-Fokker-Planck)}
- 		Evolution of the distribution $p(\bx, t)$ is given by the following ODE:
- 		\vspace{-0.2cm}
- 		\[
- 			\frac{\partial p(\bx, t)}{\partial t} = \text{tr}\left(- \frac{\partial}{\partial \bx} \bigl[ \mathbf{f}(\bx, t) p(\bx, t)\bigr] + \frac{1}{2} g^2(t) \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right)
- 		\]
- 		\vspace{-0.6cm}
- 	\end{block}
+\begin{frame}{Outline}
+	\tableofcontents
 \end{frame}
-%=======
-\begin{frame}{Stochastic differential equation (SDE)}
-	\[
-		d\bx = {\color{violet}\mathbf{f}(\bx, t)} dt + {\color{teal}g(t)} d \bw, \quad d \bw = \bepsilon \cdot \sqrt{dt}, \quad \bepsilon \sim \cN(0, 1).
-	\]
-	\vspace{-0.4cm}
-	\begin{block}{Langevin SDE (special case)}
-		\vspace{-0.3cm}
-		\[
-			d \bx = {\color{violet}\frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx, t)} d t + {\color{teal} 1 }d \bw
-		\]
-		\vspace{-0.6cm}
-	\end{block}
-	\begin{block}{Langevin discrete dynamic}
-		\vspace{-0.3cm}
-		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \eta \approx dt.
-		\]
-		\vspace{-0.3cm}
-	\end{block}
-	Let apply KFP theorem.
-	\begin{multline*}
-		\frac{\partial p(\bx, t)}{\partial t} =  \text{tr} \left(- \frac{\partial}{\partial \bx}\left[ {\color{olive}p(\bx, t) \frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx, t)} \right]  + \frac{1}{2} \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right) = \\
-		= \text{tr} \left(- \frac{\partial}{\partial \bx}\left[ {\color{olive}\frac{1}{2} \frac{\partial}{\partial \bx} p(\bx, t) } \right]  + \frac{1}{2} \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right) = 0
-	\end{multline*}
-	The density $p(\bx, t) = \text{const}$.
-\end{frame}
-%=======
-\begin{frame}{Stochastic differential equation (SDE)}
-	\begin{block}{Statement}
-		Let $\bx_0$ be a random vector. Then samples from the following dynamics
-		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx_t} \log p(\bx_t | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \bepsilon \sim \cN(0, 1).
-		\]
-		will come from $p(\bx | \btheta)$ under mild regularity conditions for small enough $\eta$ and large enough $t$.
-	\end{block}
-	\begin{minipage}{0.6\linewidth}
-		The density $p(\bx | \btheta)$ is a \textbf{stationary} distribution for this SDE.
-	\end{minipage}%
-	\begin{minipage}{0.35\linewidth}
-		\vspace{-0.2cm}
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.9\linewidth]{figs/langevin_dynamic}
-		\end{figure}
-	\end{minipage}
-	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021} 
-	\end{frame}
 %=======
 \section{Score matching}
 %=======
@@ -303,7 +230,7 @@
 		\]
 		\vspace{-0.5cm}
 	\end{block}
-	Let introduce \textbf{score function} $\bs(\bx, \btheta) = \nabla_{\bx}\log p(\bx| \btheta)$. 
+	Let introduce \textbf{score function} $\bs_{\btheta}(\bx) = \nabla_{\bx}\log p(\bx| \btheta)$. 
 	\vspace{-0.2cm}
 	\begin{figure}
 		\centering
@@ -319,7 +246,7 @@
 		Under some regularity conditions, it holds
 		\vspace{-0.2cm}
 		\[
-		\frac{1}{2} \bbE_{\pi}\bigl\| \bs(\bx, \btheta) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2 = \bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs(\bx, \btheta) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs(\bx, \btheta)\bigr) \Bigr] + \text{const}
+		\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2 = \bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr] + \text{const}
 		\]
 		\vspace{-0.6cm}
 	\end{block}
@@ -348,9 +275,9 @@
 	\begin{block}{Theorem (implicit score matching)}
 		\vspace{-0.6cm}
 		\[
-		{\color{violet}\frac{1}{2} \bbE_{\pi}\bigl\| \bs(\bx, \btheta) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2} = {\color{teal}\bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs(\bx, \btheta) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs(\bx, \btheta)\bigr) \Bigr]} + \text{const}
+		{\color{violet}\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2} = {\color{teal}\bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr]} + \text{const}
 		\]
-		Here $\nabla_{\bx} \bs(\bx, \btheta) = \nabla_{\bx}^2 \log p(\bx | \btheta)$ is a Hessian matrix.
+		Here $\nabla_{\bx} \bs_{\btheta}(\bx) = \nabla_{\bx}^2 \log p(\bx | \btheta)$ is a Hessian matrix.
 	\end{block}
 	\begin{enumerate}
 		\item {\color{violet}The left hand side} is intractable due to unknown $\pi(\bx)$ -- \textbf{denoising score matching}. 
@@ -359,7 +286,7 @@
 	\begin{block}{Sliced score matching (Hutchinson's trace estimation)}
 	\vspace{-0.3cm}
 	\[
-		\text{tr}\bigl(\nabla_{\bx} \bs(\bx, \btheta)\bigr) = \mathbb{E}_{p(\bepsilon)} \left[ {\color{olive}\bepsilon^T \nabla_{\bx} \bs(\bx, \btheta)} \bepsilon \right]
+		\text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) = \mathbb{E}_{p(\bepsilon)} \left[ {\color{olive}\bepsilon^T \nabla_{\bx} \bs_{\btheta}(\bx)} \bepsilon \right]
 	\]
 	\end{block}
 	\myfootnote{\href{https://yang-song.net/blog/2021/ssm/}{Song Y. Sliced Score Matching: A Scalable Approach to Density and Score Estimation, 2019} \\
@@ -378,10 +305,10 @@
 	\vspace{-0.4cm} \\
 	Then the solution of 
 	\[
-		\frac{1}{2} \bbE_{\pi(\bx' | \sigma)}\bigl\| \bs(\bx', \btheta, \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 \rightarrow \min_{\btheta}
+		\frac{1}{2} \bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 \rightarrow \min_{\btheta}
 	\]
 	\vspace{-0.3cm} \\
-	satisfies $\bs(\bx', \btheta, \sigma) \approx \bs(\bx', \btheta, 0) = \bs(\bx, \btheta)$ if $\sigma$ is small enough.
+	satisfies $\bs_{\btheta}(\bx', \sigma) \approx \bs_{\btheta}(\bx', 0) = \bs_{\btheta}(\bx)$ if $\sigma$ is small enough.
 	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
 \end{frame}
 %=======
@@ -389,7 +316,7 @@
 	\begin{block}{Theorem}
 	\vspace{-0.5cm}
 	\begin{multline*}
-		\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs(\bx', \btheta, \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\ = \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs(\bx', \btheta, \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
+		\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\ = \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
 	\end{multline*}
 	\vspace{-0.5cm}
 	\end{block}
@@ -402,8 +329,8 @@
 	\end{block}
 	\begin{itemize}
 		\item The RHS does not need to compute $\nabla_{\bx'} \log \pi(\bx' | \sigma)$ and even $\nabla_{\bx'} \log \pi(\bx')$.
-		\item $\bs(\bx', \btheta, \sigma)$ tries to \textbf{denoise} a corrupted sample $\bx'$.
-		\item Score function $\bs(\bx', \btheta, \sigma)$ parametrized by $\sigma$. How to make it?
+		\item $\bs_{\btheta}(\bx', \sigma)$ tries to \textbf{denoise} a corrupted sample $\bx'$.
+		\item Score function $\bs_{\btheta}(\bx', \sigma)$ parametrized by $\sigma$. How to make it?
 	\end{itemize}
 	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
 \end{frame}
@@ -428,10 +355,10 @@
 	\begin{itemize}
 		\item Define the sequence of noise levels: $\sigma_1 > \sigma_2 > \dots > \sigma_L$.
 		\item Perturb the original data with the different noise level to get $\pi(\bx' | \sigma_1), \dots, \pi(\bx' | \sigma_L)$.
-		\item Train denoised score function $\bs(\bx', \btheta, \sigma)$ for each noise level:
+		\item Train denoised score function $\bs_{\btheta}(\bx', \sigma)$ for each noise level:
 		\vspace{-0.2cm}
 		\[
-			\sum_{l=1}^L {\color{violet}\sigma_l^2} \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma_l)}\bigl\| \bs(\bx', \btheta, \sigma_l) - \nabla_\bx' \log p(\bx' | \bx, \sigma_l) \bigr\|^2_2 \rightarrow \min_{\btheta}
+			\sum_{l=1}^L {\color{violet}\sigma_l^2} \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma_l)}\bigl\| \bs_{\btheta}(\bx', \sigma_l) - \nabla_\bx' \log p(\bx' | \bx, \sigma_l) \bigr\|^2_2 \rightarrow \min_{\btheta}
 		\]
 		\item Sample from \textbf{annealed} Langevin dynamics (for $l=1, \dots, L$).
 	\end{itemize}
@@ -456,7 +383,7 @@
 		\vspace{-0.5cm}
 		Here
 		\begin{itemize}
-			\item $\bs_l = \bs(\bx + \sigma_l \cdot \bepsilon, \btheta, \sigma_l)$.
+			\item $\bs_l = \bs_{\btheta}(\bx + \sigma_l \cdot \bepsilon, \sigma_l)$.
 			\item $\nabla_{\bx'} \log p(\bx' | \bx, \sigma) = - \frac{\bx' - \bx}{\sigma^2} = - \frac{\bepsilon}{\sigma_l}$.
 		\end{itemize}
 	\end{minipage}%
@@ -478,14 +405,11 @@
 %=======
 \begin{frame}{Summary}
 	\begin{itemize}
-		\item Langevin dynamics allows to sample from the model using the score function (due to the existence of stationary distribution for SDE).
-		\vfill
 		\item Score matching proposes to minimize Fisher divergence to get score function.
 		\vfill
 		\item Sliced score matching and denoising score matching are two techniques to get scalable algorithm for fitting Fisher divergence.
 		\vfill
 		\item Noise conditioned score network uses multiple noise levels and annealed Langevin dynamics to fit score function.
-
 	\end{itemize}
 \end{frame}
 \end{document} 
