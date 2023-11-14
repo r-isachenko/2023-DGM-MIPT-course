@@ -44,7 +44,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 9 | October, 31 | <b>Lecture 9:</b> f-divergence minimization. GAN evaluation. Inception score, FID, Precision-Recall, truncation trick. | [slides](lectures/lecture9/Lecture9.pdf) | [video](https://youtu.be/sy4w3kMOdmA) |
 |  |  | <b>Seminar 9:</b> WGANs on multimodal 2D data. GANs zoo and evolution of GANs. StyleGAN coding. | [notebook](seminars/seminar9/seminar9.ipynb)<br>[GANs_evolution](seminars/seminar9/GANs_evolution_and_StyleGAN.pdf)<br>[StyleGAN](seminars/seminar9/StyleGAN.ipynb) | [video](https://youtu.be/buyiq637u6s) |
 | 10 | November, 14 | <b>Lecture 10:</b> Neural ODE. Adjoint method. Continuous-in-time NF (FFJORD, Hutchinson's trace estimator). Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. | [slides](lectures/lecture10/Lecture10.pdf) |  |
-|  |  | <b>Seminar 10:</b> TBA |  |  |
+|  |  | <b>Seminar 10:</b> StyleGAN: end discussions. Energy-Based models |  |  |
 | 11 | November, 21 | <b>Lecture 11:</b> TBA |  |  |
 |  |  | <b>Seminar 11:</b> TBA |  |  |
 | 12 | November, 28 | <b>Lecture 12:</b> TBA |  |  |
