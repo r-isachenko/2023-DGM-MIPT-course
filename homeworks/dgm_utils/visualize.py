@@ -1,9 +1,9 @@
 import numpy as np
-import torch
-
 from matplotlib import pyplot as plt
 from torchvision.utils import make_grid
 from typing import Dict, List, Optional, Tuple
+
+import torch
 
 
 TICKS_FONT_SIZE = 12
@@ -60,6 +60,8 @@ def show_samples(
     grid_img = grid_samples.permute(1, 2, 0)
     if figsize is None:
         figsize = (6, 6)
+
+    grid_img = grid_img.clip(0, 1)
     plt.figure(figsize=figsize)
     plt.title(title, fontsize=TITLE_FONT_SIZE)
     plt.imshow(grid_img)
