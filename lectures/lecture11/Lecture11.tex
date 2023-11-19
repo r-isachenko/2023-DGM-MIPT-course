@@ -460,7 +460,7 @@
 %=======
 \begin{frame}{Reparametrization of DDPM}
 	\[
-		\cL_t =  \bbE_{q(\bx_t | \bx_0)} KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)
+		\cL_t =  KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)
 	\]
 	$\cL_t$ is a KL between two normal distributions:
 	\begin{align*}
@@ -486,78 +486,42 @@
 		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN (\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI )
 	\end{align*}
 	Use KL formula between two normal distributions:
-		\begin{align*}
-			\cL_t &= KL\Bigl(\cN\bigl(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI \bigr) || \cN\bigl(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI\bigr)\Bigr) \\ 
-			&= \bbE_{\bepsilon} \left[ \frac{1}{2\tilde{\beta}_t} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2 \right] \\
-			& = \bbE_{\bepsilon} \left[ \frac{1}{2\tilde{\beta}_t} \left\| {\color{violet} \frac{1}{\sqrt{1 - \beta_t}}\left( \bx_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} } \bepsilon \right)} - \bmu_{\btheta}(\bx_t, t) \right\|^2 \right]
-		\end{align*}
-		 {\color{gray}Here we used the analytic expression for $\tilde{\bmu}_t(\bx_t, \bx_0)$.}
-	\begin{block}{Reparametrization}
-		\vspace{-0.3cm}
-		\[
-			\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{1 - \beta_t}}\left( \bx_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} } \bepsilon_{\btheta}(\bx_t, t) \right) 
-		\]
-		\vspace{-0.6cm}
-	\end{block}
+	\begin{align*}
+		\cL_t &= KL\Bigl(\cN\bigl(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI \bigr) || \cN\bigl(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI\bigr)\Bigr) \\ 
+		&= \frac{1}{2\tilde{\beta}_t} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2 
+	\end{align*}
+	\[
+		\bx_t = \sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon \quad \Rightarrow \quad {\color{olive} \bx_0} = \frac{\bx_t -  \sqrt{1 - \bar{\alpha}_t} \bepsilon}{\sqrt{\bar{\alpha}_t}}
+	\]
+	\begin{align*}
+		\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \bx_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)}{1 - \bar{\alpha}_t} {\color{olive} \bx_0} \\
+		&= \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}} \bepsilon
+	\end{align*}
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 	\end{frame}
 %=======
 \begin{frame}{Reparametrization of DDPM}
-	\begin{block}{KL term}
-		\vspace{-0.8cm}
-		\begin{multline*}
-			\cL_t = \bbE_{\bepsilon} \biggl[ \frac{1}{2\tilde{\beta}_t} \Bigl\| {\color{violet} \frac{1}{\sqrt{1 - \beta_t}}\left( \bx_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} } \bepsilon \right)} - \\
-			- \frac{1}{\sqrt{1 - \beta_t}}\left( \bx_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} } \bepsilon_{\btheta}(\bx_t, t) \right)  \Bigr\|^2 \biggr] = \\
-			\bbE_{\bepsilon} \left[ \frac{\beta_t^2}{2\tilde{\beta}_t (1 - \beta_t)} \left\| \frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}} - \frac{\bepsilon_{\btheta}({\color{teal}\bx_t}, t)}{\sqrt{1 - \bar{\alpha}_t}}\right\|^2 \right]
-		\end{multline*}
+	\vspace{-0.3cm}
+	\[
+		\cL_t = {\color{olive}\frac{1}{2\tilde{\beta}_t}} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2
+	\]
+	\vspace{-0.3cm}
+	\begin{block}{Reparametrization}
+		\vspace{-0.7cm}
+		\begin{align*}
+			\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}} \bepsilon \\
+			\bmu_{\btheta}(\bx_t, t) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - {\color{teal}\frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}}} \bepsilon_{\btheta}(\bx_t, t)
+		\end{align*}
+		\vspace{-0.7cm}
 	\end{block}
 		\vspace{-0.5cm}
-		\[
-			{\color{teal}\bx_t} = \sqrt{\bar{\alpha}_t} \cdot \bx_{0} + \sqrt{1 - \bar{\alpha}_t} \cdot \bepsilon, \quad \text{where } \bepsilon \sim \cN(0, 1)
-		\]
-	At each step of reverse diffusion process we try to predict the noise $\bepsilon$ that we used in forward process!
+		\begin{align*}
+			\cL_t &= \frac{(1 - \alpha_t)^2}{2\tilde{\beta}_t \alpha_t (1 - \bar{\alpha_t})} \bigl\| \bepsilon - \bepsilon_{\btheta}({\color{violet}\bx_t}, t) \bigr\|^2 \\
+			& =	\frac{{\color{teal}(1 - \alpha_t)^2}}{{\color{olive}2\tilde{\beta}_t} {\color{teal}\alpha_t (1 - \bar{\alpha_t})}} \Bigl\| \bepsilon - \bepsilon_{\btheta}\bigl( {\color{violet}\sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon}, t\bigr) \Bigr\|^2
+		\end{align*}
+		At each step of reverse diffusion process we try to predict the noise $\bepsilon$ that we used in forward process!
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-\end{frame}
-%=======
-\subsection{Overview of DDPM}
-%=======
-\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
-	\begin{block}{DDPM is a VAE model}
-		\begin{itemize}
-			\item Encoder is a fixed Gaussian Markov chain.
-			\item Latent variable is a hierarchical (in each step the dim. of the latent equals to the dim of the input).
-			\item Decoder is a simple Gaussian model.
-			\item Prior distribution is given by parametric Gaussian Makov chain.
-		\end{itemize}
-	\end{block}
-	\begin{minipage}{0.5\linewidth}
-		\begin{block}{Forward process}
-			\begin{enumerate}
-				\item $\bx_0 = \bx \sim \pi(\bx)$;
-				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$.
-			\end{enumerate}
-		\end{block}
-	\end{minipage}%
-	\begin{minipage}{0.5\linewidth}
-		\begin{block}{Reverse process}
-			\begin{enumerate}
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$;
-				\item $\bx_{t - 1} = \bsigma_{\btheta}(\bx_t, t) \cdot \bepsilon + \bmu_{\btheta}(\bx_t, t)$;
-				\item $\bx_0 = \bx \sim \pi(\bx)$;
-			\end{enumerate}
-		\end{block}
-	\end{minipage}
-\end{frame}
-%=======
-\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
-	\begin{block}{Samples}
-		\begin{figure}
-			\includegraphics[width=\linewidth]{figs/ddpm_samples}
-		\end{figure}
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-\end{frame}
+	\end{frame}
 %=======
 \begin{frame}{Summary}
 	\begin{itemize}

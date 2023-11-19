@@ -114,6 +114,46 @@
 	\tableofcontents
 \end{frame}
 %=======
+\section{Overview of DDPM}
+%=======
+\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
+	\begin{block}{DDPM is a VAE model}
+		\begin{itemize}
+			\item Encoder is a fixed Gaussian Markov chain.
+			\item Latent variable is a hierarchical (in each step the dim. of the latent equals to the dim of the input).
+			\item Decoder is a simple Gaussian model.
+			\item Prior distribution is given by parametric Gaussian Makov chain.
+		\end{itemize}
+	\end{block}
+	\begin{minipage}{0.5\linewidth}
+		\begin{block}{Forward process}
+			\begin{enumerate}
+				\item $\bx_0 = \bx \sim \pi(\bx)$;
+				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
+				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$.
+			\end{enumerate}
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}{0.5\linewidth}
+		\begin{block}{Reverse process}
+			\begin{enumerate}
+				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$;
+				\item $\bx_{t - 1} = \bsigma_{\btheta}(\bx_t, t) \cdot \bepsilon + \bmu_{\btheta}(\bx_t, t)$;
+				\item $\bx_0 = \bx \sim \pi(\bx)$;
+			\end{enumerate}
+		\end{block}
+	\end{minipage}
+\end{frame}
+%=======
+\begin{frame}{Denoising diffusion probabilistic model (DDPM)}
+	\begin{block}{Samples}
+		\begin{figure}
+			\includegraphics[width=\linewidth]{figs/ddpm_samples}
+		\end{figure}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+\end{frame}
+%=======
 \section{Langevin dynamic and SDE basics}
 %=======
 \begin{frame}{Langevin dynamic}
