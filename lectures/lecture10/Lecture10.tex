@@ -273,14 +273,14 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1806.07366}{Chen R. T. Q. et al. Neural Ordinary Differential Equations, 2018}   
 \end{frame}
 %=======
-\section{Continuous-in-time normalizing flows}
+\section{Continuous-in-time Normalizing Flows}
 %=======
 \begin{frame}{Continuous-in-time Normalizing Flows}
 	\vspace{-0.3cm}
 	\begin{block}{Discrete-in-time NF}
 		\vspace{-0.8cm}
 		  \[
-		  \bz_{t+1} = f(\bz_t, \btheta); \quad \log p(\bz_{t+1}) = \log p(\bz_{t}) - \log \left| \det \frac{\partial f_{\btheta}(\bz_t)}{\partial \bz_{t}} \right| .
+		  \bz_{t+1} = f_{\btheta}(\bz_t); \quad \log p(\bz_{t+1}) = \log p(\bz_{t}) - \log \left| \det \frac{\partial f_{\btheta}(\bz_t)}{\partial \bz_{t}} \right| .
 		  \]
 		\vspace{-0.7cm}
 	\end{block}
@@ -310,10 +310,10 @@
 	\begin{block}{Theorem (Picard)}
 		If $f$ is uniformly Lipschitz continuous in $\bz$ and continuous in $t$, then the ODE has a \textbf{unique} solution.
 	\end{block}
-	\textbf{Note:} Unlike discrete-in-time flows, $f$ does not need to be bijective (uniqueness guarantees bijectivity).
+	\textbf{Note:} Unlike discrete-in-time NF, $f$ does not need to be bijective (uniqueness guarantees bijectivity).
 	\begin{itemize}
-		\item Discrete-in-time normalizing flows need invertible $f$. Here we have sequence of $\log p(\bz_t)$.
-		\item Continuous-in-time flows require only smoothness of $f$. Here we need to get $\log(p(\bz(t), t))$
+		\item Discrete-in-time NF need invertible $f$. Here we have sequence of $\log p(\bz_t)$.
+		\item Continuous-in-time NF require only smoothness of $f$. Here we need to get $\log(p(\bz(t), t))$
 	\end{itemize}
 	\begin{block}{Forward and inverse transforms}
 		\vspace{-0.7cm}
@@ -389,104 +389,6 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1810.01367}{Grathwohl W. et al. FFJORD: Free-form Continuous Dynamics for Scalable Reversible Generative Models, 2018} 
 \end{frame}
 %=======
-\section{Langevin dynamic and SDE basics}
-%=======
-\begin{frame}{Langevin dynamic}
-	Imagine that we have some generative model $p(\bx | \btheta)$.
-	\begin{block}{Statement}
-		Let $\bx_0$ be a random vector. Then under mild regularity conditions for small enough $\eta$ samples from the following dynamics
-		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx_t} \log p(\bx_t | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \bepsilon \sim \cN(0, 1).
-		\]
-		will comes from $p(\bx | \btheta)$.
-	\end{block}
-	What do we get if $\bepsilon = \boldsymbol{0}$?
-	\begin{block}{Energy-based model}
-		\vspace{-0.4cm}
-		\[
-			p(\bx | \btheta) = \frac{\hat{p}(\bx | \btheta)}{Z_{\btheta}}, \quad \text{where } Z_{\btheta} = \int \hat{p}(\bx | \btheta) d \bx
-		\]
-		\[
-			\nabla_{\bx} \log p(\bx | \btheta) = \nabla_{\bx} \log \hat{p}(\bx | \btheta) - \nabla_{\bx} \log Z_{\btheta} = \nabla_{\bx} \log \hat{p}(\bx | \btheta)
-		\]
-		Gradient of normalized density equals to gradient of unnormalized density.
-	\end{block}
-	\myfootnotewithlink{https://www.stats.ox.ac.uk/~teh/research/compstats/WelTeh2011a.pdf}{Welling M. Bayesian Learning via Stochastic Gradient Langevin Dynamics, 2011}
-\end{frame}
-%=======
-\begin{frame}{Stochastic differential equation (SDE)}
-	Let define stochastic process $\bx(t)$ with initial condition $\bx(0) \sim p_0(\bx)$:
-	\[
-		d\bx = \mathbf{f}(\bx, t) dt + g(t) d \bw
-	\]
-	\vspace{-0.6cm}
-	\begin{itemize}
-		 \item $\mathbf{f}(\bx, t)$ is the \textbf{drift} function of $\bx(t)$.
-		 \item $g(t)$ is the \textbf{diffusion} coefficient of $\bx(t)$.
-		 \item If $g(t) = 0$ we get standard ODE.
-		 \item $\bw(t)$ is the standard Wiener process (Brownian motion)
-		 \[		
-		 \bw(t) - \bw(s) \sim \cN(0, t - s), \quad d \bw = \bepsilon \cdot \sqrt{dt}, \, \text{where } \bepsilon \sim \cN(0, 1).
-		 \]
-	\end{itemize}
-	 How to get distribution $p(\bx, t)$ for $\bx(t)$?
- 	\begin{block}{Theorem (Kolmogorov-Fokker-Planck)}
- 		Evolution of the distribution $p(\bx, t)$ is given by the following ODE:
- 		\vspace{-0.2cm}
- 		\[
- 			\frac{\partial p(\bx, t)}{\partial t} = \text{tr}\left(- \frac{\partial}{\partial \bx} \bigl[ \mathbf{f}(\bx, t) p(\bx, t)\bigr] + \frac{1}{2} g^2(t) \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right)
- 		\]
- 		\vspace{-0.6cm}
- 	\end{block}
-\end{frame}
-%=======
-\begin{frame}{Langevin SDE (special case)}
-	\vspace{-0.4cm}
-	\[
-		d\bx = {\color{violet}\mathbf{f}(\bx, t)} dt + {\color{teal}g(t)} d \bw, \quad d \bw = \bepsilon \cdot \sqrt{dt}, \quad \bepsilon \sim \cN(0, 1).
-	\]
-	\vspace{-0.4cm}
-	\begin{align*}
-		d \bx &= {\color{violet}\frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx, t)} d t + {\color{teal} 1 }d \bw \\
-		\bx_{t + 1} - \bx_t &= \eta \frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx, t) + \sqrt{\eta} \cdot \bepsilon, \quad \eta \approx dt.
-	\end{align*}
-	Let apply KFP theorem.
-	\begin{multline*}
-		\frac{\partial p(\bx, t)}{\partial t} =  \text{tr} \left(- \frac{\partial}{\partial \bx}\left[ {\color{olive}p(\bx, t) \frac{1}{2} \frac{\partial}{\partial \bx} \log p(\bx, t)} \right]  + \frac{1}{2} \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right) = \\
-		= \text{tr} \left(- \frac{\partial}{\partial \bx}\left[ {\color{olive}\frac{1}{2} \frac{\partial}{\partial \bx} p(\bx, t) } \right]  + \frac{1}{2} \frac{\partial^2 p(\bx, t)}{\partial \bx^2} \right) = 0
-	\end{multline*}
-	The density $p(\bx, t) = \text{const}$.
-	\begin{block}{Langevin dynamic}
-		\vspace{-0.3cm}
-		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx} \log p(\bx | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \eta \approx dt.
-		\]
-		\vspace{-0.3cm}
-	\end{block}
-\end{frame}
-%=======
-\begin{frame}{Stochastic differential equation (SDE)}
-	\vspace{-0.4cm}
-	\begin{block}{Statement}
-		Let $\bx_0$ be a random vector. Then samples from the following dynamics
-		\[
-			\bx_{t + 1} = \bx_t + \eta \frac{1}{2} \nabla_{\bx_t} \log p(\bx_t | \btheta) + \sqrt{\eta} \cdot \bepsilon, \quad \bepsilon \sim \cN(0, 1).
-		\]
-		will come from $p(\bx | \btheta)$ under mild regularity conditions for small enough $\eta$ and large enough $t$.
-	\end{block}
-	\begin{minipage}{0.6\linewidth}
-		The density $p(\bx | \btheta)$ is a \textbf{stationary} distribution for this SDE.
-	\end{minipage}%
-	\begin{minipage}{0.35\linewidth}
-		\vspace{-0.2cm}
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.9\linewidth]{figs/langevin_dynamic}
-		\end{figure}
-	\end{minipage}
-	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021} 
-	\end{frame}
-%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Residual networks could be interpreted as solution of ODE with Euler method.
@@ -495,9 +397,7 @@
 		\vfill
 		\item Kolmogorov-Fokker-Planck theorem allows to construct continuous-in-time normalizing flow with less functional restrictions.
 		\vfill
-		\item FFJORD model makes such kind of flows scalable.
-		\vfill
-		\item Langevin dynamics allows to sample from the model using the score function (due to the existence of stationary distribution for SDE).
+		\item FFJORD model makes such kind of NF scalable.
 	\end{itemize}
 \end{frame}
 %=======
