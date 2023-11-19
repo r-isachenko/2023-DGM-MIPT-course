@@ -195,37 +195,59 @@
 %=======
 \section{Gaussian diffusion process}
 %=======
+\subsection{Forward gaussian diffusion process}
+%=======
 \begin{frame}{Forward gaussian diffusion process}
-	Let $\bx_0 = \bx \sim \pi(\bx)$, $\beta \in (0, 1)$. Define the Markov chain
+	Let $\bx_0 = \bx \sim \pi(\bx)$, $\beta_t \in (0, 1)$. Define the Markov chain
 	\[
-		\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon, \quad \text{where }\bepsilon \sim \cN(0, 1);
+		\bx_t = \sqrt{1 - \beta_t} \cdot \bx_{t - 1} + \sqrt{\beta_t} \cdot \bepsilon, \quad \text{where }\bepsilon \sim \cN(0, \bI);
 	\]
 	\[
-		q(\bx_t | \bx_{t-1}) = \cN(\bx_t | \sqrt{1 - \beta} \cdot \bx_{t-1}, \beta \cdot \bI).
+		q(\bx_t | \bx_{t-1}) = \cN(\bx_t | \sqrt{1 - \beta_t} \cdot \bx_{t-1}, \beta_t \cdot \bI).
 	\]
-	\vspace{-0.6cm}
+	\vspace{-0.5cm}
 	\begin{block}{Statement 1}
-		Applying the Markov chain to samples from any $\pi(\bx)$ we will get $\bx_{\infty} \sim p_{\infty}(\bx) = \cN(0, 1)$. Here $p_{\infty}(\bx)$ is a \textbf{stationary} distribution:
+		Let denote $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{s=1}^t \alpha_s$. Then
 		\vspace{-0.2cm}
-		\[
-			p_{\infty}(\bx) = \int q(\bx | \bx') p_{\infty}(\bx') d \bx'. 
-		\]
-		\vspace{-0.8cm}
-	\end{block}
-	\begin{block}{Statement 2}
-		Denote $\bar{\alpha}_t = \prod_{s=1}^t (1 - \beta_s)$. Then 
-		\vspace{-0.2cm}
-		\[
-			\bx_t = \sqrt{\bar{\alpha}_t} \cdot \bx_{0} + \sqrt{1 - \bar{\alpha}_t} \cdot \bepsilon, \quad \text{where } \bepsilon \sim \cN(0, 1)
-		\]
-		\vspace{-0.7cm}
+		\begin{multline*}
+			\bx_t = \sqrt{\alpha_t} {\color{teal}\bx_{t-1}} + \sqrt{1 - \alpha_t} \boldsymbol{\epsilon}_t = \\
+			= \sqrt{\alpha_t} ({\color{teal} \sqrt{\alpha_{t-1}} \bx_{t-2} + \sqrt{1 - \alpha_{t-1}} \boldsymbol{\epsilon}_{t-1}}) + \sqrt{1 - \alpha_t} \boldsymbol{\epsilon}_t = \\
+			= \sqrt{\alpha_t \alpha_{t-1}} \bx_{t-2} + ( \sqrt{\alpha_t (1 - \alpha_{t-1})}  \boldsymbol{\epsilon}_{t-1} + \sqrt{1 - \alpha_t} \boldsymbol{\epsilon}_t) = \\
+			= \sqrt{\bar{\alpha}_t} \cdot \bx_{0} + \sqrt{1 - \bar{\alpha}_t} \cdot \bepsilon, \quad \text{where } \bepsilon \sim \cN(0, \bI).
+		\end{multline*}
+		\vspace{-0.4cm}
 		\[
 			q(\bx_t | \bx_0) = \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI).
 		\]
 		We could sample from any timestamp using only $\bx_0$!
 	\end{block}
 	\myfootnotewithlink{http://proceedings.mlr.press/v37/sohl-dickstein15.pdf}{Sohl-Dickstein J. Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015}
-\end{frame}
+ \end{frame}
+%=======
+\begin{frame}{Forward gaussian diffusion process}
+	\vspace{-0.5cm}
+	\begin{align*}
+		q(\bx_t | \bx_{t-1}) &= \cN(\bx_t | \sqrt{1 - \beta_t} \cdot \bx_{t-1}, \beta_t \cdot \bI); \\
+		q(\bx_t | \bx_0) &= \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI).
+	\end{align*}
+	At each step we
+	\begin{itemize}
+		\item scale magnitude of the signal at rate $\sqrt{1 - \beta_t}$;
+		\item add noise with variance $\beta_t$.
+	\end{itemize}
+	\begin{block}{Statement 2}
+		Applying the Markov chain to samples from any $\pi(\bx)$ we will get $\bx_{\infty} \sim p_{\infty}(\bx) = \cN(0, 1)$. Here $p_{\infty}(\bx)$ is a \textbf{stationary} and \textbf{limiting} distribution:
+		\vspace{-0.2cm}
+		\[
+			p_{\infty}(\bx) = \int q(\bx | \bx') p_{\infty}(\bx') d \bx'. 
+		\]
+		\[
+			p_{\infty}(\bx) = \int q(\bx_{\infty} | \bx_0) \pi(\bx_0) d\bx_0 \approx \cN(0, \bI) \int \pi(\bx_0) d\bx_0 = \cN(0, \bI)
+		\]
+		\vspace{-0.8cm}
+	\end{block}
+	\myfootnotewithlink{http://proceedings.mlr.press/v37/sohl-dickstein15.pdf}{Sohl-Dickstein J. Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015}
+ \end{frame}
 %=======
 \begin{frame}{Forward gaussian diffusion process}
 	\textbf{Diffusion} refers to the flow of particles from high-density regions towards low-density regions.
@@ -244,6 +266,52 @@
 	\myfootnotewithlink{https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html}{Das A. An introduction to Diffusion Probabilistic Models, blog post, 2021}
 \end{frame}
 %=======
+\subsection{Reverse gaussian diffusion process}
+%=======
+\begin{frame}{Reverse gaussian diffusion process}
+	\begin{figure}
+		\includegraphics[width=0.8\linewidth]{figs/DDPM}
+	\end{figure}
+	\vspace{-0.5cm}
+	\begin{block}{Forward process}
+		\vspace{-0.3cm}
+		\[
+			q(\bx_t | \bx_{t-1}) = \cN(\bx_t | \sqrt{1 - \beta_t} \cdot \bx_{t-1}, \beta_t \cdot \bI).
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{Reverse process}
+		\vspace{-0.3cm}
+		\[
+			q(\bx_{t-1}|\bx_{t}) = \frac{q(\bx_{t}|\bx_{t-1}) {\color{violet}q(\bx_{t-1})}}{{\color{violet}q(\bx_{t})}} \approx p(\bx_{t - 1} | \bx_t, \btheta)
+		\]
+		\vspace{-0.3cm}
+		\begin{itemize}
+			\item ${\color{violet}q(\bx_{t-1})}$, ${\color{violet}q(\bx_{t})}$ are intractable.
+			\item If $\beta_t$ is small enough, $q(\bx_{t-1}|\bx_{t})$ will be Gaussian (Feller, 1949).
+		\end{itemize}
+	\end{block}
+	\myfootnotewithlink{}{Feller W. On the theory of stochastic processes, with particular reference to applications, 1949}
+	\end{frame}
+%=======
+\begin{frame}{Reverse gaussian diffusion process}
+		\vspace{-0.4cm}
+		\begin{align*}
+			q(\bx_{t-1}|\bx_{t}) &= \frac{q(\bx_{t}|\bx_{t-1}) {\color{violet}q(\bx_{t-1})}}{{\color{violet}q(\bx_{t})}} \\
+			q(\bx_{t-1}|\bx_{t}, {\color{olive}\bx_0}) &= \frac{q(\bx_{t}|\bx_{t-1}, {\color{olive}\bx_0}) q(\bx_{t-1} | {\color{olive}\bx_0}) }{q(\bx_{t}| {\color{olive}\bx_0})} = \cN(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI)
+		\end{align*}
+		\vspace{-0.2cm}
+		\begin{itemize}
+			\item ${\color{violet}q(\bx_{t-1})}$, ${\color{violet}q(\bx_{t})}$ are intractable.
+			\item If $\beta_t$ is small enough, $q(\bx_{t-1}|\bx_{t})$ will be Gaussian (Feller, 1949).
+		\end{itemize}
+	\vspace{-0.2cm}
+	\begin{figure}
+		\includegraphics[width=0.7\linewidth]{figs/inverse_distr_1d}
+	\end{figure}
+	\myfootnotewithlink{https://arxiv.org/abs/2112.07804}{Xiao Z., Kreis K., Vahdat A. Tackling the generative learning trilemma with denoising diffusion GANs, 2021}
+	\end{frame} 
+%=======
 \begin{frame}{Reverse gaussian diffusion process}
 	\vspace{-0.3cm} 
 	\begin{figure}
@@ -253,22 +321,22 @@
 	Let define the reverse process
 	\vspace{-0.2cm}
 	\[
-		p(\bx_{t - 1} | \bx_t, \btheta) = \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \bsigma_{\btheta}^2(\bx_t, t)\bigr)
+		q(\bx_{t-1}|\bx_{t}) \approx p(\bx_{t - 1} | \bx_t, \btheta) = \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \bsigma_{\btheta}^2(\bx_t, t)\bigr)
 	\]
-	\vspace{-0.5cm}
+	\vspace{-0.7cm}
 	\begin{minipage}{0.5\linewidth}
 		\begin{block}{Forward process}
 			\begin{enumerate}
 				\item $\bx_0 = \bx \sim \pi(\bx)$;
-				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$.
+				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$, $t \geq 1$;
+				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, \bI)$.
 			\end{enumerate}
 		\end{block}
 	\end{minipage}%
 	\begin{minipage}{0.5\linewidth}
 		\begin{block}{Reverse process}
 			\begin{enumerate}
-				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$;
+				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, \bI)$;
 				\item $\bx_{t - 1} = \bsigma_{\btheta}(\bx_t, t) \cdot \bepsilon + \bmu_{\btheta}(\bx_t, t)$;
 				\item $\bx_0 = \bx \sim \pi(\bx)$;
 			\end{enumerate}
@@ -277,6 +345,10 @@
 	\textbf{Note:} The forward process does not have any learnable parameters!
 	\myfootnotewithlink{https://lilianweng.github.io/posts/2021-07-11-diffusion-models/}{Weng L. What are Diffusion Models?, blog post, 2021}
 \end{frame}
+%=======
+\section{Denoising diffusion probabilistic model (DDPM)}
+%=======
+\subsection{Objective of DDPM}
 %=======
 \begin{frame}{Gaussian diffusion model as VAE}
 	\vspace{-0.2cm}
@@ -306,57 +378,6 @@
 	\myfootnotewithlink{https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html}{Das A. An introduction to Diffusion Probabilistic Models, blog post, 2021}
 \end{frame}
 %=======
-\section{Denoising diffusion probabilistic model (DDPM)}
-%=======
-\begin{frame}{Reverse gaussian diffusion process}
-	\begin{figure}
-		\includegraphics[width=0.8\linewidth]{figs/DDPM}
-	\end{figure}
-	\vspace{-0.5cm}
-	\begin{block}{Forward process}
-		\vspace{-0.3cm}
-		\[
-			q(\bx_t | \bx_{t-1}) = \cN(\bx_t | \sqrt{1 - \beta_t} \cdot \bx_{t-1}, \beta_t \cdot \bI).
-		\]
-		\vspace{-0.5cm}
-	\end{block}
-	\begin{block}{Reverse process}
-		\vspace{-0.3cm}
-		\[
-			q(\bx_{t-1}|\bx_{t}) = \frac{q(\bx_{t}|\bx_{t-1}) {\color{violet}q(\bx_{t-1})}}{{\color{violet}q(\bx_{t})}} \approx p(\bx_{t - 1} | \bx_t, \btheta)
-		\]
-		\vspace{-0.3cm}
-		\begin{itemize}
-			\item ${\color{violet}q(\bx_{t-1})}$, ${\color{violet}q(\bx_{t})}$ are intractable.
-			\item If $\beta_t$ is small enough, $q(\bx_{t-1}|\bx_{t})$ will be Gaussian (Feller, 1949).
-		\end{itemize}
-	\end{block}
-	\myfootnotewithlink{}{Feller W. On the theory of stochastic processes, with particular reference to applications, 1949}
-	\end{frame}
-%=======
-\begin{frame}{Reverse gaussian diffusion process}
-	\begin{block}{Reverse process}
-		\vspace{-0.6cm}
-		\[
-			q(\bx_{t-1}|\bx_{t}) \approx p(\bx_{t - 1} | \bx_t, \btheta) = \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \bsigma_{\btheta}^2(\bx_t, t)\bigr)
-		\]
-		\vspace{-0.6cm}
-	\end{block}
-	\begin{figure}
-		\includegraphics[width=0.7\linewidth]{figs/inverse_distr_1d}
-	\end{figure}
-	\vspace{-0.3cm}
-	\begin{block}{Important distribution}
-		\vspace{-0.6cm}
-		\[
-			q(\bx_{t-1}|\bx_{t}, \bx_0) = \frac{q(\bx_{t}|\bx_{t-1}, {\color{olive}\bx_0}) q(\bx_{t-1} | {\color{olive}\bx_0}) }{q(\bx_{t}| {\color{olive}\bx_0})} = \cN(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI)
-		\]
-	\end{block}
-	\myfootnotewithlink{https://arxiv.org/abs/2112.07804}{Xiao Z., Kreis K., Vahdat A. Tackling the generative learning trilemma with denoising diffusion GANs, 2021}
-	\end{frame}
-%=======
-\subsection{Objective of DDPM}
-%=======
 \begin{frame}{Objective of DDPM}
 	\begin{block}{ELBO}
 		\vspace{-0.4cm}
@@ -366,19 +387,17 @@
 		\vspace{-0.5cm}
 	\end{block}
 	\begin{block}{Derivation}
+		\vspace{-0.5cm}
 		{\small
-		\begin{multline*}
-			\cL(q, \btheta) = \bbE_{q({\color{teal}\bx_{1:T}} | \bx_0)} \log \frac{p(\bx_0, {\color{teal}\bx_{1:T}} | \btheta)}{q({\color{teal}\bx_{1:T}} | \bx_0)} =  \bbE_{q} \log \frac{{\color{violet}\prod_{t=1}^T} p(\bx_{t-1} | \bx_t, \btheta) {\color{olive}p(\bx_T)} }{{\color{violet}\prod_{t=1}^T} q(\bx_t | \bx_{t-1})}  \\ 
-			= \bbE_{q} \left[ \log {\color{olive}p(\bx_T)} + \log \frac{p(\bx_0 | \bx_1, \btheta)}{q(\bx_1 | \bx_0)}  + {\color{violet}\sum_{t=2}^T} \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{{\color{teal}q(\bx_t | \bx_{t-1})}}\right)\right]
-		\end{multline*}
+		\begin{align*}
+			\cL(q, \btheta) &= \bbE_{q({\color{teal}\bx_{1:T}} | \bx_0)} \log \frac{p(\bx_0, {\color{teal}\bx_{1:T}} | \btheta)}{q({\color{teal}\bx_{1:T}} | \bx_0)} \\
+			& = \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{p(\bx_T) \prod_{t=1}^T p(\bx_{t-1} | \bx_t, \btheta) }{\prod_{t=1}^T q(\bx_t | \bx_{t-1})}  \\ 
+			& = \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{p(\bx_T) p(\bx_0 | \bx_1, \btheta) \prod_{t=2}^T p(\bx_{t-1} | \bx_t, \btheta) }{q(\bx_1 | \bx_0)\prod_{t=2}^T {\color{teal}q(\bx_t | \bx_{t-1})}}  \\ 
+			& = \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{p(\bx_T) p(\bx_0 | \bx_1, \btheta) \prod_{t=2}^T p(\bx_{t-1} | \bx_t, \btheta) }{q(\bx_1 | \bx_0)\prod_{t=2}^T q(\bx_t | \bx_{t-1}, {\color{olive}\bx_0})} 
+		\end{align*}
 		}
-		\vspace{-0.3cm}
 		\[
-			q(\bx_{t-1}|\bx_{t}, \bx_0) = \frac{{\color{teal} q(\bx_{t}|\bx_{t-1})} q(\bx_{t-1} |\bx_0) }{q(\bx_{t}| \bx_0)} 
-		\]
-		
-		\[
-			\log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{{\color{teal}q(\bx_t | \bx_{t-1})}}\right) = \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta) {\color{teal} q(\bx_{t-1}|\bx_{0})}}{{\color{teal} q(\bx_{t-1}|\bx_{t}, \bx_0) q(\bx_{t}| \bx_0)}}\right)
+			q(\bx_{t-1}|\bx_{t}, {\color{olive}\bx_0}) = \frac{q(\bx_{t}|\bx_{t-1}, {\color{olive}\bx_0}) q(\bx_{t-1} | {\color{olive}\bx_0}) }{q(\bx_{t}| {\color{olive}\bx_0})} = \cN(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI)
 		\]
 	\end{block}
 	
@@ -386,14 +405,16 @@
 \end{frame}
 %=======
 \begin{frame}{Objective of DDPM}
-	\begin{block}{Derivation}
+	\begin{block}{Derivation (continued)}
+		\vspace{-0.7cm}
 		{\small
 		\begin{multline*}
-			\cL(q, \btheta) = \bbE_{q} \left[ \log p(\bx_T) + \log \frac{p(\bx_0 | \bx_1, \btheta)}{q(\bx_1 | \bx_0)}  + \sum_{t=2}^T \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{{\color{teal}q(\bx_t | \bx_{t-1})}}\right)\right] \\ 
-			= \bbE_{q} \biggl[  \log {\color{violet} p(\bx_T)} + \log \frac{{\color{olive}p(\bx_0 | \bx_1, \btheta)}}{q(\bx_1 | \bx_0)}  + \sum_{t=2}^T \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{{\color{teal} q(\bx_{t-1}|\bx_{t}, \bx_0)}}\right) + \\ 
-			+ \sum_{t=2}^T \log \left( \frac{{\color{teal} q(\bx_{t-1}|\bx_{0})}}{{\color{teal} q(\bx_{t}| \bx_0)}}\right) \biggr] = \bbE_{q} \biggl[ \log \frac{{\color{violet} p(\bx_T)}}{q(\bx_T | \bx_0)} + \log {\color{olive}p(\bx_0 | \bx_1, \btheta)} + \\
-			 + \sum_{t=2}^T \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{q(\bx_{t-1}|\bx_{t}, \bx_0)}\right) \biggr] = \bbE_{q} \biggl[ - KL(q(\bx_T | \bx_0) || p(\bx_T)) + \\
-			 + \log p(\bx_0 | \bx_1, \btheta) - \sum_{t=2}^T  KL\bigl( q(\bx_{t-1}|\bx_{t}, \bx_0) || p(\bx_{t-1} | \bx_t, \btheta)\bigr) \biggr]
+			\cL(q, \btheta) = \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{p(\bx_T) p(\bx_0 | \bx_1, \btheta) \prod_{t=2}^T p(\bx_{t-1} | \bx_t, \btheta) }{q(\bx_1 | \bx_0)\prod_{t=2}^T q(\bx_t | \bx_{t-1}, {\color{olive}\bx_0})}  = \\ 
+			= \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{p(\bx_T) p(\bx_0 | \bx_1, \btheta) \prod_{t=2}^T p(\bx_{t-1} | \bx_t, \btheta) }{{\color{violet}q(\bx_1 | \bx_0)}\prod_{t=2}^T \frac{q(\bx_{t-1}|\bx_t, \bx_0) {\color{violet}q(\bx_{t} | \bx_0)}}{{\color{violet}q(\bx_{t-1}| \bx_0)}}}  = \\
+			= \bbE_{q(\bx_{1:T} | \bx_0)} \log \frac{{\color{violet}p(\bx_T)} {\color{olive}p(\bx_0 | \bx_1, \btheta)} \prod_{t=2}^T p(\bx_{t-1} | \bx_t, \btheta) }{{\color{violet}q(\bx_T | \bx_0)}\prod_{t=2}^T q(\bx_{t-1}|\bx_t, \bx_0)}  = \\
+			= \bbE_{{\color{teal}q(\bx_{1:T} | \bx_0)}} \biggl[ \log {\color{olive}p(\bx_0 | \bx_1, \btheta)} + \log {\color{violet}\frac{p(\bx_T)}{q(\bx_T | \bx_0)}} + \sum_{t=2}^T \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{q(\bx_{t-1}|\bx_{t}, \bx_0)}\right) \biggr] = \\
+			 = \bbE_{{\color{teal}q(\bx_1 | \bx_0)}} \log p(\bx_0 | \bx_1, \btheta) + \bbE_{{\color{teal}q(\bx_T | \bx_0)}} \log \frac{p(\bx_T)}{q(\bx_T | \bx_0)} + \\
+			  + \sum_{t=2}^T \bbE_{{\color{teal}q(\bx_{t-1}, \bx_t | \bx_0)}} \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{q(\bx_{t-1}|\bx_{t}, \bx_0)}\right) 
 		\end{multline*}
 		}
 		\vspace{-0.3cm}
@@ -402,46 +423,75 @@
 \end{frame}
 %=======
 \begin{frame}{Objective of DDPM}
-		\vspace{-0.6cm}
+		\vspace{-0.5cm}
 		\begin{multline*}
-			\cL(q, \btheta) =  \bbE_{q} \Bigl[ {\color{olive}\log p(\bx_0 | \bx_1, \btheta)} - {\color{violet}KL\bigl(q(\bx_T | \bx_0) || p(\bx_T)\bigr)} - \\
-			- \sum_{t=2}^T \underbrace{KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)}_{\cL_t} \Bigr]
+			\cL(q, \btheta) = \bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta) + \bbE_{q(\bx_T | \bx_0)} \log \frac{p(\bx_T)}{q(\bx_T | \bx_0)} + \\
+			  + \sum_{t=2}^T \bbE_{q(\bx_{t-1}, \bx_t | \bx_0)} \log \left( \frac{p(\bx_{t-1} | \bx_t, \btheta)}{q(\bx_{t-1}|\bx_{t}, \bx_0)}\right) =
+			  \\ =  {\color{olive}\bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta)} - {\color{violet}KL\bigl(q(\bx_T | \bx_0) || p(\bx_T)\bigr)} - \\
+			- \sum_{t=2}^T  \bbE_{q(\bx_t | \bx_0)} \underbrace{KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)}_{\cL_t}
 		\end{multline*}
 		\vspace{-0.5cm}
 	\begin{itemize}
 		\item {\color{olive}First term} is a decoder distribution
 		\[
-			\log p(\bx_0 | \bx_1, \btheta) = \log \cN \bigl(\bx_0 | \bmu_{\btheta}(\bx_1, t), \bsigma_{\btheta}^2(\bx_1, t)\bigr)
+			\log p(\bx_0 | \bx_1, \btheta) = \log \cN \bigl(\bx_0 | \bmu_{\btheta}(\bx_1, t), \bsigma_{\btheta}^2(\bx_1, t)\bigr).
 		\] 
 		\item {\color{violet}Second term} is constant ($p(\bx_T)$ is a standard Normal, $q(\bx_T | \bx_0)$ is a non-parametrical Normal).
-		\item $\cL_t$ is a KL between two normal distributions:
-		\[
-			q(\bx_{t-1} | \bx_t, \bx_0) = \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI),
-		\]
-		$\tilde{\bmu}_t(\bx_t, \bx_0)$ and $\tilde{\beta}_t$ have analytical formulas (we omit it) and they are both dependent on $\beta_t$.
 	\end{itemize}
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 \end{frame}
 %=======
+\begin{frame}{Objective of DDPM}
+	\vspace{-0.5cm}
+	\begin{multline*}
+		\cL(q, \btheta) =  {\color{olive}\bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta)} - {\color{violet}KL\bigl(q(\bx_T | \bx_0) || p(\bx_T)\bigr)} - \\
+		- \sum_{t=2}^T  \bbE_{q(\bx_t | \bx_0)} \underbrace{KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)}_{\cL_t}
+	\end{multline*}
+	$q(\bx_{t-1} | \bx_t, \bx_0)$ defines how to denoise a noisy image $\bx_t$ with access to what the final, completely denoised image $\bx_0$ should be.
+	
+	\begin{figure}
+		\includegraphics[width=0.85\linewidth]{figs/diffusion_objective}
+	\end{figure}
+
+	\myfootnotewithlink{https://arxiv.org/abs/2208.11970}{Luo C. Understanding Diffusion Models: A Unified Perspective, 2022}
+\end{frame}
+%=======
 \subsection{Reparametrization of DDPM}
 %=======
-\begin{frame}{Gaussian diffusion model as VAE}
-	\vspace{-0.5cm}
+\begin{frame}{Reparametrization of DDPM}
+	\[
+		\cL_t =  \bbE_{q(\bx_t | \bx_0)} KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)
+	\]
+	$\cL_t$ is a KL between two normal distributions:
 	\begin{align*}
 		q(\bx_{t-1} | \bx_t, \bx_0) &= \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI), \\
 		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \bsigma_{\btheta}^2(\bx_t, t)\bigr)
 	\end{align*}
+	Here
+	\begin{align*}
+		\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \bx_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)}{1 - \bar{\alpha}_t} \bx_0 \\
+		\tilde{\beta}_t &= \frac{(1 - \alpha_t)(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} = \text{const}
+	\end{align*}
+	Let assume
+	\[
+		\bsigma_{\btheta}^2(\bx_t, t) = \tilde{\beta}_t \bI \quad \Rightarrow \quad p(\bx_{t - 1} | \bx_t, \btheta) = \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI \bigr).
+	\]
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+\end{frame}
+%=======
+\begin{frame}{Reparametrization of DDPM}
 	\vspace{-0.5cm}
-	\begin{itemize}
-		\item Assume $\bsigma_{\btheta}^2(\bx_t, t) = \tilde{\beta}_t \bI$.
-		\item Use KL formula between two normal distributions:
+	\begin{align*}
+		q(\bx_{t-1} | \bx_t, \bx_0) &= \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI), \\
+		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN (\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI )
+	\end{align*}
+	Use KL formula between two normal distributions:
 		\begin{align*}
 			\cL_t &= KL\Bigl(\cN\bigl(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI \bigr) || \cN\bigl(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI\bigr)\Bigr) \\ 
 			&= \bbE_{\bepsilon} \left[ \frac{1}{2\tilde{\beta}_t} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2 \right] \\
 			& = \bbE_{\bepsilon} \left[ \frac{1}{2\tilde{\beta}_t} \left\| {\color{violet} \frac{1}{\sqrt{1 - \beta_t}}\left( \bx_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} } \bepsilon \right)} - \bmu_{\btheta}(\bx_t, t) \right\|^2 \right]
 		\end{align*}
 		 {\color{gray}Here we used the analytic expression for $\tilde{\bmu}_t(\bx_t, \bx_0)$.}
-	\end{itemize}
 	\begin{block}{Reparametrization}
 		\vspace{-0.3cm}
 		\[
@@ -469,7 +519,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 \end{frame}
 %=======
-\section{Overview of DDPM and link to score matching}
+\subsection{Overview of DDPM}
 %=======
 \begin{frame}{Denoising diffusion probabilistic model (DDPM)}
 	\begin{block}{DDPM is a VAE model}
@@ -517,11 +567,9 @@
 		\vfill
 		\item Diffusion model is a VAE model which reverts gaussian diffusion process using variational inference.
 		\vfill
-		\item ELBO of DDPM is a sum of KL terms.
+		\item ELBO of DDPM could be represented as a sum of KL terms.
 		\vfill
-		\item At each step DDPM predicts the noise used in forward process.
-		\vfill
-		\item Objective of DDPM is closely related to the noise conditioned score network and score matching.			
+		\item At each step DDPM predicts the noise that was used in forward diffusion process.		
 	\end{itemize}
 \end{frame}
 \end{document} 
