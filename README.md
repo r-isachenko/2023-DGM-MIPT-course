@@ -45,9 +45,9 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |  |  | <b>Seminar 9:</b> WGANs on multimodal 2D data. GANs zoo and evolution of GANs. StyleGAN coding. | [notebook](seminars/seminar9/seminar9.ipynb)<br>[GANs_evolution](seminars/seminar9/GANs_evolution_and_StyleGAN.pdf)<br>[StyleGAN](seminars/seminar9/StyleGAN.ipynb) | [video](https://youtu.be/buyiq637u6s) |
 | 10 | November, 14 | <b>Lecture 10:</b> Neural ODE. Adjoint method. Continuous-in-time NF (FFJORD, Hutchinson's trace estimator). | [slides](lectures/lecture10/Lecture10.pdf) | [video](https://youtu.be/tIuNmzFJhF4) |
 |  |  | <b>Seminar 10:</b> StyleGAN: end discussions. Energy-Based models. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar10/seminar10_todo.ipynb)<br>[notebook](seminars/seminar10/seminar10_todo.ipynb)  | [video](https://youtu.be/3C2BYSpK9yo) |
-| 11 | November, 21 | <b>Lecture 11:</b> Gaussian diffusion process. Denoising diffusion probabilistic model (DDPM): objective, reparametrization. | [slides](lectures/lecture11/Lecture11.pdf) |  |
+| 11 | November, 21 | <b>Lecture 11:</b> Gaussian diffusion process. Gaussian diffusion model as VAE, derivation of ELBO. | [slides](lectures/lecture11/Lecture11.pdf) | [video](https://youtu.be/kxLvyWqsJMU) |
 |  |  | <b>Seminar 11:</b> TBA |  |  |
-| 12 | November, 28 | <b>Lecture 12:</b> Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. |  |  |
+| 12 | November, 28 | <b>Lecture 12:</b> Denoising diffusion probabilistic model (DDPM): reparametrization and overview. Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. |  |  |
 |  |  | <b>Seminar 12:</b> TBA |  |  |
 | 13 | December, 5 | <b>Lecture 13:</b> TBA |  |  |
 |  |  | <b>Seminar 13:</b> TBA |  |  |

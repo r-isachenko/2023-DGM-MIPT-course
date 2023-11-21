@@ -258,7 +258,7 @@
 	\vspace{-0.6cm}
 	\begin{enumerate}
 		\item $\bx_0 = \bx \sim \pi(\bx)$;
-		\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
+		\item $\bx_t = \sqrt{1 - \beta_t} \cdot \bx_{t - 1} + \sqrt{\beta_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, 1)$, $t \geq 1$;
 		\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, 1)$, where $T >> 1$.
 	\end{enumerate}
 	If we are able to invert this process, we will get the way to sample $\bx \sim \pi(\bx)$ using noise samples $p_{\infty}(\bx) = \cN(0, 1)$. \\ 
@@ -328,7 +328,7 @@
 		\begin{block}{Forward process}
 			\begin{enumerate}
 				\item $\bx_0 = \bx \sim \pi(\bx)$;
-				\item $\bx_t = \sqrt{1 - \beta} \cdot \bx_{t - 1} + \sqrt{\beta} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$, $t \geq 1$;
+				\item $\bx_t = \sqrt{1 - \beta_t} \cdot \bx_{t - 1} + \sqrt{\beta_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$, $t \geq 1$;
 				\item $\bx_T \sim p_{\infty}(\bx) = \cN(0, \bI)$.
 			\end{enumerate}
 		\end{block}
@@ -346,9 +346,7 @@
 	\myfootnotewithlink{https://lilianweng.github.io/posts/2021-07-11-diffusion-models/}{Weng L. What are Diffusion Models?, blog post, 2021}
 \end{frame}
 %=======
-\section{Denoising diffusion probabilistic model (DDPM)}
-%=======
-\subsection{Objective of DDPM}
+\section{Gaussian diffusion model as VAE}
 %=======
 \begin{frame}{Gaussian diffusion model as VAE}
 	\vspace{-0.2cm}
@@ -378,8 +376,8 @@
 	\myfootnotewithlink{https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html}{Das A. An introduction to Diffusion Probabilistic Models, blog post, 2021}
 \end{frame}
 %=======
-\begin{frame}{Objective of DDPM}
-	\begin{block}{ELBO}
+\begin{frame}{ELBO for gaussian diffusion model}
+	\begin{block}{Standard ELBO}
 		\vspace{-0.4cm}
 		\[
 			\log p(\bx | \btheta) \geq \bbE_{q({\color{teal}\bz} | \bx)} \log \frac{p(\bx, {\color{teal}\bz} | \btheta)}{q({\color{teal}\bz} | \bx)} = \cL(q, \btheta) \rightarrow \max_{q, \btheta}
@@ -404,7 +402,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 \end{frame}
 %=======
-\begin{frame}{Objective of DDPM}
+\begin{frame}{ELBO for gaussian diffusion model}
 	\begin{block}{Derivation (continued)}
 		\vspace{-0.7cm}
 		{\small
@@ -422,7 +420,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 \end{frame}
 %=======
-\begin{frame}{Objective of DDPM}
+\begin{frame}{ELBO for gaussian diffusion model}
 		\vspace{-0.5cm}
 		\begin{multline*}
 			\cL(q, \btheta) = \bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta) + \bbE_{q(\bx_T | \bx_0)} \log \frac{p(\bx_T)}{q(\bx_T | \bx_0)} + \\
@@ -441,7 +439,7 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 \end{frame}
 %=======
-\begin{frame}{Objective of DDPM}
+\begin{frame}{ELBO for gaussian diffusion model}
 	\vspace{-0.5cm}
 	\begin{multline*}
 		\cL(q, \btheta) =  {\color{olive}\bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta)} - {\color{violet}KL\bigl(q(\bx_T | \bx_0) || p(\bx_T)\bigr)} - \\
@@ -456,73 +454,6 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2208.11970}{Luo C. Understanding Diffusion Models: A Unified Perspective, 2022}
 \end{frame}
 %=======
-\subsection{Reparametrization of DDPM}
-%=======
-\begin{frame}{Reparametrization of DDPM}
-	\[
-		\cL_t =  KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)
-	\]
-	$\cL_t$ is a KL between two normal distributions:
-	\begin{align*}
-		q(\bx_{t-1} | \bx_t, \bx_0) &= \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI), \\
-		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \bsigma_{\btheta}^2(\bx_t, t)\bigr)
-	\end{align*}
-	Here
-	\begin{align*}
-		\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \bx_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)}{1 - \bar{\alpha}_t} \bx_0 \\
-		\tilde{\beta}_t &= \frac{(1 - \alpha_t)(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} = \text{const}
-	\end{align*}
-	Let assume
-	\[
-		\bsigma_{\btheta}^2(\bx_t, t) = \tilde{\beta}_t \bI \quad \Rightarrow \quad p(\bx_{t - 1} | \bx_t, \btheta) = \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI \bigr).
-	\]
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-\end{frame}
-%=======
-\begin{frame}{Reparametrization of DDPM}
-	\vspace{-0.5cm}
-	\begin{align*}
-		q(\bx_{t-1} | \bx_t, \bx_0) &= \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI), \\
-		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN (\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI )
-	\end{align*}
-	Use KL formula between two normal distributions:
-	\begin{align*}
-		\cL_t &= KL\Bigl(\cN\bigl(\tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI \bigr) || \cN\bigl(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI\bigr)\Bigr) \\ 
-		&= \frac{1}{2\tilde{\beta}_t} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2 
-	\end{align*}
-	\[
-		\bx_t = \sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon \quad \Rightarrow \quad {\color{olive} \bx_0} = \frac{\bx_t -  \sqrt{1 - \bar{\alpha}_t} \bepsilon}{\sqrt{\bar{\alpha}_t}}
-	\]
-	\begin{align*}
-		\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \bx_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)}{1 - \bar{\alpha}_t} {\color{olive} \bx_0} \\
-		&= \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}} \bepsilon
-	\end{align*}
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-	\end{frame}
-%=======
-\begin{frame}{Reparametrization of DDPM}
-	\vspace{-0.3cm}
-	\[
-		\cL_t = {\color{olive}\frac{1}{2\tilde{\beta}_t}} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2
-	\]
-	\vspace{-0.3cm}
-	\begin{block}{Reparametrization}
-		\vspace{-0.7cm}
-		\begin{align*}
-			\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}} \bepsilon \\
-			\bmu_{\btheta}(\bx_t, t) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - {\color{teal}\frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha_t})}}} \bepsilon_{\btheta}(\bx_t, t)
-		\end{align*}
-		\vspace{-0.7cm}
-	\end{block}
-		\vspace{-0.5cm}
-		\begin{align*}
-			\cL_t &= \frac{(1 - \alpha_t)^2}{2\tilde{\beta}_t \alpha_t (1 - \bar{\alpha_t})} \bigl\| \bepsilon - \bepsilon_{\btheta}({\color{violet}\bx_t}, t) \bigr\|^2 \\
-			& =	\frac{{\color{teal}(1 - \alpha_t)^2}}{{\color{olive}2\tilde{\beta}_t} {\color{teal}\alpha_t (1 - \bar{\alpha_t})}} \Bigl\| \bepsilon - \bepsilon_{\btheta}\bigl( {\color{violet}\sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon}, t\bigr) \Bigr\|^2
-		\end{align*}
-		At each step of reverse diffusion process we try to predict the noise $\bepsilon$ that we used in forward process!
-	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
-	\end{frame}
-%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Gaussian diffusion process is a Markov chain that injects special form of Gaussian noise to the samples.
@@ -532,8 +463,6 @@
 		\item Diffusion model is a VAE model which reverts gaussian diffusion process using variational inference.
 		\vfill
 		\item ELBO of DDPM could be represented as a sum of KL terms.
-		\vfill
-		\item At each step DDPM predicts the noise that was used in forward diffusion process.		
 	\end{itemize}
 \end{frame}
 \end{document} 
