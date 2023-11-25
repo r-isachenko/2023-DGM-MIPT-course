@@ -116,20 +116,6 @@
 %=======
 \section{Noise conditioned score network}
 %=======
-\begin{frame}{Denoising score matching}
-	\begin{itemize}
-		\item If $\sigma$ is \textbf{small}, the score function is not accurate and Langevin dynamics will probably fail to jump between modes.
-		\begin{figure}
-			\includegraphics[width=0.75\linewidth]{figs/pitfalls}
-		\end{figure}
-		\item If $\sigma$ is \textbf{large}, it is good for low-density regions and  multimodal distributions, but we will learn too corrupted distribution.
-		\begin{figure}
-			\includegraphics[width=0.75\linewidth]{figs/single_noise}
-		\end{figure}
-	\end{itemize}
-	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}
-\end{frame}
-%=======
 \begin{frame}{Noise conditioned score network}
 	\begin{itemize}
 		\item Define the sequence of noise levels: $\sigma_1 > \sigma_2 > \dots > \sigma_L$.
@@ -228,7 +214,9 @@
 %=======
 \begin{frame}{Summary}
 	\begin{itemize}
-		\item 
+		\item Noise conditioned score network uses multiple noise levels and annealed Langevin dynamics to fit score function.
+		\vfill
+		\item Objective of DDPM is closely related to the noise conditioned score network and score matching.	
 	\end{itemize}
 \end{frame}
 \end{document} 
