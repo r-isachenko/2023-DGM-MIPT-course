@@ -47,7 +47,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |  |  | <b>Seminar 10:</b> StyleGAN: end discussions. Energy-Based models. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar10/seminar10_todo.ipynb)<br>[notebook](seminars/seminar10/seminar10_todo.ipynb)  | [video](https://youtu.be/3C2BYSpK9yo) |
 | 11 | November, 21 | <b>Lecture 11:</b> Gaussian diffusion process. Gaussian diffusion model as VAE, derivation of ELBO. | [slides](lectures/lecture11/Lecture11.pdf) | [video](https://youtu.be/kxLvyWqsJMU) |
 |  |  | <b>Seminar 11:</b> TBA |  | [video](https://youtu.be/-pNUOr2Ig38) |
-| 12 | November, 28 | <b>Lecture 12:</b> Denoising diffusion probabilistic model (DDPM): reparametrization and overview. Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. |  |  |
+| 12 | November, 28 | <b>Lecture 12:</b> Denoising diffusion probabilistic model (DDPM): reparametrization and overview. Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. | [slides](lectures/lecture11/Lecture12.pdf) |  |
 |  |  | <b>Seminar 12:</b> TBA |  |  |
 | 13 | December, 5 | <b>Lecture 13:</b> TBA |  |  |
 |  |  | <b>Seminar 13:</b> TBA |  |  |
@@ -62,7 +62,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 3 | October, 11 | October, 25 | <ol><li>Theory (Sylvester flows, NF expressivity, Discrete vs Continuous).</li><li>RealNVP on 2D data.</li><li>RealNVP on CIFAR10.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw3.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw3.ipynb) |
 | 4 | October, 25 | November, 8 | <ol><li>Theory (MI in ELBO surgery, Gumbel-Max trick, LSGAN).</li><li>VQ-VAE with PixelCNN prior.</li><li>Vanilla GAN on CIFAR10.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw4.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw4.ipynb) |
 | 5 | November, 15 | November, 29 | <ol><li>Theory (f-GAN conjugate, Neural ODE Pontryagin theorem).</li><li>WGAN/WGAN-GP/SN-GAN on CIFAR10.</li><li>Inception Score and FID.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw5.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw5.ipynb) |
-| 6 | November, 29 | December, 13 | TBA | TBA |
+| 6 | November, 29 | December, 13 | <ol><li>Theory (KFP theorem, spaced diffusion).</li><li>DDPM on 2d data.</li><li>DDPM on MNIST.</li></ol> | [![Open In Github](https://img.shields.io/static/v1.svg?logo=github&label=Repo&message=Open%20in%20Github&color=lightgrey)](homeworks/hw6.ipynb)<br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/homeworks/hw6.ipynb) |
 
 ## Game rules
 - 6 homeworks each of 13 points = **78 points**
