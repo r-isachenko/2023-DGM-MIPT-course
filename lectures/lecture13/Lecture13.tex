@@ -114,7 +114,207 @@
 	\tableofcontents
 \end{frame}
 %=======
-\section{Noise conditioned score network}
+\section{Score matching}
+%=======
+\begin{frame}{Score matching}
+	We could sample from the model using Langevin dynamics if we have $\nabla_{\bx}\log p(\bx| \btheta)$.
+	\begin{block}{Fisher divergence}
+		\vspace{-0.3cm}
+		\[
+		D_F(\pi, p) = \frac{1}{2}\bbE_{\pi}\bigl\| \nabla_{\bx}\log p(\bx| \btheta) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2 \rightarrow \min_{\btheta}
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	Let introduce \textbf{score function} $\bs_{\btheta}(\bx) = \nabla_{\bx}\log p(\bx| \btheta)$. 
+	\vspace{-0.2cm}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.75\linewidth]{figs/smld}
+	\end{figure}
+	\vspace{-0.3cm} 
+	\textbf{Problem:} we do not know $\nabla_\bx \log \pi(\bx)$.
+	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}
+\end{frame}
+%=======
+\subsection{Implicit score matching}
+%=======
+\begin{frame}{Implicit score matching}
+	\begin{block}{Theorem}
+		Under some regularity conditions, it holds
+		\vspace{-0.2cm}
+		\[
+		\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2 = \bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr] + \text{const}
+		\]
+		\vspace{-0.6cm}
+	\end{block}
+	\begin{block}{Proof (only for 1D)}
+		\vspace{-0.6cm}
+		{\small
+			\begin{multline*}
+				\bbE_{\pi}\bigl\| s(x) - \nabla_x \log \pi(x) \bigr\|^2_2 = \bbE_{\pi} \bigl[ s(x)^2 + (\nabla_x \log \pi(x))^2 - 2{\color{teal}[s(x) \nabla_x \log \pi(x) ] \bigr] }
+			\end{multline*}
+			\vspace{-0.8cm}
+			\begin{align*}
+				{\color{teal}\bbE_{\pi} [{\color{violet}s(x) } \nabla_x \log \pi(x) ] } &= \int {\color{olive}\pi(x) {\color{violet}s(x)}  \nabla_x \log \pi(x)} d x 
+				= \int \underbrace{\color{violet}\nabla_x \log p(x) }_{g} \underbrace{\color{olive}\nabla_x \pi(x) }_{\nabla f} dx \\
+				& = \Bigl. \underbrace{\nabla_x \log p(x)}_{g} \underbrace{\pi(x)}_{f} \Bigr|_{-\infty}^{+\infty} - \int \underbrace{\nabla_x \bigl( {\color{violet}\nabla_x \log p(x)} \bigr)}_{\nabla g} \underbrace{\pi(x)}_{f} dx \\
+				& = - \bbE_{\pi} \nabla_x {\color{violet}s(x)}
+			\end{align*}
+			\vspace{-0.4cm}
+			\[
+			\frac{1}{2} \bbE_{\pi}\bigl\| s(x) - \nabla_x \log \pi(x) \bigr\|^2_2 = \bbE_{\pi} \Bigr[\frac{1}{2} s(x)^2 + \nabla_x s(x) \Bigl]+ \text{const}.
+			\]
+		}
+	\end{block}
+	\myfootnotewithlink{https://jmlr.org/papers/volume6/hyvarinen05a/old.pdf}{Hyvarinen A. Estimation of non-normalized statistical models by score matching, 2005} 
+\end{frame}
+%=======
+\begin{frame}{Score matching}
+	\vspace{-0.3cm}
+	\begin{block}{Theorem (implicit score matching)}
+		\vspace{-0.6cm}
+		\[
+		{\color{violet}\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2} = {\color{teal}\bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr]} + \text{const}
+		\]
+		Here $\nabla_{\bx} \bs_{\btheta}(\bx) = \nabla_{\bx}^2 \log p(\bx | \btheta)$ is a Hessian matrix.
+	\end{block}
+	\begin{enumerate}
+		\item {\color{teal}The right hand side} is complex due to Hessian matrix -- \textbf{sliced score matching}.
+		\item {\color{violet}The left hand side} is intractable due to unknown $\pi(\bx)$ -- \textbf{denoising score matching}. 
+	\end{enumerate}
+	\begin{block}{Sliced score matching (Hutchinson's trace estimation)}
+	\vspace{-0.3cm}
+	\[
+		\text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) = \mathbb{E}_{p(\bepsilon)} \left[ {\color{olive}\bepsilon^T \nabla_{\bx} \bs_{\btheta}(\bx)} \bepsilon \right]
+	\]
+	\end{block}
+	\myfootnote{\href{https://yang-song.net/blog/2021/ssm/}{Song Y. Sliced Score Matching: A Scalable Approach to Density and Score Estimation, 2019} \\
+	\href{https://yang-song.net/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}}
+\end{frame}
+%=======
+\subsection{Denoising score matching}
+%=======
+\begin{frame}{Denoising score matching}
+	Let perturb original data $\bx \sim \pi(\bx)$ by random normal noise 
+	\[
+		\bx' = \bx + \sigma \cdot \bepsilon, \quad \bepsilon \sim \cN(0, \bI), \quad p(\bx' | \bx, \sigma) = \cN(\bx' | \bx, \sigma^2 \bI)
+	\]
+	\vspace{-0.4cm}
+	\[
+		\pi(\bx' | \sigma) = \int p(\bx' | \bx, \sigma) \pi(\bx) d\bx.
+	\]
+	\vspace{-0.4cm} 
+	\begin{block}{Assumption}
+		The solution of 
+		\[
+			\frac{1}{2} \bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 \rightarrow \min_{\btheta}
+		\]
+		\vspace{-0.3cm} \\
+		satisfies $\bs_{\btheta}(\bx', \sigma) \approx \bs_{\btheta}(\bx', 0) = \bs_{\btheta}(\bx)$ if $\sigma$ is small enough.
+	\end{block}
+	\begin{itemize}
+		\item $\bs_{\btheta}(\bx', \sigma)$ tries to \textbf{denoise} a corrupted sample $\bx'$.
+		\item Score function $\bs_{\btheta}(\bx', \sigma)$ parametrized by $\sigma$. 
+	\end{itemize}
+	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
+\end{frame}
+%=======
+\begin{frame}{Denoising score matching}
+	\begin{block}{Theorem}
+	\vspace{-0.5cm}
+	\begin{multline*}
+		\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\
+		= \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
+	\end{multline*}
+	\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{Proof}
+		\vspace{-0.7cm}
+		{\small
+		\begin{multline*}
+			\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\ 
+			= \bbE_{\pi(\bx' | \sigma)} \Bigl[\| {\color{olive}\bs_{\btheta}(\bx', \sigma) \|^2} + \underbrace{\| \nabla_{\bx'} \log \pi(\bx' | \sigma) \|^2_2}_{\text{const}(\btheta)} - 2 \bs_{\btheta}^T(\bx', \sigma) \nabla_{\bx'} \log \pi(\bx' | \sigma) \Bigr]
+		\end{multline*}
+		\vspace{-0.7cm}
+		\begin{multline*}
+			\bbE_{\pi(\bx' | \sigma)} {\color{olive} \| \bs_{\btheta}(\bx', \sigma) \|^2} = \int {\color{violet}\pi(\bx' | \sigma)} \| \bs_{\btheta}(\bx', \sigma) \|^2 d\bx' = \\
+			= \int \left({\color{violet}\int p(\bx' | \bx, \sigma) \pi(\bx) d\bx}\right) \| \bs_{\btheta}(\bx', \sigma) \|^2 d\bx' =  \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}  \| \bs_{\btheta}(\bx', \sigma) \|^2 d\bx'
+		\end{multline*}
+		}
+	\end{block}
+	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
+\end{frame}
+%=======
+\begin{frame}{Denoising score matching}
+	\begin{block}{Theorem}
+	\vspace{-0.5cm}
+	\begin{multline*}
+		\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\
+		= \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
+	\end{multline*}
+	\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{Proof (continued)}
+		\vspace{-0.7cm}
+		{\small
+		\begin{multline*}
+			\bbE_{\pi(\bx' | \sigma)} \left[{\color{teal}\bs_{\btheta}^T(\bx', \sigma) \nabla_{\bx'} \log \pi(\bx' | \sigma)} \right] = \int \pi(\bx' | \sigma) \left[\bs_{\btheta}^T(\bx', \sigma) \frac{\nabla_{\bx'} {\color{violet}\pi(\bx' | \sigma)}}{\pi(\bx' | \sigma)} \right] d \bx' = \\
+			= \int \left[\bs_{\btheta}^T(\bx', \sigma) \nabla_{\bx'}\left({\color{violet}\int p(\bx' | \bx, \sigma) \pi(\bx) d\bx}\right) \right] d \bx' = \\
+			=  \int \int \pi(\bx) \left[\bs_{\btheta}^T(\bx', \sigma) {\color{olive}\nabla_{\bx'}p(\bx' | \bx, \sigma)} \right] d \bx' d\bx = \\
+			= \int \int \pi(\bx) {\color{olive} p(\bx' | \bx, \sigma)} \left[\bs_{\btheta}^T(\bx', \sigma) {\color{olive}\nabla_{\bx'} \log p(\bx' | \bx, \sigma)} \right] d \bx' d\bx = \\
+			= \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)} \left[{\color{teal}\bs_{\btheta}^T(\bx', \sigma) \nabla_{\bx'} \log p(\bx' | \bx, \sigma)} \right]
+		\end{multline*}
+		}
+	\end{block}
+	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
+\end{frame}
+%=======
+\begin{frame}{Denoising score matching}
+	\begin{block}{Theorem}
+	\vspace{-0.7cm}
+	\begin{multline*}
+		\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\
+		= \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
+	\end{multline*}
+	\vspace{-0.9cm}
+	\end{block}
+	\begin{block}{Proof (continued)}
+		\vspace{-0.7cm}
+		{\small
+		\begin{multline*}
+			\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\ 
+			= {\color{olive}\bbE_{\pi(\bx' | \sigma)}} \Bigl[\| \bs_{\btheta}(\bx', \sigma) \|^2 - 2 \bs_{\btheta}^T(\bx', \sigma) {\color{teal}\nabla_{\bx'} \log \pi(\bx' | \sigma)} \Bigr] + \text{const}(\btheta) = \\
+			= {\color{olive}\bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}}\Bigl[\| \bs_{\btheta}(\bx', \sigma) \|^2 - 2 \bs_{\btheta}^T(\bx', \sigma) {\color{teal}\nabla_{\bx'} \log p(\bx' | \bx, \sigma)} \Bigr] + \text{const}(\btheta)
+		\end{multline*}
+		}
+		\vspace{-0.8cm}
+	\end{block}
+	\begin{block}{Gradient of the noise kernel}
+	\vspace{-0.4cm}
+	\[
+		\nabla_{\bx'} \log p(\bx' | \bx, \sigma) = \nabla_{\bx'} \log \cN(\bx' | \bx, \sigma^2 \bI) = - \frac{\bx' - \bx}{\sigma^2}
+	\]
+	\vspace{-0.5cm}
+	\end{block}
+	The RHS does not need to compute $\nabla_{\bx'} \log \pi(\bx' | \sigma)$ and even $\nabla_{\bx'} \log \pi(\bx')$.
+	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
+\end{frame}
+%=======
+\begin{frame}{Denoising score matching}
+	\begin{itemize}
+		\item If $\sigma$ is \textbf{small}, the score function is not accurate and Langevin dynamics will probably fail to jump between modes.
+		\begin{figure}
+			\includegraphics[width=0.75\linewidth]{figs/pitfalls}
+		\end{figure}
+		\item If $\sigma$ is \textbf{large}, it is good for low-density regions and  multimodal distributions, but we will learn too corrupted distribution.
+		\begin{figure}
+			\includegraphics[width=0.75\linewidth]{figs/single_noise}
+		\end{figure}
+	\end{itemize}
+	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}
+\end{frame}
+%=======
+\section{Noise conditioned score network (NCSN)}
 %=======
 \begin{frame}{Noise conditioned score network}
 	\begin{itemize}
@@ -168,7 +368,9 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.09011}{Song Y. et al. Improved Techniques for Training Score-Based Generative Models, 2020}
 \end{frame}
 %=======
-\begin{frame}{Gaussian diffusion model vs Score matching}
+\section{DDPM vs Score matching}
+%=======
+\begin{frame}{DDPM vs Score matching}
 	\vspace{-0.3cm}
 	\[
 		\cL_t = {\color{olive}\bbE_{\bepsilon}} \left[ \frac{\beta_t^2}{2\tilde{\beta}_t (1 - \beta_t)} \left\| {\color{violet}\frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}} - {\color{teal}\frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}\right\|^2 \right]
@@ -196,24 +398,14 @@
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 	\end{frame}
 %=======
-\section{The worst course overview}
-%=======
-\begin{frame}{The worst course overview :)}
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/generative-overview}
-	\end{figure}
-	\myfootnotewithlink{https://lilianweng.github.io/posts/2021-07-11-diffusion-models/}{Weng L. What are Diffusion Models?, blog post, 2021}
-\end{frame}
-%=======
-\begin{frame}{The worst course overview :)}
-	\begin{figure}
-		\includegraphics[width=0.7\linewidth]{figs/trilemma}
-	\end{figure}
-	\myfootnotewithlink{https://arxiv.org/abs/2112.07804}{Xiao Z., Kreis K., Vahdat A. Tackling the generative learning trilemma with denoising diffusion GANs, 2021}
-\end{frame}
-%=======
 \begin{frame}{Summary}
 	\begin{itemize}
+		\item Score matching proposes to minimize Fisher divergence to get score function.
+		\vfill
+		\item Implicit score matching tries to avoid the value of original distribution $\pi(\bx)$. Sliced score matching makes implicit score matching scalable. 
+		\vfill
+		\item Denoising score matching minimizes Fisher divergence on noisy samples.		
+		\vfill
 		\item Noise conditioned score network uses multiple noise levels and annealed Langevin dynamics to fit score function.
 		\vfill
 		\item Objective of DDPM is closely related to the noise conditioned score network and score matching.	
