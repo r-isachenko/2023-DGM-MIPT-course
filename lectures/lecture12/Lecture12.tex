@@ -257,8 +257,9 @@
 			\item Sample $\bx_T \sim \cN(0, \bI)$.
 			\item Compute mean of $p(\bx_{t-1} | \bx_t, \btheta) = \cN(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI)$:
 			\[
-				\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{\alpha_t}} \bx_t - {\color{teal}\frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}}} \bepsilon_{\btheta}(\bx_t, t)
+				\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}} \bepsilon_{\btheta}(\bx_t, t)
 			\]
+			\vspace{-0.3cm}
 			\item Get denoised image $\bx_{t - 1} = \bmu_{\btheta}(\bx_t, t) +  \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
 		\end{enumerate}
 	\end{block}
@@ -313,9 +314,9 @@
 		 \begin{enumerate}
 		 	\item $\bw(0) = 0$ (almost surely);
 		 	\item $\bw(t)$ has independent increments;
-			 \item $\bw(t) - \bw(s) \sim \cN(0, t - s)$.
+			 \item $\bw(t) - \bw(s) \sim \cN(0, (t - s) \bI)$.
 		 \end{enumerate}
-		 \item $d \bw = \bw(t + dt) - \bw(t) = \cN(0, dt) = \bepsilon \cdot \sqrt{dt}$, where $\bepsilon \sim \cN(0, \bI)$.
+		 \item $d \bw = \bw(t + dt) - \bw(t) = \cN(0, \bI \cdot dt ) = \bepsilon \cdot \sqrt{dt}$, where $\bepsilon \sim \cN(0, \bI)$.
 	\end{itemize}
 	\textbf{Note:} In contrast to ODE, initial condition $\bx(0)$ does not uniquely determine the process trajectory.
 \end{frame}

@@ -13,6 +13,77 @@
 \end{frame}
 %=======
 \begin{frame}{Recap of previous lecture}
+	\begin{block}{ELBO of gaussian diffusion model}
+		\vspace{-0.7cm}
+		\begin{multline*}
+			\cL(q, \btheta) =  {\color{olive}\bbE_{q(\bx_1 | \bx_0)} \log p(\bx_0 | \bx_1, \btheta)} - {\color{violet}KL\bigl(q(\bx_T | \bx_0) || p(\bx_T)\bigr)} - \\
+			- \sum_{t=2}^T  \underbrace{ \bbE_{q(\bx_t | \bx_0)}KL \bigl(q(\bx_{t-1} | \bx_t, \bx_0) || p(\bx_{t - 1} | \bx_t, \btheta )\bigr)}_{\cL_t}
+		\end{multline*}
+		\vspace{-1.0cm}
+	\end{block}
+	\begin{align*}
+		q(\bx_{t-1} | \bx_t, \bx_0) &= \cN(\bx_{t-1} | \tilde{\bmu}_t(\bx_t, \bx_0), \tilde{\beta}_t \bI), \\
+		p(\bx_{t - 1} | \bx_t, \btheta) &= \cN \bigl(\bx_{t - 1} | \bmu_{\btheta}(\bx_t, t), {\color{violet}\bsigma_{\btheta}^2(\bx_t, t)}\bigr)
+	\end{align*}
+	Our assumption:	${\color{violet}\bsigma_{\btheta}^2(\bx_t, t) = \tilde{\beta}_t \bI}$.
+	\[
+		\cL_t = \bbE_{q(\bx_t | \bx_0)} \left[\frac{1}{2\tilde{\beta}_t} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2  \right]
+	\]
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+\end{frame}
+%=======
+\begin{frame}{Recap of previous lecture}
+	\vspace{-0.3cm}
+	\[
+		\cL_t = \bbE_{\color{violet}q(\bx_t | \bx_0)} \left[ {\color{olive}\frac{1}{2\tilde{\beta}_t}} \bigl\| \tilde{\bmu}_t(\bx_t, \bx_0) - \bmu_{\btheta}(\bx_t, t) \bigr\|^2  \right]
+	\]
+	\vspace{-0.3cm}
+	\begin{block}{Reparametrization}
+		\vspace{-0.7cm}
+		\begin{align*}
+			\tilde{\bmu}_t(\bx_t, \bx_0) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}} \bepsilon \\
+			\bmu_{\btheta}(\bx_t, t) &= \frac{1}{\sqrt{\alpha_t}} \bx_t - {\color{teal}\frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}}} \bepsilon_{\btheta}(\bx_t, t)
+		\end{align*}
+		\vspace{-0.7cm}
+	\end{block}
+	\vspace{-0.2cm}
+	\[
+		\cL_t  =	 \bbE_{\color{violet}\bepsilon \sim \cN(0, \bI)} \left[ \frac{(1 - \alpha_t)^2}{2\tilde{\beta}_t \alpha_t (1 - \bar{\alpha}_t)} \Bigl\| \bepsilon - \bepsilon_{\btheta}\bigl( {\color{violet}\sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon}, t\bigr) \Bigr\|^2 \right]
+	\]
+	At each step of reverse diffusion process we try to predict the noise~$\bepsilon$ that we used in the forward diffusion process!
+	\begin{block}{Simplified objective}
+		\vspace{-0.7cm}
+		\[
+			 \cL_{\text{simple}} = \bbE_{t \sim U[2, T]} \bbE_{\bepsilon \sim \cN(0, \bI)} \Bigl\| \bepsilon - \bepsilon_{\btheta}\bigl( \sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon, t\bigr) \Bigr\|^2 
+		\]
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+	\end{frame}
+%=======
+\begin{frame}{Recap of previous lecture}
+	\begin{block}{Training}
+		\begin{enumerate}
+			\item Get the sample $\bx_0 \sim \pi(\bx)$.
+			\item Sample timestamp $t \sim U[1, T]$ and the noise $\bepsilon \sim \cN(0, \bI)$.
+			\item Get noisy image $\bx_t = \sqrt{\bar{\alpha}_t} \bx_0 + \sqrt{1 - \bar{\alpha}_t} \bepsilon$.
+			\item Compute loss $ \cL_{\text{simple}} = \| \bepsilon - \bepsilon_{\btheta}(\bx_t , t) \|^2 $.
+		\end{enumerate}
+	\end{block}
+	\begin{block}{Sampling}
+		\begin{enumerate}
+			\item Sample $\bx_T \sim \cN(0, \bI)$.
+			\item Compute mean of $p(\bx_{t-1} | \bx_t, \btheta) = \cN(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI)$:
+			\[
+				\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}} \bepsilon_{\btheta}(\bx_t, t)
+			\]
+			\vspace{-0.3cm}
+			\item Get denoised image $\bx_{t - 1} = \bmu_{\btheta}(\bx_t, t) +  \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
+		\end{enumerate}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+\end{frame}
+%=======
+\begin{frame}{Recap of previous lecture}
 	\vspace{-0.2cm}
 	\begin{block}{SDE basics}
 		Let define stochastic process $\bx(t)$ with initial condition $\bx(0) \sim p_0(\bx)$:
@@ -36,78 +107,6 @@
 	\end{block}
 	The density $p(\bx | \btheta)$ is a \textbf{stationary} distribution for the Langevin SDE.
 	\myfootnotewithlink{https://www.stats.ox.ac.uk/~teh/research/compstats/WelTeh2011a.pdf}{Welling M. Bayesian Learning via Stochastic Gradient Langevin Dynamics, 2011}
-\end{frame}
-%=======
-\begin{frame}{Recap of previous lecture}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.75\linewidth]{figs/smld}
-	\end{figure}
-	\vspace{-0.3cm} 
-	\begin{block}{Theorem (implicit score matching)}
-		\vspace{-0.6cm}
-		\[
-		{\color{violet}\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2} = {\color{teal}\bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr]} + \text{const}
-		\]
-	\end{block}
-	\vspace{-0.5cm}
-	\begin{enumerate}
-		\item {\color{violet}The left hand side} is intractable due to unknown $\pi(\bx)$ -- \textbf{denoising score matching}. 
-		\item {\color{teal}The right hand side} is complex due to Hessian matrix -- \textbf{sliced score matching (Hutchinson's trace estimation)}.
-	\end{enumerate}
-	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}
-\end{frame}
-%=======
-\begin{frame}{Recap of previous lecture}
-	Let perturb original data by normal noise $p(\bx' | \bx, \sigma) = \cN(\bx' | \bx, \sigma^2 \bI)$
-	\vspace{-0.3cm}
-	\[
-	\pi(\bx' | \sigma) = \int \pi(\bx) p(\bx' | \bx, \sigma) d\bx.
-	\]
-	\vspace{-0.6cm} \\
-	Then the solution of 
-	\vspace{-0.2cm}
-	\[
-	\frac{1}{2} \bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 \rightarrow \min_{\btheta}
-	\]
-	\vspace{-0.5cm} \\
-	satisfies $\bs_{\btheta}(\bx', \sigma) \approx \bs(\bx', \btheta, 0) = \bs(\bx', \btheta)$ if $\sigma$ is small enough.
-	\begin{block}{Theorem (denoising score matching)}
-		\vspace{-0.8cm}
-		\begin{multline*}
-			\bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 = \\ = \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma) \bigr\|^2_2 + \text{const}(\btheta)
-		\end{multline*}
-		\vspace{-0.8cm}
-	\end{block}
-	Here $\nabla_{\bx'} \log p(\bx' | \bx, \sigma) = - \frac{\bx' - \bx}{\sigma^2}$.
-	\begin{itemize}
-		\item The RHS does not need to compute $\nabla_{\bx'} \log \pi(\bx' | \sigma)$ and even more $\nabla_{\bx'} \log \pi(\bx')$.
-		\item $\bs_{\btheta}(\bx', \sigma)$ tries to \textbf{denoise} a corrupted sample.
-		\item Score function $\bs_{\btheta}(\bx', \sigma)$ parametrized by $\sigma$. 
-	\end{itemize}
-	\myfootnotewithlink{http://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport.pdf}{Vincent P. A Connection Between Score Matching and Denoising Autoencoders, 2010}
-\end{frame}
-%=======
-\begin{frame}{Recap of previous lecture}
-	\begin{block}{Noise conditioned score network}
-		\begin{itemize}
-			\item Define the sequence of noise levels: $\sigma_1 > \sigma_2 > \dots > \sigma_L$.
-			\item Train denoised score function $\bs_{\btheta}(\bx', \sigma)$ for each noise level:
-			\vspace{-0.3cm}
-			\[
-				\sum_{l=1}^L {\color{violet}\sigma_l^2} \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma_l)}\bigl\| \bs_{\btheta}(\bx', \sigma_l) - \nabla_\bx' \log p(\bx' | \bx, \sigma_l) \bigr\|^2_2 \rightarrow \min_{\btheta}
-			\]
-			\vspace{-0.5cm}
-			\item Sample from \textbf{annealed} Langevin dynamics (for $l=1, \dots, L$).
-		\end{itemize}
-	\end{block}
-	\begin{figure}
-		\includegraphics[width=0.55\linewidth]{figs/multi_scale}
-	\end{figure}
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/duoduo}
-	\end{figure}
-	\myfootnotewithlink{https://arxiv.org/abs/1907.05600}{Song Y. et al. Generative Modeling by Estimating Gradients of the Data Distribution, 2019}
 \end{frame}
 %=======
 \begin{frame}{Outline}
