@@ -168,9 +168,9 @@
 	\myfootnotewithlink{https://jmlr.org/papers/volume6/hyvarinen05a/old.pdf}{Hyvarinen A. Estimation of non-normalized statistical models by score matching, 2005} 
 \end{frame}
 %=======
-\begin{frame}{Score matching}
+\begin{frame}{Implicit score matching}
 	\vspace{-0.3cm}
-	\begin{block}{Theorem (implicit score matching)}
+	\begin{block}{Theorem}
 		\vspace{-0.6cm}
 		\[
 		{\color{violet}\frac{1}{2} \bbE_{\pi}\bigl\| \bs_{\btheta}(\bx) - \nabla_\bx \log \pi(\bx) \bigr\|^2_2} = {\color{teal}\bbE_{\pi}\Bigr[ \frac{1}{2}\| \bs_{\btheta}(\bx) \|_2^2 + \text{tr}\bigl(\nabla_{\bx} \bs_{\btheta}(\bx)\bigr) \Bigr]} + \text{const}
@@ -313,18 +313,16 @@
 	\myfootnotewithlink{https://yang-song.github.io/blog/2021/score/}{Song Y. Generative Modeling by Estimating Gradients of the Data Distribution, blog post, 2021}
 \end{frame}
 %=======
-\section{Noise conditioned score network (NCSN)}
+\section{Noise Conditioned Score Network (NCSN)}
 %=======
-\begin{frame}{Noise conditioned score network}
+\begin{frame}{Noise Conditioned Score Network (NCSN)}
 	\begin{itemize}
-		\item Define the sequence of noise levels: $\sigma_1 > \sigma_2 > \dots > \sigma_L$.
-		\item Perturb the original data with the different noise level to get $\pi(\bx' | \sigma_1), \dots, \pi(\bx' | \sigma_L)$.
-		\item Train denoised score function $\bs_{\btheta}(\bx', \sigma)$ for each noise level:
-		\vspace{-0.2cm}
+		\item Define the sequence of the noise levels: $\sigma_1 > \sigma_2 > \dots > \sigma_L$.
+		\item Perturb the original data with the different noise levels to obtain $\pi(\bx' | \sigma_1), \dots, \pi(\bx' | \sigma_L)$.
+		\item Choose $\sigma_1, \sigma_L$ such that:
 		\[
-			\sum_{l=1}^L {\color{violet}\sigma_l^2} \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma_l)}\bigl\| \bs_{\btheta}(\bx', \sigma_l) - \nabla_\bx' \log p(\bx' | \bx, \sigma_l) \bigr\|^2_2 \rightarrow \min_{\btheta}
+			\pi(\bx' | \sigma_1) \approx \cN(0, \sigma_1^2 \bI), \quad \pi(\bx' | \sigma_L) \approx \pi(\bx).
 		\]
-		\item Sample from \textbf{annealed} Langevin dynamics (for $l=1, \dots, L$).
 	\end{itemize}
 	\begin{figure}
 		\includegraphics[width=0.6\linewidth]{figs/multi_scale}
@@ -335,65 +333,70 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1907.05600}{Song Y. et al. Generative Modeling by Estimating Gradients of the Data Distribution, 2019}
 \end{frame}
 %=======
-\begin{frame}{Noise conditioned score network}
-	\begin{minipage}{0.5\linewidth}
-		\vspace{-0.7cm}
-		\begin{block}{Training: loss function}
-			\vspace{-0.8cm}
-			\[
-			\sum_{i=1}^L \sigma_l^2\bbE_{\pi(\bx)} \bbE_{\bepsilon}\left\| \bs_l + \frac{\bepsilon}{\sigma_l} \right\|^2_2,
-			\]
-		\end{block}
-		\vspace{-0.5cm}
-		Here
-		\begin{itemize}
-			\item $\bs_l = \bs_{\btheta}(\bx + \sigma_l \cdot \bepsilon, \sigma_l)$.
-			\item $\nabla_{\bx'} \log p(\bx' | \bx, \sigma) = - \frac{\bx' - \bx}{\sigma^2} = - \frac{\bepsilon}{\sigma_l}$.
-		\end{itemize}
-	\end{minipage}%
-	\begin{minipage}{0.5\linewidth}
-		\begin{block}{Inference: annealed Langevin dynamic}
-			\begin{figure}
-				\includegraphics[width=0.9\linewidth]{figs/ald}
-			\end{figure}
-		\end{block}
-	\end{minipage}
-	\vspace{-0.7cm}
-	\begin{block}{Samples}
-		\begin{figure}
-			\includegraphics[width=\linewidth]{figs/NCSNv2}
-		\end{figure}
+\begin{frame}{Noise Conditioned Score Network (NCSN)}
+	Train the denoising score function $\bs_{\btheta}(\bx', \sigma)$ for each noise level using unified weighted objective:
+	\vspace{-0.2cm}
+	\[
+		\sum_{l=1}^L {\color{violet}\sigma_l^2} \bbE_{\pi(\bx)} \bbE_{p(\bx' | \bx, \sigma_l)}\bigl\| \bs_{\btheta}(\bx', \sigma_l) - \nabla_{\bx'} \log p(\bx' | \bx, \sigma_l) \bigr\|^2_2 \rightarrow \min_{\btheta}
+	\]
+	Here $\nabla_{\bx'} \log p(\bx' | \bx, \sigma_l) = - \frac{\bx' - \bx}{\sigma_l^2} = - \frac{\bepsilon}{\sigma_l}$.
+	\begin{block}{Training}
+		\begin{enumerate}
+			\item Get the sample $\bx_0 \sim \pi(\bx)$.
+			\item Sample noise level $l \sim U[1, L]$ and the noise $\bepsilon \sim \cN(0, \bI)$.
+			\item Get noisy image $\bx' = \bx_0 + \sigma_l \cdot \bepsilon$.
+			\item Compute loss $ \cL = \| \bs_{\btheta}(\bx', \sigma_l) + \frac{\bepsilon}{\sigma_l} \|^2 $.
+		\end{enumerate}
 	\end{block}
+	How to sample from this model?
+	\myfootnotewithlink{https://arxiv.org/abs/1907.05600}{Song Y. et al. Generative Modeling by Estimating Gradients of the Data Distribution, 2019}
+\end{frame}
+%=======
+\begin{frame}{Noise Conditioned Score Network (NCSN)}
+	\begin{block}{Sampling (annealed Langevin dynamics)}
+		\begin{itemize}
+			\item Sample $\bx_0 \sim \cN(0, \sigma_1 \bI) \approx \pi(\bx | \sigma_L)$.
+			\item Apply $T$ steps of Langevin dynamic
+			\vspace{-0.2cm}
+			\[
+				\bx_t = \bx_{t-1} + \frac{1}{2}\alpha_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\alpha_l} \bepsilon_t.
+			\] 
+			\vspace{-0.5cm}
+			\item Update $\bx_0 := \bx_T$ and choose the next $\sigma_l$.
+		\end{itemize}
+	\end{block}
+	\begin{figure}
+		\includegraphics[width=0.9\linewidth]{figs/ald}
+	\end{figure}
 	\myfootnotewithlink{https://arxiv.org/abs/2006.09011}{Song Y. et al. Improved Techniques for Training Score-Based Generative Models, 2020}
 \end{frame}
 %=======
-\section{DDPM vs Score matching}
+\section{DDPM vs NCSN}
 %=======
-\begin{frame}{DDPM vs Score matching}
-	\vspace{-0.3cm}
-	\[
-		\cL_t = {\color{olive}\bbE_{\bepsilon}} \left[ \frac{\beta_t^2}{2\tilde{\beta}_t (1 - \beta_t)} \left\| {\color{violet}\frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}} - {\color{teal}\frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}\right\|^2 \right]
-	\]
-	\begin{itemize}
-		\item Result from Statement 2
-		\[
-			q(\bx_t | \bx_0) = \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI).
-		\]
-		\item Score of noised distribution
-		\[
-			\nabla_{\bx_t} \log q(\bx_t | \bx_0) = - \frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}, \quad \text{where } \bepsilon \sim \cN(0, \bI).
-		\]
-		\item Let reparametrize our model: 
-		\[
-			\bs_{\btheta}(\bx_t, t) = - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}.
-		\]
-	\end{itemize}
-	\begin{block}{Noise conditioned score network}
+\begin{frame}{DDPM vs NCSN}
+	\begin{block}{NCSN objective}
 		\vspace{-0.2cm}
 		\[
-			{\color{olive}\bbE_{p(\bx' | \bx, \sigma_l)}}\bigl\| {\color{teal}\bs(\bx', \btheta, \sigma_l)} - {\color{violet}\nabla_{\bx'} \log p(\bx' | \bx, \sigma_l)} \bigr\|^2_2 \rightarrow \min_{\btheta}
+			{\color{olive}\bbE_{p(\bx' | \bx, \sigma_l)}}\bigl\| {\color{teal}\bs_{\btheta}(\bx', \sigma_l)} - {\color{violet}\nabla_{\bx'} \log p(\bx' | \bx, \sigma_l)} \bigr\|^2_2 \rightarrow \min_{\btheta}
 		\]
 	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{DDPM objective}
+		\vspace{-0.2cm}
+		\[
+			\cL_t = {\color{olive}\bbE_{\bepsilon \sim \cN(0, \bI)}} \left[ \frac{(1 - \alpha_t)^2}{2\tilde{\beta}_t \alpha_t} \left\| {\color{violet}\frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}} - {\color{teal}\frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}\right\|^2 \right]
+		\]
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{align*}
+		q(\bx_t | \bx_0) &= \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI) \\
+		{\color{violet}\nabla_{\bx_t} \log q(\bx_t | \bx_0)} &= - \frac{\bx_t - \sqrt{\bar{\alpha}_t} \cdot \bx_0}{1 - \bar{\alpha}_t} = - \frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}.
+	\end{align*}
+		Let reparametrize our model: 
+		\vspace{-0.2cm}
+		\[
+			{\color{teal}\bs_{\btheta}(\bx_t, t)} = - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}.
+		\]
 	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
 	\end{frame}
 %=======

@@ -49,7 +49,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |  |  | <b>Seminar 11:</b> TBA |  | [video](https://youtu.be/-pNUOr2Ig38) |
 | 12 | November, 28 | <b>Lecture 12:</b> Denoising diffusion probabilistic model (DDPM): reparametrization and overview. Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. | [slides](lectures/lecture12/Lecture12.pdf) | [video](https://youtu.be/Owk8ilp7yW0) |
 |  |  | <b>Seminar 12:</b> TBA |  |  |
-| 13 | December, 5 | <b>Lecture 13:</b> Score matching: implicit/sliced score matching, denoising score matching. Noise Conditioned Score Network (NCSN). | [slides](lectures/lecture13/Lecture13.pdf) |  |
+| 13 | December, 5 | <b>Lecture 13:</b> Score matching: implicit/sliced score matching, denoising score matching. Noise Conditioned Score Network (NCSN). DDPM vs NCSN. | [slides](lectures/lecture13/Lecture13.pdf) |  |
 |  |  | <b>Seminar 13:</b> TBA |  |  |
 | 14 | December, 12 | <b>Lecture 14:</b> TBA |  |  |
 |  |  | <b>Seminar 14:</b> TBA |  |  |
