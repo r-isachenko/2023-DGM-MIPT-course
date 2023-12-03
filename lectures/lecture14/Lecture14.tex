@@ -84,8 +84,137 @@
 	\myfootnotewithlink{https://arxiv.org/abs/1907.05600}{Song Y. et al. Generative Modeling by Estimating Gradients of the Data Distribution, 2019}
 \end{frame}
 %=======
+\begin{frame}{Recap of previous lecture}
+	\begin{block}{NCSN training}
+		\begin{enumerate}
+			\item Get the sample $\bx_0 \sim \pi(\bx)$.
+			\item Sample noise level $l \sim U[1, L]$ and the noise $\bepsilon \sim \cN(0, \bI)$.
+			\item Get noisy image $\bx' = \bx_0 + \sigma_l \cdot \bepsilon$.
+			\item Compute loss $ \cL = \| \bs_{\btheta}(\bx', \sigma_l) + \frac{\bepsilon}{\sigma_l} \|^2 $.
+		\end{enumerate}
+	\end{block}
+	\begin{block}{NCSN sampling (annealed Langevin dynamics)}
+		\begin{itemize}
+			\item Sample $\bx_0 \sim \cN(0, \sigma_1 \bI) \approx \pi(\bx | \sigma_L)$.
+			\item Apply $T$ steps of Langevin dynamic
+			\vspace{-0.2cm}
+			\[
+				\bx_t = \bx_{t-1} + \frac{1}{2}\alpha_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\alpha_l} \bepsilon_t.
+			\] 
+			\vspace{-0.5cm}
+			\item Update $\bx_0 := \bx_T$ and choose the next $\sigma_l$.
+		\end{itemize}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2006.09011}{Song Y. et al. Improved Techniques for Training Score-Based Generative Models, 2020}
+\end{frame}
+%=======
+\begin{frame}{Recap of previous lecture}
+	\begin{block}{NCSN objective}
+		\vspace{-0.2cm}
+		\[
+			{\color{olive}\bbE_{p(\bx' | \bx, \sigma_l)}}\bigl\| {\color{teal}\bs_{\btheta}(\bx', \sigma_l)} - {\color{violet}\nabla_{\bx'} \log p(\bx' | \bx, \sigma_l)} \bigr\|^2_2 \rightarrow \min_{\btheta}
+		\]
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{DDPM objective}
+		\vspace{-0.2cm}
+		\[
+			\cL_t = {\color{olive}\bbE_{\bepsilon \sim \cN(0, \bI)}} \left[ \frac{(1 - \alpha_t)^2}{2\tilde{\beta}_t \alpha_t} \left\| {\color{violet}\frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}} - {\color{teal}\frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}\right\|^2 \right]
+		\]
+		\vspace{-0.7cm}
+	\end{block}
+	\begin{align*}
+		q(\bx_t | \bx_0) &= \cN(\bx_t | \sqrt{\bar{\alpha}_t} \cdot \bx_0, (1 - \bar{\alpha}_t) \cdot \bI) \\
+		{\color{violet}\nabla_{\bx_t} \log q(\bx_t | \bx_0)} &= - \frac{\bx_t - \sqrt{\bar{\alpha}_t} \cdot \bx_0}{1 - \bar{\alpha}_t} = - \frac{\bepsilon}{\sqrt{1 - \bar{\alpha}_t}}.
+	\end{align*}
+		Let reparametrize our model: 
+		\vspace{-0.2cm}
+		\[
+			{\color{teal}\bs_{\btheta}(\bx_t, t)} = - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}.
+		\]
+	\myfootnotewithlink{https://arxiv.org/abs/2006.11239}{Ho J. Denoising Diffusion Probabilistic Models, 2020}
+	\end{frame}
+%=======
 \begin{frame}{Outline}
 	\tableofcontents
+\end{frame}
+%=======
+\section{Classifier guidance}
+%=======
+\begin{frame}{Classifier guidance}
+	\begin{itemize}
+		\item Let imagine we are given the distribution $q(\by | \bx_0)$. 
+		\item Since we have already defined Markov chain, we have $q(\bx_t | \bx_{t-1}, \by) = q(\bx_t | \bx_{t - 1})$.
+		\item Let try to find reverse $q(\bx_{t-1} | \bx_t, \by)$.
+		\item Helper statement:
+		\vspace{-0.2cm}
+		\begin{multline*}
+			{\color{teal}q(\by | \bx_{t - 1}, \bx_t)} = \frac{q(\bx_{t - 1}, \bx_t, \by)}{q(\bx_{t - 1}, \bx_t)} = \\
+			= \frac{q(\bx_t | \bx_{t - 1}, {\color{olive}\by}) q(\by | \bx_{t - 1}) \color{violet}{q(\bx_{t - 1})}} {q(\bx_t | \bx_{t - 1}) \color{violet}{q(\bx_{t - 1})}} = q(\by | \bx_{t - 1}).
+		\end{multline*}
+		\vspace{-0.4cm}
+	\end{itemize}
+	\begin{block}{Conditional distribution}
+		\vspace{-0.7cm}
+		\begin{multline*}
+			q(\bx_{t - 1} | \bx_t, \by) = \frac{q(\bx_{t - 1}, \bx_t, \by)}{q(\bx_t, \by)}  = \\ 
+			=  \frac{{\color{teal}q(\by | \bx_{t - 1}, \bx_t)} q(\bx_{t - 1} | \bx_t) {\color{violet}q(\bx_t)}}{q(\by | \bx_t) {\color{violet}q(\bx_t)}} = \\
+			= q(\by | \bx_{t - 1}) q(\bx_{t - 1} | \bx_t) \cdot \text{const}(\bx_{t - 1}).
+		\end{multline*}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
+	\begin{block}{Conditional distribution}
+		\[
+			q(\bx_{t - 1} | \bx_t, \by) = q(\by | \bx_{t - 1}) q(\bx_{t - 1} | \bx_t) \cdot \text{const}(\bx_{t - 1}).
+		\]
+	\end{block}
+	\[
+		p(\bx_{t - 1} | \bx_t, \by, \btheta , \bphi) = p(\by | \bx_{t-1}, \bphi) p(\bx_{t-1} | \bx_t, \btheta) \cdot \text{const}(\bx_{t - 1}).
+	\]
+	\[
+		p(\bx_{t-1} | \bx_t, \btheta) = \cN(\bmu_{\btheta}(\bx_t, t), \bsigma^2_{\btheta}(\bx_t, t)). 
+	\]
+	\[
+		\log p(\bx_{t-1} | \bx_t, \btheta) = - \frac{\|\bx_{t - 1} - \bmu\|^2}{2 \bsigma^2} + \text{const}(\bx_{t-1})
+	\]
+	\begin{multline*}
+		\log p(\by | \bx_{t-1}, \bphi) \approx \log p(\by | \bx_{t-1}, \bphi) |_{\bx_{t-1} = \bmu} + \\
+		+ (\bx_{t-1} - \bmu) \nabla_{\bx_{t-1}} \log p(\by | \bx_{t-1}, \bphi) |_{\bx_{t-1} = \bmu} = \\
+		= (\bx_{t-1} - \bmu) \cdot \mathbf{g} +  \text{const}(\bx_{t-1}),
+	\end{multline*}
+	where $\mathbf{g} =  \nabla_{\bx_{t-1}} \log p(\by | \bx_{t-1}, \bphi) |_{\bx_{t-1} = \bmu}$.
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
+	\[
+		\log p(\bx_{t - 1} | \bx_t, \by, \btheta , \bphi) = \log p(\by | \bx_{t-1}, \bphi) + \log p(\bx_{t-1} | \bx_t, \btheta) + \text{const}(\bx_{t - 1})
+	\]
+	\begin{align*}
+		\log p(\bx_{t - 1} | \bx_t, \by, \btheta , \bphi) &= (\bx_{t-1} - \bmu) \cdot \mathbf{g} - \frac{\|\bx_{t - 1} - \bmu\|^2}{2 \bsigma^2} + \text{const}(\bx_{t-1}) \\
+		& = - \frac{\|\bx_{t - 1} - \bmu - \bsigma \odot \mathbf{g}\|^2}{2 \bsigma^2} + \text{const}(\bx_{t-1}) \\
+		& = \log \cN( \bmu + \bsigma \odot \mathbf{g}, \bsigma^2) + \text{const}(\bx_{t-1})
+	\end{align*}
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
+	\begin{block}{Guided sampling}
+		\begin{enumerate}
+			\item Sample $\bx_T \sim \cN(0, \bI)$.
+			\item Compute mean of $p(\bx_{t-1} | \bx_t, \btheta) = \cN(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI)$:
+			\[
+				\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}} \bepsilon_{\btheta}(\bx_t, t)
+			\]
+			\vspace{-0.3cm}
+			\item Compute $\mathbf{g} =  \nabla_{\bx_{t-1}} \log p(\by | \bx_{t-1}, \bphi) |_{\bx_{t-1} = \bmu}$
+			\item Get denoised image $\bx_{t - 1} = (\bmu_{\btheta}(\bx_t, t) + s \cdot \tilde{\beta}_t \cdot \mathbf{g})+ \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
+		\end{enumerate}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
 \end{frame}
 %=======
 \section{The worst course overview}
