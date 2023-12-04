@@ -142,6 +142,11 @@
 \section{Classifier guidance}
 %=======
 \begin{frame}{Classifier guidance}
+	Idea: use $p(\bx_{t-1} | \bx_t, \by, \btheta)$ instead of $p(\bx_{t-1} | \bx_t, \btheta)$.
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
 	\begin{itemize}
 		\item Let imagine we are given the distribution $q(\by | \bx_0)$. 
 		\item Since we have already defined Markov chain, we have $q(\bx_t | \bx_{t-1}, \by) = q(\bx_t | \bx_{t - 1})$.
@@ -171,6 +176,7 @@
 			q(\bx_{t - 1} | \bx_t, \by) = q(\by | \bx_{t - 1}) q(\bx_{t - 1} | \bx_t) \cdot \text{const}(\bx_{t - 1}).
 		\]
 	\end{block}
+	\vspace{-0.7cm}
 	\[
 		p(\bx_{t - 1} | \bx_t, \by, \btheta , \bphi) = p(\by | \bx_{t-1}, \bphi) p(\bx_{t-1} | \bx_t, \btheta) \cdot \text{const}(\bx_{t - 1}).
 	\]
@@ -211,10 +217,75 @@
 			\]
 			\vspace{-0.3cm}
 			\item Compute $\mathbf{g} =  \nabla_{\bx_{t-1}} \log p(\by | \bx_{t-1}, \bphi) |_{\bx_{t-1} = \bmu}$
-			\item Get denoised image $\bx_{t - 1} = (\bmu_{\btheta}(\bx_t, t) + s \cdot \tilde{\beta}_t \cdot \mathbf{g})+ \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
+			\item Get denoised image $\bx_{t - 1} = (\bmu_{\btheta}(\bx_t, t) + \tilde{\beta}_t \cdot \mathbf{g})+ \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
 		\end{enumerate}
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
+	\[
+		\nabla_{\bx_t} \log p(\bx_t | \btheta) \approx - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}.
+	\]
+	\begin{align*}
+		\nabla_{\bx_t} \log p(\bx_t | \by, \btheta, \bphi) &= \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + \nabla_{\bx_t} \log p(\bx_t | \btheta) \\
+		&= \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}
+	\end{align*}
+	\[
+		\hat{\bepsilon}_{\btheta}(\bx_t, t) = \bepsilon_{\btheta}(\bx_t, t) - \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
+	\]
+	\[
+		\hat{\bepsilon}_{\btheta}(\bx_t, t) = \bepsilon_{\btheta}(\bx_t, t) - \gamma \cdot \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
+	\]
+	\[
+		\nabla_{\bx_t}^{\gamma} \log p(\bx_t | \by, \btheta, \bphi) = \gamma \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + \nabla_{\bx_t} \log p(\bx_t | \btheta) 
+	\]
+	\[
+		p(\bx_t | \by, \btheta, \bphi) = \frac{p(\by | \bx_t, \bphi)^{\gamma} p(\bx_t | \btheta)}{Z}
+	\]
+	Check that $\nabla_{\bx_t} Z \neq 0$.
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\begin{frame}{Classifier guidance}
+	\begin{block}{Guided sampling}
+		\begin{enumerate}
+			\item Sample $\bx_T \sim \cN(0, \bI)$.
+			\item Compute "corrected" $\hat{\bepsilon}_{\btheta}(\bx_t, t)$:
+			\[
+				\hat{\bepsilon}_{\btheta}(\bx_t, t) = \bepsilon_{\btheta}(\bx_t, t) - \gamma \cdot \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
+			\]
+			\item Compute mean of $p(\bx_{t-1} | \bx_t, \btheta) = \cN(\bmu_{\btheta}(\bx_t, t), \tilde{\beta}_t \bI)$:
+			\[
+				\bmu_{\btheta}(\bx_t, t) = \frac{1}{\sqrt{\alpha_t}} \bx_t - \frac{1 - \alpha_t}{\sqrt{\alpha_t (1 - \bar{\alpha}_t)}} \hat{\bepsilon}_{\btheta}(\bx_t, t)
+			\]
+			\vspace{-0.3cm}
+			\item Get denoised image $\bx_{t - 1} = \bmu_{\btheta}(\bx_t, t) +  \sqrt{\tilde{\beta}_t} \cdot \bepsilon$, where $\bepsilon \sim \cN(0, \bI)$.
+		\end{enumerate}
+	\end{block}
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
+\end{frame}
+%=======
+\section{Classifier-free guidance}
+%=======
+\begin{frame}{Classifier-free guidance}
+	\begin{align*}
+		\nabla_{\bx_t}^{\gamma} \log p(\bx_t | \by, \btheta, \bphi) &= \gamma \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + \nabla_{\bx_t} \log p(\bx_t | \btheta) \\
+		&= \gamma \nabla_{\bx_t} \log \left(\frac{p(\bx_t| \by, \btheta) p(\by | \bphi)}{p(\bx_t | \btheta)}\right) + \nabla_{\bx_t} \log p(\bx_t | \btheta)\\
+				&= \gamma \nabla_{\bx_t} \log p(\bx_t| \by, \btheta) + (1 - \gamma) \nabla_{\bx_t} \log p(\bx_t | \btheta)
+	\end{align*}
+	\[
+		\hat{\bepsilon}_{\btheta}(\bx_t, t) = \gamma \cdot \bepsilon_{\btheta}(\bx_t, \by, t) + (1 - \gamma) \cdot \bepsilon_{\btheta}(\bx_t, t)
+	\]
+	\myfootnotewithlink{https://arxiv.org/pdf/2112.10741}{Nichol A., et al. GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models, 2022}
+\end{frame}
+%=======
+\begin{frame}{Classifier-free guidance}
+	“a stained glass window of a panda eating bamboo"
+	\begin{figure}
+		\includegraphics[width=\linewidth]{figs/cfg}
+	\end{figure}
+	\myfootnotewithlink{https://arxiv.org/pdf/2112.10741}{Nichol A., et al. GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models, 2022}
 \end{frame}
 %=======
 \section{The worst course overview}
