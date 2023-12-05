@@ -355,11 +355,11 @@
 \begin{frame}{Noise Conditioned Score Network (NCSN)}
 	\begin{block}{Sampling (annealed Langevin dynamics)}
 		\begin{itemize}
-			\item Sample $\bx_0 \sim \cN(0, \sigma_1 \bI) \approx \pi(\bx | \sigma_L)$.
+			\item Sample $\bx_0 \sim \cN(0, \sigma_1 \bI) \approx \pi(\bx | \sigma_1)$.
 			\item Apply $T$ steps of Langevin dynamic
 			\vspace{-0.2cm}
 			\[
-				\bx_t = \bx_{t-1} + \frac{1}{2}\alpha_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\alpha_l} \bepsilon_t.
+				\bx_t = \bx_{t-1} + \frac{1}{2}\eta_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\eta_l} \bepsilon_t.
 			\] 
 			\vspace{-0.5cm}
 			\item Update $\bx_0 := \bx_T$ and choose the next $\sigma_l$.

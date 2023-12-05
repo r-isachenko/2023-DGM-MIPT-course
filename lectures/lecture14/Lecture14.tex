@@ -99,7 +99,7 @@
 			\item Apply $T$ steps of Langevin dynamic
 			\vspace{-0.2cm}
 			\[
-				\bx_t = \bx_{t-1} + \frac{1}{2}\alpha_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\alpha_l} \bepsilon_t.
+				\bx_t = \bx_{t-1} + \frac{1}{2}\eta_l \bs_{\btheta}(\bx_{t - 1}, \sigma_l) + \sqrt{\eta_l} \bepsilon_t.
 			\] 
 			\vspace{-0.5cm}
 			\item Update $\bx_0 := \bx_T$ and choose the next $\sigma_l$.
@@ -137,6 +137,32 @@
 %=======
 \begin{frame}{Outline}
 	\tableofcontents
+\end{frame}
+%=======
+\section{NCSN DDPM SDE}
+%=======
+\begin{frame}{NCSN DDPM SDE}
+	\[
+		\bx_l = \bx_{l - 1} + \sqrt{\sigma^2_l - \sigma^2_{l-1}} \bepsilon
+	\]
+	\[
+		\bx(t + dt) = \bx(t) + \sqrt{\frac{\sigma^2(t + dt) - \sigma^2(t)}{dt} dt} \cdot \bepsilon = \bx(t) + \sqrt{\frac{ d [\sigma^2(t)]}{dt}} \cdot d \bw
+	\]
+	\[
+		d \bx = \sqrt{\frac{ d [\sigma^2(t)]}{dt}} \cdot d \bw
+	\]
+	\[
+		\bx_t = \sqrt{1 - \beta_t} \cdot \bx_{t - 1} + \sqrt{\beta_t} \cdot \bepsilon
+	\]
+	\begin{multline*}
+		\bx(t) = \sqrt{1 - \beta(t) dt} \cdot \bx(t - dt) + \sqrt{\beta(t)dt} \cdot \bepsilon = \\
+		= (1 - \frac{1}{2} \beta(t) dt) \cdot \bx(t - dt) + \sqrt{\beta(t)dt} \cdot \bepsilon = \\
+		= \bx(t - dt) - \frac{1}{2} \beta(t) \bx(t - dt) dt  + \sqrt{\beta(t)} \cdot d \bw
+	\end{multline*}
+	\[
+		d \bx = - \frac{1}{2} \beta(t) \bx(t) dt + \sqrt{\beta(t)} \cdot d \bw
+	\]
+	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Song Y., et al. Score-Based Generative Modeling through Stochastic Differential Equations, 2020}
 \end{frame}
 %=======
 \section{Classifier guidance}
