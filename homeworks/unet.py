@@ -53,8 +53,6 @@ class MyUNet(nn.Module):
         self.time_embed = nn.Embedding(n_steps, time_emb_dim)
         self.time_embed.weight.data = sinusoidal_embedding(n_steps, time_emb_dim)
         self.time_embed.requires_grad_(False)
-        self.y_embed = nn.Embedding(10, time_emb_dim)
-        self.is_y_cond = True
 
         # First half
         self.te1 = self._make_te(time_emb_dim, 1)
@@ -123,11 +121,9 @@ class MyUNet(nn.Module):
 
         self.conv_out = nn.Conv2d(10, 1, 3, 1, 1)
 
-    def forward(self, x, t, y):
+    def forward(self, x, t):
         # x is (N, 2, 28, 28) (image with positional embedding stacked on channel dimension)
         t = self.time_embed(t)
-        if self.is_y_cond:
-            t += self.y_embed(y)
         n = len(x)
         out1 = self.b1(x + self.te1(t).reshape(n, -1, 1, 1))  # (N, 10, 28, 28)
         out2 = self.b2(
