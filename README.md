@@ -46,11 +46,11 @@ The course is accompanied by practical tasks that allow you to understand the pr
 | 10 | November, 14 | <b>Lecture 10:</b> Neural ODE. Adjoint method. Continuous-in-time NF (FFJORD, Hutchinson's trace estimator). | [slides](lectures/lecture10/Lecture10.pdf) | [video](https://youtu.be/tIuNmzFJhF4) |
 |  |  | <b>Seminar 10:</b> StyleGAN: end discussions. Energy-Based models. | [![colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/r-isachenko/2023-DGM-MIPT-course/blob/main/seminars/seminar10/seminar10_todo.ipynb)<br>[notebook](seminars/seminar10/seminar10_todo.ipynb)  | [video](https://youtu.be/3C2BYSpK9yo) |
 | 11 | November, 21 | <b>Lecture 11:</b> Gaussian diffusion process. Gaussian diffusion model as VAE, derivation of ELBO. | [slides](lectures/lecture11/Lecture11.pdf) | [video](https://youtu.be/kxLvyWqsJMU) |
-|  |  | <b>Seminar 11:</b> TBA |  | [video](https://youtu.be/-pNUOr2Ig38) |
+|  |  | <b>Seminar 11:</b> Gaussian diffusion process basics. | [notes.pdf](seminars/seminar11/diffusion_models_basics_notes.pdf)  | [video](https://youtu.be/3C2BYSpK9yo) | [video](https://youtu.be/-pNUOr2Ig38) |
 | 12 | November, 28 | <b>Lecture 12:</b> Denoising diffusion probabilistic model (DDPM): reparametrization and overview. Kolmogorov-Fokker-Planck equation and Langevin dynamic. SDE basics. | [slides](lectures/lecture12/Lecture12.pdf) | [video](https://youtu.be/Owk8ilp7yW0) |
-|  |  | <b>Seminar 12:</b> TBA |  | [video](https://youtu.be/BBgBSyxBChs) |
+|  |  | <b>Seminar 12:</b> Fast samplers: iDDPM and DDIM | [notes.pdf](seminars/seminar12/fast_sampling_notes.pdf) | [video](https://youtu.be/BBgBSyxBChs) |
 | 13 | December, 5 | <b>Lecture 13:</b> Score matching: implicit/sliced score matching, denoising score matching. Noise Conditioned Score Network (NCSN). DDPM vs NCSN. | [slides](lectures/lecture13/Lecture13.pdf) | [video](https://youtu.be/dANy4SZytN4) |
-|  |  | <b>Seminar 13:</b> TBA |  | [video](https://youtu.be/XEO0cEPWJVg) |
+|  |  | <b>Seminar 13:</b> Noise Conditioned Score Network | [notebook](seminars/seminar13/ncsn.ipynb) | [video](https://youtu.be/XEO0cEPWJVg) |
 | 14 | December, 12 | <b>Lecture 14:</b> Variance Preserving and Variance Exploding SDEs. Model guidance: classifier guidance, classfier-free guidance. | [slides](lectures/lecture14/Lecture14.pdf) |  |
 |  |  | <b>Seminar 14:</b> TBA |  |  |
 
