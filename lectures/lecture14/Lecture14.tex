@@ -45,7 +45,7 @@
 	\frac{1}{2} \bbE_{\pi(\bx' | \sigma)}\bigl\| \bs_{\btheta}(\bx', \sigma) - \nabla_{\bx'} \log \pi(\bx' | \sigma) \bigr\|^2_2 \rightarrow \min_{\btheta}
 	\]
 	\vspace{-0.5cm} \\
-	satisfies $\bs_{\btheta}(\bx', \sigma) \approx \bs(\bx', \btheta, 0) = \bs(\bx', \btheta)$ if $\sigma$ is small enough.
+	satisfies $\bs_{\btheta}(\bx', \sigma) \approx \bs_{\btheta}(\bx', 0) = \bs_{\btheta}(\bx')$ if $\sigma$ is small enough.
 	\begin{block}{Theorem (denoising score matching)}
 		\vspace{-0.8cm}
 		\begin{multline*}
@@ -153,9 +153,9 @@
 	\[
 		\bx_l = \bx_{l - 1} + \sqrt{\sigma^2_l - \sigma^2_{l-1}} \cdot \bepsilon, \quad p(\bx_l | \bx_{l-1}, \sigma_l) = \cN(\bx_l | \bx_{l-1}, (\sigma_l^2 - \sigma_{l-1}^2) \cdot \bI)
 	\]
-	Let turn this Markov chain to the continuous stochastic process taking $L \rightarrow \infty$:
+	Let turn this Markov chain to the continuous stochastic process~$\bx(t)$ taking $L \rightarrow \infty$:
 	\[
-		\bx(t + dt) = \bx(t) + \sqrt{\frac{\sigma^2(t + dt) - \sigma^2(t)}{dt} dt} \cdot \bepsilon = \bx(t) + \sqrt{\frac{ d [\sigma^2(t)]}{dt}} \cdot d \bw
+		{\color{teal}\bx(t + dt)} = {\color{teal}\bx(t)} + \sqrt{\frac{\sigma^2(t + dt) - \sigma^2(t)}{dt} {\color{violet}dt}} \cdot {\color{violet}\bepsilon} = \bx(t) + \sqrt{\frac{ d [\sigma^2(t)]}{dt}} \cdot {\color{violet}d \bw}
 	\]
 	\vspace{-0.5cm}
 	\begin{block}{Variance Exploding SDE}
@@ -177,15 +177,15 @@
 	\end{block}
 	Let turn this Markov chain to the continuous stochastic process taking $T \rightarrow \infty$ and taking $\beta(\frac{t}{T}) = \beta_t \cdot T$
 	\begin{multline*}
-		\bx(t) = \sqrt{1 - \beta(t) dt} \cdot \bx(t - dt) + \sqrt{\beta(t)dt} \cdot \bepsilon = \\
-		= (1 - \frac{1}{2} \beta(t) dt) \cdot \bx(t - dt) + \sqrt{\beta(t)dt} \cdot \bepsilon = \\
-		= \bx(t - dt) - \frac{1}{2} \beta(t) \bx(t - dt) dt  + \sqrt{\beta(t)} \cdot d \bw
+		{\color{teal}\bx(t)} = \sqrt{1 - \beta(t) dt} \cdot \bx(t - dt) + \sqrt{\beta(t)dt} \cdot \bepsilon \approx \\
+		\approx (1 - \frac{1}{2} \beta(t) dt) \cdot \bx(t - dt) + \sqrt{\beta(t){\color{violet}dt}} \cdot {\color{violet}\bepsilon} = \\
+		= {\color{teal}\bx(t - dt)} - \frac{1}{2} \beta(t) \bx(t - dt) dt  + \sqrt{\beta(t)} \cdot {\color{violet}d \bw}
 	\end{multline*}
 	\vspace{-0.5cm}
 	\begin{block}{Variance Preserving SDE}
 		\vspace{-0.3cm}
 		\[
-			d \bx = - \frac{1}{2} \beta(t) \bx(t) dt + \sqrt{\beta(t)} \cdot d \bw
+			{\color{teal}d \bx} = - \frac{1}{2} \beta(t) \bx(t) dt + \sqrt{\beta(t)} \cdot d \bw
 		\]
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/2011.13456}{Song Y., et al. Score-Based Generative Modeling through Stochastic Differential Equations, 2020}
@@ -238,10 +238,10 @@
 		\begin{itemize}
 		\item If we have \textbf{supervised} data $\{(\bx_i, \by_i)\}_{i=1}^m$ we could theat $\by$ as additional model input:
 		\begin{itemize}
-			\item $p(x_j | \bx_{1:j-1}, \by, \btheta)$ for AR;
-			\item Encoder $q(\bz | \bx, \by, \bphi)$ and decoder $p(\bx | \bz, \by, \btheta)$ for VAE;
-			\item $G_{\btheta}(\bz, \by)$ for NF and GAN;
-			\item $p(\bx_{t-1} | \bx_t, \by, \btheta)$ for DDPM.
+			\item $p(x_j | \bx_{1:j-1}, {\color{olive}\by}, \btheta)$ for AR;
+			\item Encoder $q(\bz | \bx, {\color{olive}\by}, \bphi)$ and decoder $p(\bx | \bz, {\color{olive}\by}, \btheta)$ for VAE;
+			\item $G_{\btheta}(\bz, {\color{olive}\by})$ for NF and GAN;
+			\item $p(\bx_{t-1} | \bx_t, {\color{olive}\by}, \btheta)$ for DDPM.
 		\end{itemize}
 		\item If we have \textbf{unsupervised} data $\{\bx_i\}_{i=1}^m$ we need to create the way to convert unconditional model $p(\bx | \btheta)$ to the conditional.
 		\end{itemize}
@@ -253,6 +253,23 @@
 			\item Let try to find reverse $q(\bx_{t-1} | \bx_t, \by)$.
 		\end{itemize}
 	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Label guidance}
+	\textbf{Label:} Ostrich (10th ImageNet class) 
+	\begin{figure}
+		\includegraphics[width=\linewidth]{figs/label_conditioning}
+	\end{figure}
+	\myfootnotewithlink{https://arxiv.org/abs/1906.00446}{Razavi A., Oord A., et al. Generating Diverse High-Fidelity Images with VQ-VAE-2, 2019}
+\end{frame}
+%=======
+\begin{frame}{Text guidance}
+	\textbf{Prompt:} a stained glass window of a panda eating bamboo \\
+	Left: $\gamma = 1$, Right: $\gamma = 3$.
+	\begin{figure}
+		\includegraphics[width=\linewidth]{figs/cfg}
+	\end{figure}
+	\myfootnotewithlink{https://arxiv.org/pdf/2112.10741}{Nichol A., et al. GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models, 2022}
 \end{frame}
 %=======
 \subsection{Classifier guidance}
@@ -338,24 +355,25 @@
 		\begin{multline*}
 			\bbE_{q(\bx_{t})}\bigl\| \bs_{\btheta}(\bx_t, t) - \nabla_{\bx_t} \log q(\bx_t) \bigr\|^2_2 = \\ = \bbE_{\pi(\bx_0)} \bbE_{q(\bx_t | \bx_0)}\bigl\| \bs_{\btheta}(\bx_t, t) - \nabla_{\bx_t} \log q(\bx_t | \bx_0) \bigr\|^2_2 + \text{const}(\btheta)
 		\end{multline*}
-		\vspace{-0.8cm}
+		\vspace{-1.0cm}
 	\end{block}
 	\[
 		\nabla_{\bx_t} \log p(\bx_t | \btheta) \approx - \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}} = \bs_{\btheta}(\bx_t, t).
 	\]
-	\vspace{-0.5cm}
+	\vspace{-0.4cm}
 	\begin{block}{Conditional distribution}
-		\vspace{-0.5cm}
+		\vspace{-0.7cm}
 		\begin{align*}
-			\nabla_{\bx_t} \log p(\bx_t | \by, \btheta, \bphi) &= \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + {\color{violet}\nabla_{\bx_t} \log p(\bx_t | \btheta)}\\
-			&= \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) {\color{violet}- \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}
+			{\color{olive}\nabla_{\bx_t} \log p(\bx_t | \by, \btheta, \bphi)} &= \nabla_{\bx_t} \log \left(\frac{p(\by | \bx_t, \bphi)p(\bx_t | \btheta)}{p(\by | \bphi)} \right)\\
+			&= \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + {\color{violet}\nabla_{\bx_t} \log p(\bx_t | \btheta)}\\
+			&= {\color{teal}\nabla_{\bx_t} \log p(\by | \bx_t, \bphi)} {\color{violet}- \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}
 		\end{align*}
 		\vspace{-0.7cm}
 	\end{block}
 	\begin{block}{Classifier-corrected noise prediction}
-		\vspace{-0.3cm}
+		\vspace{-0.4cm}
 		\[
-			\hat{\bepsilon}_{\btheta}(\bx_t, t) = \bepsilon_{\btheta}(\bx_t, t) - \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
+			{\color{olive}\nabla_{\bx_t}\hat{\bepsilon}_{\btheta}(\bx_t, t)} = {\color{violet}\bepsilon_{\btheta}(\bx_t, t)} - {\color{violet}\sqrt{1 - \bar{\alpha}_t}} \cdot {\color{teal}\nabla_{\bx_t} \log p(\by | \bx_t, \bphi)}
 		\]
 	\end{block}
 	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
@@ -368,16 +386,20 @@
 			\hat{\bepsilon}_{\btheta}(\bx_t, t) &= \bepsilon_{\btheta}(\bx_t, t) - \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) \\
 			\hat{\bepsilon}_{\btheta}(\bx_t, t) &= \bepsilon_{\btheta}(\bx_t, t) - {\color{teal}\gamma} \cdot \sqrt{1 - \bar{\alpha}_t} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
 		\end{align*}
-		\vspace{-0.4cm}
+		\vspace{-0.7cm}
 	\end{block}
 	Here we introduce {\color{teal} guidance scale $\gamma$} that controls the magnitude of the classifier guidance.
 	\begin{block}{Conditional distribution}
+		\vspace{-0.2cm}
+		\[
+			\frac{\hat{\bepsilon}_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}} = \frac{\bepsilon_{\btheta}(\bx_t, t)}{\sqrt{1 - \bar{\alpha}_t}} - {\color{teal}\gamma} \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi)
+		\]
 		\vspace{-0.5cm}
 		\begin{align*}
 			\nabla_{\bx_t}^{\gamma} \log p(\bx_t | \by, \btheta, \bphi) &= \gamma \cdot \nabla_{\bx_t} \log p(\by | \bx_t, \bphi) + \nabla_{\bx_t} \log p(\bx_t | \btheta) \\
 			p(\bx_t | \by, \btheta, \bphi) &= \frac{p(\by | \bx_t, \bphi)^{\gamma} p(\bx_t | \btheta)}{Z}
 		\end{align*}
-		\vspace{-0.4cm}
+		\vspace{-0.5cm}
 	\end{block}
 	Check that $\nabla_{\bx_t} Z \neq 0$.
 	\myfootnotewithlink{https://arxiv.org/abs/2105.05233}{Dhariwal P., Nichol A. Diffusion Models Beat GANs on Image Synthesis, 2021}
@@ -410,7 +432,7 @@
 	\vspace{-0.3cm}
 	\begin{multline*}
 		\nabla_{\bx_t}^{\gamma} \log p(\bx_t | \by, \btheta, \bphi) = \gamma \cdot \nabla_{\bx_t} {\color{violet}\log p(\by | \bx_t, \bphi)} + \nabla_{\bx_t} \log p(\bx_t | \btheta) = \\
-		= \gamma \cdot  \nabla_{\bx_t} \log \left( {\color{violet}\frac{p(\bx_t| \by, \btheta) p(\by | \bphi)}{p(\bx_t | \btheta)}} \right) + \nabla_{\bx_t} \log p(\bx_t | \btheta) = \\
+		= \gamma \cdot  \nabla_{\bx_t} \log \left( {\color{violet}\frac{p(\bx_t| \by, \btheta, \bphi) p(\by | \bphi)}{p(\bx_t | \btheta)}} \right) + \nabla_{\bx_t} \log p(\bx_t | \btheta) = \\
 		= \gamma \cdot  \nabla_{\bx_t} \log p(\bx_t| \by, \btheta) -\gamma \cdot  \nabla_{\bx_t} \log  p(\bx_t | \btheta) + \nabla_{\bx_t} \log p(\bx_t | \btheta) = \\
 		= \gamma \cdot  \nabla_{\bx_t} \log p(\bx_t| \by, \btheta) + (1 - \gamma) \cdot  \nabla_{\bx_t} \log p(\bx_t | \btheta)
 	\end{multline*}
@@ -424,15 +446,6 @@
 	\end{block}
 	In practice we could train the single model $\bepsilon_{\btheta}(\bx_t, \by, t)$ on \textbf{supervised} data alternating with real conditioning $\by$ and empty conditioning $\by = \emptyset$.
 	\myfootnotewithlink{https://arxiv.org/abs/2207.12598}{Ho J., Salimans T. Classifier-Free Diffusion Guidance, 2022}
-\end{frame}
-%=======
-\begin{frame}{Classifier-free guidance}
-	\textbf{Prompt:} a stained glass window of a panda eating bamboo \\
-	Left: $\gamma = 1$, Right: $\gamma = 3$.
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/cfg}
-	\end{figure}
-	\myfootnotewithlink{https://arxiv.org/pdf/2112.10741}{Nichol A., et al. GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models, 2022}
 \end{frame}
 %=======
 \section{The worst course overview}
@@ -459,7 +472,7 @@
 		\vfill
 		\item Classifier guidance is the way to turn the unconditional model to the conditional one via the training additional classifier on the noisy data.
 		\vfill
-		\item Classifier-free guidance allows to avoid the training additional classifier to get conditional model. It is widely used in practice.
+		\item Classifier-free guidance allows to avoid the training additional classifier to get the conditional model. It is widely used in practice.
 	\end{itemize}
 \end{frame}
 \end{document} 
