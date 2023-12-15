@@ -51,8 +51,7 @@ The course is accompanied by practical tasks that allow you to understand the pr
 |  |  | <b>Seminar 12:</b> Fast samplers: iDDPM and DDIM | [notes.pdf](seminars/seminar12/fast_sampling_notes.pdf) | [video](https://youtu.be/BBgBSyxBChs) |
 | 13 | December, 5 | <b>Lecture 13:</b> Score matching: implicit/sliced score matching, denoising score matching. Noise Conditioned Score Network (NCSN). DDPM vs NCSN. | [slides](lectures/lecture13/Lecture13.pdf) | [video](https://youtu.be/dANy4SZytN4) |
 |  |  | <b>Seminar 13:</b> Noise Conditioned Score Network | [notebook](seminars/seminar13/ncsn.ipynb) | [video](https://youtu.be/XEO0cEPWJVg) |
-| 14 | December, 12 | <b>Lecture 14:</b> Variance Preserving and Variance Exploding SDEs. Model guidance: classifier guidance, classfier-free guidance. | [slides](lectures/lecture14/Lecture14.pdf) |  |
-|  |  | <b>Seminar 14:</b> TBA |  |  |
+| 14 | December, 12 | <b>Lecture 14:</b> Variance Preserving and Variance Exploding SDEs. Model guidance: classifier guidance, classfier-free guidance. | [slides](lectures/lecture14/Lecture14.pdf) | [video](https://youtu.be/qy593_HbMXg) |
 
 ## Homeworks
 | Homework | Date | Deadline | Description | Link |
